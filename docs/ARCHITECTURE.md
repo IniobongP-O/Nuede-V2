@@ -37,6 +37,24 @@ When feature cycles begin, application code should be organized by feature rathe
 
 Shared packages must remain independent of React and application routing unless a later approved architectural decision explicitly changes that boundary.
 
+## Cycle 1 application shells
+
+Each application owns a separate React Router tree.
+
+Storefront routes are `/`, `/menu`, `/saved`, `/planner`, `/checkout`, and `/payment`. The storefront root layout owns the header, desktop/mobile navigation, static basket entry point, main landmark, notifications, and footer. About, FAQ, and Contact are homepage anchors until the Cycle 17 content work justifies any dedicated route.
+
+Admin routes are `/login`, `/dashboard`, `/menu`, `/orders`, `/analytics`, `/delivery`, `/testimonials`, `/feedback`, and `/settings`. Login renders outside the operational layout. The remaining routes use the admin sidebar, top bar, mobile navigation, and content canvas. There are deliberately no auth guards in Cycle 1.
+
+Both trees include branded Not Found behavior. `apps/*/src/app/routePaths.js` is a plain-JavaScript route manifest used for navigation and structural tests; `apps/*/src/app/router.jsx` owns rendered route composition.
+
+## Presentation boundaries
+
+`packages/config/src/brand.css` is the only shared visual layer. It contains stable CSS/Tailwind theme tokens and imports no application or React code.
+
+React UI and layouts remain application-owned. Storefront and admin may use similar primitive names, but each can evolve for its distinct customer or operational context without creating a cross-deployment UI package.
+
+Fixture data lives under each application's `src/fixtures` directory. Fixtures are not APIs, database models, seed data, or shared domain rules; their direct page imports make their temporary nature explicit.
+
 ## Authority boundaries
 
 Supabase PostgreSQL is the source of truth for business data. React may display estimates and collect normalized input, but it is never authoritative for prices, totals, order validity, payment state, or fulfilment state.

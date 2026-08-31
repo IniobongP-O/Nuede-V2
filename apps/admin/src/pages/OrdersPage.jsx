@@ -1,0 +1,9 @@
+import { AdminPageHeader } from "../components/layout/AdminPageHeader.jsx";
+import { FilterBar, StatusBadge } from "../components/ui/AdminPrimitives.jsx";
+import { DataTable } from "../components/ui/DataTable.jsx";
+import { SelectInput, TextInput } from "../components/ui/FormControls.jsx";
+import { demoOrders } from "../fixtures/adminFixtures.js";
+
+export function OrdersPage() {
+  return <><AdminPageHeader eyebrow="Order management foundation" title="Orders" description="Static search, filtering, table, payment, and fulfilment status treatments. Order management begins in Cycle 15." /><FilterBar><TextInput fieldClassName="min-w-60 flex-1" label="Search orders" type="search" placeholder="Order, customer, phone, or reference" /><SelectInput fieldClassName="min-w-44" label="Payment status" defaultValue="all"><option value="all">All payments</option><option>Paid</option><option>Unpaid</option></SelectInput><SelectInput fieldClassName="min-w-44" label="Fulfilment" defaultValue="all"><option value="all">All statuses</option><option>Preparing</option><option>Delivered</option></SelectInput></FilterBar><div className="mt-5"><DataTable caption="Demonstration orders" columns={["Order", "Customer", "Total", "Payment method", "Payment", "Fulfilment"]} rows={demoOrders} renderRow={(order) => <tr key={order.id}><td className="px-4 py-4 text-sm font-semibold text-brand-950">{order.id}</td><td className="px-4 py-4 text-sm text-muted">{order.customer}</td><td className="px-4 py-4 text-sm font-semibold">{order.total}</td><td className="px-4 py-4 text-sm text-muted">{order.method}</td><td className="px-4 py-4"><StatusBadge tone={order.payment === "Paid" ? "success" : "warning"}>{order.payment}</StatusBadge></td><td className="px-4 py-4"><StatusBadge tone={order.tone}>{order.status}</StatusBadge></td></tr>} /></div></>;
+}

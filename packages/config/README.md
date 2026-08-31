@@ -1,7 +1,9 @@
 # @nuede/config
 
-This package will hold public, non-secret configuration helpers and shared constants when they become necessary.
+This package holds public, non-secret configuration helpers and stable shared constants.
+
+Cycle 1 adds `brand.css`, the framework-independent Nuede color, typography, radius, and shadow token source used by both applications. React components and application layout styles remain owned by their applications.
 
 It must never contain credentials, Supabase service-role access, Paystack secrets, webhook secrets, or application-specific UI code.
 
-Cycle 0 intentionally exports no configuration values.
+The package remains independent of React, routing, and application code.

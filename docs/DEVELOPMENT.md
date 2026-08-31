@@ -59,6 +59,21 @@ A cycle is not complete merely because implementation stopped or automated check
 - Do not create abstractions solely for future cycles.
 - Never commit real secrets or generated build output.
 
+## Cycle 1 frontend conventions
+
+- Each app owns its router under `src/app/router.jsx` and its route manifest under `src/app/routePaths.js`.
+- Storefront and admin must not import one another.
+- Shared brand tokens are imported from `@nuede/config/brand.css`; component and page styles remain application-owned.
+- Use Lucide React as the only icon source.
+- Use the native `dialog` element through the application-owned `Dialog` component for modal focus containment, Escape behavior, and focus restoration.
+- Form controls require visible labels. Helper/error text must be associated through `aria-describedby`.
+- Reusable feedback components cover loading, error, and empty states. Toast viewports use ARIA live regions.
+- Fixture content belongs under `src/fixtures` and must not be promoted into shared domain/config packages or disguised behind a fake API.
+- About, FAQ, and Contact remain storefront homepage anchors until production content work.
+- Commercial-looking Cycle 1 actions must be inert or explicitly describe themselves as demonstrations.
+
+See `docs/DESIGN.md` for visual, responsive, interaction, and accessibility conventions.
+
 ## Git and recovery
 
 Use clear Conventional Commit-style checkpoint messages from the field guide. The planned Cycle 0 checkpoint is:

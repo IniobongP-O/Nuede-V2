@@ -48,3 +48,19 @@ Status terms used by the project are:
 | 18 | Security hardening, QA, deployment, and launch |
 
 The specification's 212 numbered product features remain planned. Cycle 0 implements none of them. Relevant numbered requirements must be expanded in `TRACEABILITY.md` during each cycle's inspection before that cycle is considered complete.
+
+## Cycle 1 implementation status
+
+The application-shell implementation now exists but has not yet completed the separate review, verification, or manual-acceptance phases.
+
+Implemented foundations:
+
+- independent storefront and admin routing;
+- storefront header, responsive navigation, basket placeholder, content layout, and footer;
+- admin login shell, sidebar, top bar, mobile navigation, and content layout;
+- shared brand tokens with application-owned React components;
+- buttons, form controls, cards/panels, tables, badges, loading/error/empty states, native dialogs, and toasts;
+- fixture-backed page shells and branded Not Found pages;
+- responsive and keyboard/focus foundations.
+
+Every displayed menu item, price, order, metric, delivery area, testimonial, feedback record, payment state, and planner slot is mock content. A visible page or control does not mark its future business feature implemented.

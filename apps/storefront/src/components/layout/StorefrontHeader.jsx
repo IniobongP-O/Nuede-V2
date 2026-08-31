@@ -1,0 +1,65 @@
+import { Menu, ShoppingBasket, Sprout } from "lucide-react";
+import { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+
+import { storefrontNavigation, storefrontPaths } from "../../app/routePaths.js";
+import { Dialog } from "../ui/Dialog.jsx";
+import { IconButton } from "../ui/Button.jsx";
+import { Container } from "./Container.jsx";
+
+function Brand() {
+  return (
+    <Link className="inline-flex min-h-11 items-center gap-2 rounded text-brand-950" to={storefrontPaths.home} aria-label="Nuede home">
+      <Sprout className="size-5 text-brand-700" aria-hidden="true" />
+      <span className="font-display text-2xl font-bold tracking-tight">nuede</span>
+    </Link>
+  );
+}
+
+function NavigationLink({ item, onNavigate, mobile = false }) {
+  return (
+    <NavLink
+      to={item.path}
+      end={item.end}
+      onClick={onNavigate}
+      className={({ isActive }) => `${mobile ? "flex min-h-12 items-center border-b border-line text-lg" : "inline-flex min-h-11 items-center border-b-2 px-1 text-sm"} font-semibold transition-colors ${isActive ? "border-brand-700 text-brand-950" : "border-transparent text-muted hover:text-brand-950"}`}
+    >
+      {item.label}
+    </NavLink>
+  );
+}
+
+export function StorefrontHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-line bg-canvas/95 backdrop-blur">
+      <Container className="flex min-h-18 items-center justify-between gap-5">
+        <Brand />
+        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
+          {storefrontNavigation.map((item) => <NavigationLink key={item.path} item={item} />)}
+          <a className="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-brand-950" href="/#about">About</a>
+          <a className="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-brand-950" href="/#faq">FAQ</a>
+        </nav>
+        <div className="flex items-center gap-2">
+          <Link className="inline-flex min-h-11 items-center gap-2 rounded-control px-3 text-sm font-semibold text-brand-950 hover:bg-brand-100" to={storefrontPaths.checkout} aria-label="Basket, 0 items. Cycle 1 placeholder.">
+            <ShoppingBasket className="size-5" aria-hidden="true" />
+            <span className="hidden sm:inline">Basket</span>
+            <span className="grid size-6 place-items-center rounded-full bg-brand-950 text-xs text-white">0</span>
+          </Link>
+          <IconButton className="lg:hidden" label="Open navigation menu" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}>
+            <Menu className="size-5" aria-hidden="true" />
+          </IconButton>
+        </div>
+      </Container>
+      <Dialog open={mobileOpen} onClose={() => setMobileOpen(false)} title="Navigate Nuede" description="Customer application sections">
+        <nav className="grid" aria-label="Mobile navigation">
+          {storefrontNavigation.map((item) => <NavigationLink key={item.path} item={item} mobile onNavigate={() => setMobileOpen(false)} />)}
+          <a className="flex min-h-12 items-center border-b border-line text-lg font-semibold text-brand-950" href="/#about" onClick={() => setMobileOpen(false)}>About</a>
+          <a className="flex min-h-12 items-center border-b border-line text-lg font-semibold text-brand-950" href="/#faq" onClick={() => setMobileOpen(false)}>FAQ</a>
+          <a className="flex min-h-12 items-center text-lg font-semibold text-brand-950" href="/#contact" onClick={() => setMobileOpen(false)}>Contact</a>
+        </nav>
+      </Dialog>
+    </header>
+  );
+}

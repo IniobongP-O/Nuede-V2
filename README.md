@@ -2,12 +2,14 @@
 
 Nuede V2 is a fresh food-commerce and nutrition platform with two independent React applications and one trusted Supabase backend.
 
-This repository currently contains the Cycle 0 engineering foundation only. It intentionally contains no commercial product functionality.
+This repository contains the Cycle 0 engineering foundation and the implemented Cycle 1 storefront/admin application shells. Cycle 1 uses fixture content only and intentionally contains no commercial product functionality, backend connection, authentication, cart, planner, checkout, payment, order, or analytics behavior.
 
 ## Applications
 
 - `apps/storefront` - customer-facing application
 - `apps/admin` - independently deployed administration application
+
+Both applications own independent React Router route trees and presentation components. Stable brand tokens are shared through `packages/config`; application UI is not shared across the deployment boundary.
 
 ## Getting started
 
