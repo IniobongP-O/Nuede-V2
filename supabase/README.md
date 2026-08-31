@@ -2,10 +2,22 @@
 
 Supabase PostgreSQL, Auth, Storage, Realtime, and Edge Functions form the trusted Nuede backend.
 
-Cycle 0 establishes directories and rules only. It does not connect to a project, create a schema, add RLS policies, seed commercial data, or implement functions.
+Cycle 2 adds the local PostgreSQL foundation without connecting to a remote project.
 
-- `migrations/` will contain reproducible schema changes beginning in Cycle 2.
-- `functions/` will contain server-authoritative backend operations in their approved cycles.
-- `seed.sql` will contain development seed data beginning in Cycle 2.
+- `config.toml` configures the disposable local stack.
+- `migrations/` is the complete schema-change source of truth.
+- `seed.sql` provides deterministic development data.
+- `tests/database/` contains pgTAP structure, constraint, and seed tests.
+- `functions/` remains reserved for server-authoritative backend operations in their approved cycles.
+
+Start and recreate locally from the repository root:
+
+```sh
+npm run supabase:start
+npm run db:reset
+npm run db:test
+```
+
+Do not link, push, or remotely reset a Supabase project during local Cycle 2 development. RLS/auth behavior begins in Cycle 3, Storage buckets in Cycle 5, and commerce Edge Functions in later cycles.
 
 Backend code must never be imported into a Vite application.

@@ -32,6 +32,20 @@ Public access must eventually be limited to explicitly approved reads and narrow
 - update payment status or totals;
 - change checkout payment settings.
 
+## Cycle 2 pre-RLS warning
+
+Cycle 2 creates the relational schema but intentionally does not enable Row Level Security or define public/admin policies. The database foundation is not production-secure until Cycle 3 implements and verifies RLS and trusted admin authorization.
+
+Until then:
+
+- use only the disposable local Supabase stack;
+- do not push the Cycle 2-only schema to production;
+- do not connect either frontend to these tables;
+- do not interpret absent frontend controls as authorization;
+- do not grant direct public order, payment, admin, audit, or settings mutation.
+
+The checkout singleton prevents an invalid all-disabled state at the database layer. Role authorization, authorized mutation, and audit writes remain later trusted operations.
+
 ## Orders and payments
 
 - Trusted backend logic revalidates products, variants, add-ons, delivery fees, and payment settings.

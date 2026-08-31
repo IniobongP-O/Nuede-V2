@@ -70,6 +70,16 @@ Trusted server logic must retrieve current database values and decide:
 
 Backend code and secrets must never become browser-importable. Payment state and fulfilment state remain separate concepts.
 
+## Cycle 2 database foundation
+
+The initial commercial schema is an atomic Supabase migration under `supabase/migrations`. A disposable local database is recreated entirely from migrations plus `supabase/seed.sql`; no required object may exist only in a Supabase Dashboard.
+
+The schema establishes normalized catalog relationships, configurable delivery and checkout records, trusted-admin storage, immutable commerce snapshot capacity, payment history, customer content, and administrative auditing. The presence of these tables does not implement the later workflows that will populate or expose them.
+
+Authoritative product, variant, add-on, delivery, order, and payment values remain in PostgreSQL. Future Edge Functions will re-read those values and populate immutable order snapshots. React must not calculate or write an authoritative total.
+
+Cycle 2 stores image object paths only. Supabase Storage bucket creation and upload management remain Cycle 5 work.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.

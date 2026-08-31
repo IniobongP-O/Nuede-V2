@@ -49,9 +49,9 @@ Status terms used by the project are:
 
 The specification's 212 numbered product features remain planned. Cycle 0 implements none of them. Relevant numbered requirements must be expanded in `TRACEABILITY.md` during each cycle's inspection before that cycle is considered complete.
 
-## Cycle 1 implementation status
+## Cycle 1 checkpoint
 
-The application-shell implementation now exists but has not yet completed the separate review, verification, or manual-acceptance phases.
+Cycle 1 is the known-good starting checkpoint for Cycle 2: `65eadef feat: build storefront and admin application shells`.
 
 Implemented foundations:
 
@@ -64,3 +64,27 @@ Implemented foundations:
 - responsive and keyboard/focus foundations.
 
 Every displayed menu item, price, order, metric, delivery area, testimonial, feedback record, payment state, and planner slot is mock content. A visible page or control does not mark its future business feature implemented.
+
+## Cycle 2 implementation status
+
+The Supabase database-foundation implementation now exists and is awaiting separate review, objective verification, and manual acceptance.
+
+Implemented storage foundation:
+
+- categories, products, grouped variants, add-ons, and relational compatibility;
+- delivery zones and a protected checkout-settings singleton;
+- admin-user/Auth linkage structure and durable audit storage shape;
+- permanent order, item, item-add-on, and payment history structure;
+- immutable product, variant, add-on, delivery, price, and nutrition snapshot columns;
+- testimonial and private-feedback tables;
+- deterministic local seed data, database constraints, indexes, and pgTAP tests.
+
+Not implemented by Cycle 2:
+
+- RLS or authentication behavior;
+- admin catalog/content/order CRUD;
+- frontend Supabase queries or replacement of Cycle 1 fixtures;
+- Storage upload behavior;
+- cart, planner, checkout, order creation, WhatsApp, Paystack, fulfilment, or analytics workflows.
+
+The presence of a table is not implementation evidence for its later feature workflow.

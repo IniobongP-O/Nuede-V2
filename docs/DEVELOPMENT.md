@@ -5,6 +5,7 @@
 - Node.js 24
 - npm 11
 - Git
+- Docker Desktop or another Docker-compatible container runtime for local Supabase
 
 Install all workspaces from the repository root:
 
@@ -26,6 +27,27 @@ npm run lint
 npm test
 npm run verify
 ```
+
+## Local Supabase
+
+The Supabase CLI is an exact-version root development dependency. Run it through repository scripts so every developer uses the lockfile version.
+
+```sh
+npm run supabase:start
+npm run db:reset
+npm run db:test
+npm run supabase:stop
+```
+
+`npm run db:reset` targets the local stack explicitly, replays `supabase/migrations`, and applies `supabase/seed.sql`. It destroys local database state and must not be replaced with `--linked` during Cycle 2.
+
+Full Cycle 2 verification after the local stack is running:
+
+```sh
+npm run verify:cycle2
+```
+
+Do not run `supabase login`, `supabase link`, `supabase db push`, or `supabase db reset --linked` as part of the local Cycle 2 workflow.
 
 The storefront uses port 5173. The admin application uses port 5174. Ports are strict so a conflict is visible instead of silently changing the expected URL.
 

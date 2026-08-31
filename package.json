@@ -21,14 +21,20 @@
     "build": "npm run build:storefront && npm run build:admin",
     "lint": "eslint . --max-warnings=0",
     "test": "node --test scripts/*.test.js",
-    "verify": "npm run lint && npm test && npm run build"
+    "verify": "npm run lint && npm test && npm run build",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "db:reset": "supabase db reset --local",
+    "db:test": "supabase test db --local",
+    "verify:cycle2": "npm run db:reset && npm run db:test && npm run verify"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.9.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
-    "globals": "^16.5.0"
+    "globals": "^16.5.0",
+    "supabase": "2.116.0"
   },
   "allowScripts": {
     "esbuild@0.28.2": true

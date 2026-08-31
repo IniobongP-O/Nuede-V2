@@ -48,3 +48,28 @@ Requirements must not be marked `Verified` until objective checks pass or `Accep
 | Admin orders | Search/filter/table shell | Order management Cycle 15 |
 | Admin analytics | Cards and chart container | Trusted analytics Cycle 16 |
 | Delivery/settings/testimonials/feedback | Management page shells | Respective backend and content workflows in assigned later cycles |
+
+Cycle 1 checkpoint: `65eadef feat: build storefront and admin application shells`. It is the known-good Git gate for Cycle 2.
+
+## Cycle 2 database foundation
+
+| Requirement ID | Requirement | Database object / implementation | Status | Automated verification | Manual acceptance |
+|---|---|---|---|---|---|
+| C2-001 / Spec 155–158 | PostgreSQL source of truth and reproducible migrations | `supabase/config.toml`, initial migration, `seed.sql` | Implemented | Pending local reset and pgTAP | Pending |
+| C2-002 / Spec 5–10, 114–121 | Configurable categories and stable standard-product storage | `categories`, `products` | Implemented | Schema/constraint tests added | Pending |
+| C2-003 / Spec 11–15, 122–126 | Grouped-product variants and default/explicit selection | `product_variants`, default-variant FK/integrity triggers | Implemented | Relationship/constraint tests added | Pending |
+| C2-004 / Spec 19–21, 127–129 | Compatible multiple/shared add-ons | `product_addons`, `product_addon_assignments` | Implemented | Seed relationship tests added | Pending |
+| C2-005 / Spec 22–24 | Complete, partial, and unavailable nutrition | Nullable nutrition columns and non-negative checks | Implemented | Partial/negative tests added | Pending |
+| C2-006 / Spec 50–53, 135–137 | Configurable delivery zones and kobo fees | `delivery_zones` | Implemented | Seed/type/constraint tests added | Pending |
+| C2-007 / Spec 57, 138–142, 157 | Persist checkout methods; retain at least one enabled method | `checkout_settings`, row check, singleton/delete trigger | Implemented | Invalid update/delete tests added | Pending |
+| C2-008 / Spec 88–91 | Future trusted admin/Auth relationship and roles | `admin_users` -> `auth.users` | Implemented | FK/role tests added | Pending Cycle 3 auth behavior |
+| C2-009 / Spec 65–70 | Permanent order storage and separate statuses | `orders` | Implemented | Schema/status/total tests added | Pending Cycle 12 population logic |
+| C2-010 / Spec 67 | Immutable purchased product/variant snapshots | `order_items` | Implemented | Schema/quantity tests added | Pending Cycle 12 population logic |
+| C2-011 / Spec 67, 102 | Immutable purchased add-on snapshots | `order_item_addons` | Implemented | Schema/FK tests added | Pending Cycle 12 population logic |
+| C2-012 / Spec 75–85 | Payment history and idempotent provider-reference storage | `payments`, unique provider-reference index | Implemented | Schema/index/type tests added | Pending Cycle 14 payment behavior |
+| C2-013 / Spec 143–150 | Testimonial and private-feedback storage | `testimonials`, `feedback` | Implemented | Rating/seed tests added | Pending Cycle 17 workflows/RLS |
+| C2-014 / Spec 167 | Administrative audit storage shape | `admin_audit_log` | Implemented | Schema/FK/index tests added | Pending authorized audit writers |
+| C2-015 / Spec 64 | Integer-kobo persistence | All `*_kobo` columns use checked `bigint` | Implemented | Static and database type tests added | Pending inspection |
+| C2-016 | Preserve Cycle 3+ boundaries | No RLS, frontend queries, Edge commerce logic, auth flow, or CRUD | Implemented | Scope test added | Pending inspection |
+
+`Implemented` here means the Cycle 2 files exist. No row may be changed to `Verified` before local database reset/tests and application checks pass, or to `Accepted` before the user completes manual acceptance.
