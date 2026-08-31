@@ -1,0 +1,36 @@
+{
+  "name": "nuede-v2",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Nuede V2 storefront, admin application, shared packages, and Supabase backend workspace.",
+  "packageManager": "npm@11.17.0",
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11 <12"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:storefront": "npm run dev --workspace=@nuede/storefront",
+    "dev:admin": "npm run dev --workspace=@nuede/admin",
+    "build:storefront": "npm run build --workspace=@nuede/storefront",
+    "build:admin": "npm run build --workspace=@nuede/admin",
+    "build": "npm run build:storefront && npm run build:admin",
+    "lint": "eslint . --max-warnings=0",
+    "test": "node --test scripts/*.test.js",
+    "verify": "npm run lint && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.9.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

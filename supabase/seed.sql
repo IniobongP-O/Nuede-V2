@@ -1,0 +1,2 @@
+-- Cycle 0 creates no commercial schema or seed data.
+-- Development seed data begins in Cycle 2 after the schema is approved.
