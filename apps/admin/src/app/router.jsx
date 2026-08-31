@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import { AdminLayout } from "../components/layout/AdminLayout.jsx";
+import { ProtectedRoute } from "../features/auth/components/ProtectedRoute.jsx";
+import { PublicOnlyRoute } from "../features/auth/components/PublicOnlyRoute.jsx";
 import { AnalyticsPage } from "../pages/AnalyticsPage.jsx";
 import { DashboardPage } from "../pages/DashboardPage.jsx";
 import { DeliveryPage } from "../pages/DeliveryPage.jsx";
@@ -14,19 +16,27 @@ import { TestimonialsPage } from "../pages/TestimonialsPage.jsx";
 
 export const adminRouter = createBrowserRouter([
   { path: "/", element: <Navigate replace to="/login" /> },
-  { path: "/login", element: <LoginPage /> },
   {
-    element: <AdminLayout />,
+    element: <PublicOnlyRoute />,
+    children: [{ path: "/login", element: <LoginPage /> }],
+  },
+  {
+    element: <ProtectedRoute />,
     children: [
-      { path: "/dashboard", element: <DashboardPage /> },
-      { path: "/menu", element: <MenuPage /> },
-      { path: "/orders", element: <OrdersPage /> },
-      { path: "/analytics", element: <AnalyticsPage /> },
-      { path: "/delivery", element: <DeliveryPage /> },
-      { path: "/testimonials", element: <TestimonialsPage /> },
-      { path: "/feedback", element: <FeedbackPage /> },
-      { path: "/settings", element: <SettingsPage /> },
-      { path: "*", element: <NotFoundPage /> },
+      {
+        element: <AdminLayout />,
+        children: [
+          { path: "/dashboard", element: <DashboardPage /> },
+          { path: "/menu", element: <MenuPage /> },
+          { path: "/orders", element: <OrdersPage /> },
+          { path: "/analytics", element: <AnalyticsPage /> },
+          { path: "/delivery", element: <DeliveryPage /> },
+          { path: "/testimonials", element: <TestimonialsPage /> },
+          { path: "/feedback", element: <FeedbackPage /> },
+          { path: "/settings", element: <SettingsPage /> },
+          { path: "*", element: <NotFoundPage /> },
+        ],
+      },
     ],
   },
 ]);

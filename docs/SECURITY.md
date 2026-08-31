@@ -21,7 +21,7 @@ Real `.env` files are ignored. Committed `.env.example` files contain placeholde
 
 ## Database access
 
-Row Level Security is required before admin CRUD is introduced. Hiding an admin URL or frontend control is not authorization.
+Every Cycle 2 business table has Row Level Security. Hiding an admin URL or frontend control is not authorization.
 
 Public access must eventually be limited to explicitly approved reads and narrowly defined submissions. Public clients must not directly:
 
@@ -32,19 +32,33 @@ Public access must eventually be limited to explicitly approved reads and narrow
 - update payment status or totals;
 - change checkout payment settings.
 
-## Cycle 2 pre-RLS warning
+## Authentication and authorization
 
-Cycle 2 creates the relational schema but intentionally does not enable Row Level Security or define public/admin policies. The database foundation is not production-secure until Cycle 3 implements and verifies RLS and trusted admin authorization.
+The admin application uses Supabase email/password authentication. Supabase manages browser session persistence and refresh; Nuede does not store a second token or password copy.
 
-Until then:
+Authentication establishes identity only. Administrative authorization additionally requires the caller's UUID to match an `admin_users` row with `is_active = true` and a recognized `owner`, `admin`, or `editor` role. All three roles have the same Cycle 3 privileges because no finer permission matrix is source-defined.
 
-- use only the disposable local Supabase stack;
-- do not push the Cycle 2-only schema to production;
-- do not connect either frontend to these tables;
-- do not interpret absent frontend controls as authorization;
-- do not grant direct public order, payment, admin, audit, or settings mutation.
+The caller may select only their own `admin_users` row. Missing and inactive records cannot enumerate administrators or receive active-admin policies. `private.is_active_admin()` is a reviewed, no-argument `SECURITY DEFINER` policy helper with an empty `search_path`; it is outside exposed API schemas and executable only by `authenticated`.
 
-The checkout singleton prevents an invalid all-disabled state at the database layer. Role authorization, authorized mutation, and audit writes remain later trusted operations.
+There is no signup UI or signup API in the application. Local Auth configuration disables new signups. Hosted signup is a Supabase Auth project setting and must also be disabled during Cycle 18 provisioning. Administrators are created through trusted local/test or production administrative processes, never by a database trigger on arbitrary Auth users.
+
+## Cycle 3 access matrix
+
+Anonymous and non-admin authenticated clients may read only enabled categories, customer-visible products and variants, available add-ons and compatible relationships, active delivery zones, published testimonials, and the safe checkout payment-options view. Anonymous users may insert feedback but cannot read it.
+
+Active administrators may manage catalog, add-on, delivery, and testimonial records. They may read private feedback, checkout configuration, orders, item snapshots, payments, and audit history. They may not directly mutate admin identities, checkout settings, order/payment state, order snapshots, private feedback, or audit history.
+
+`checkout_payment_options` exposes only `paystack_enabled` and `whatsapp_enabled`. The underlying singleton key, timestamps, and `updated_by` identity remain private.
+
+Service-role access remains backend-only and bypasses RLS. It is used only by future trusted operations and the local-only security test setup. It must never enter a Vite variable or frontend bundle.
+
+RLS is enabled but not forced. This preserves migration ownership and the future service-role Edge Function boundary. PostgreSQL constraints and triggers still apply to trusted callers.
+
+## Trusted administrator bootstrap
+
+Local development uses local Studio or the local Auth Admin API to create a real password-capable Auth identity. A trusted local SQL action then inserts the matching UUID/email/role into `admin_users`. Passwords and service-role keys are not committed or added to `seed.sql`.
+
+Production bootstrap is deferred to Cycle 18. It will create the initial owner through the hosted Auth administration surface and a trusted profile insertion after signup has been disabled.
 
 ## Orders and payments
 
@@ -60,4 +74,4 @@ The checkout singleton prevents an invalid all-disabled state at the database la
 
 Every cycle must review new trust boundaries, data exposure, validation, authorization, secret handling, and failure states. Security checks must not be weakened or suppressed to obtain passing output.
 
-Cycle 0 implements conventions only; it does not claim that future database or commerce security is already implemented.
+Cycle 3 security code is implemented but is not `Verified` or `Accepted` until the local database tests, direct attack suite, and manual login/session matrix pass.

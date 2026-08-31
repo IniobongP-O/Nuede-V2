@@ -88,3 +88,28 @@ Not implemented by Cycle 2:
 - cart, planner, checkout, order creation, WhatsApp, Paystack, fulfilment, or analytics workflows.
 
 The presence of a table is not implementation evidence for its later feature workflow.
+
+## Cycle 3 implementation status
+
+Supabase admin authentication and the database authorization foundation are implemented and awaiting review, verification, and manual acceptance.
+
+Implemented in Cycle 3:
+
+- email/password admin login with no registration flow;
+- supported persistent Supabase browser sessions and logout;
+- protected admin routes with initialization, denial, inactive-account, and error states;
+- active `admin_users` authorization supporting owner/admin/editor;
+- RLS and explicit grants across every Cycle 2 business table;
+- filtered public reads, private feedback, and anonymous feedback submission;
+- protected order/payment/checkout/audit mutation boundaries;
+- pgTAP, static architecture, and direct local Auth/RLS attack tests.
+
+Still planned:
+
+- admin catalog and content CRUD interfaces;
+- live storefront queries and Realtime behavior;
+- images, grouped-product editing, and add-on management UI;
+- cart, planner, checkout, server-authoritative orders, WhatsApp, Paystack, fulfilment, and analytics;
+- feedback/testimonial business workflows and production provisioning.
+
+RLS readiness does not mark any of those later workflows implemented.

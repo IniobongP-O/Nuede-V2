@@ -80,6 +80,16 @@ Authoritative product, variant, add-on, delivery, order, and payment values rema
 
 Cycle 2 stores image object paths only. Supabase Storage bucket creation and upload management remain Cycle 5 work.
 
+## Cycle 3 authentication and authorization
+
+The admin application owns one Supabase browser client at `apps/admin/src/lib/supabaseClient.js`. It reads only `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Auth API calls, session state, authorization checks, and route gates live under `apps/admin/src/features/auth`; visual pages do not create clients or implement token storage.
+
+`AuthProvider` resolves the server-validated Supabase identity, subscribes to supported Auth state changes, and queries the caller's own `admin_users` row. Protected content renders only after both authentication and active-admin authorization succeed. The `/login` route is public-only; every operational route is nested under `ProtectedRoute`.
+
+The route guard is a presentation boundary. PostgreSQL grants and RLS enforce public, authenticated non-admin, inactive-admin, active-admin, and trusted-backend behavior when the frontend is bypassed.
+
+The storefront remains fixture-backed in Cycle 3. Public RLS is ready for its later data cycle, but no storefront Supabase query layer exists yet.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.

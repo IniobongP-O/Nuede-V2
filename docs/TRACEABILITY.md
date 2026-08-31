@@ -73,3 +73,25 @@ Cycle 1 checkpoint: `65eadef feat: build storefront and admin application shells
 | C2-016 | Preserve Cycle 3+ boundaries | No RLS, frontend queries, Edge commerce logic, auth flow, or CRUD | Implemented | Scope test added | Pending inspection |
 
 `Implemented` here means the Cycle 2 files exist. No row may be changed to `Verified` before local database reset/tests and application checks pass, or to `Accepted` before the user completes manual acceptance.
+
+## Cycle 3 authentication and row-level security
+
+| Requirement ID | Requirement | Implementation location | Status | Automated verification | Manual acceptance |
+|---|---|---|---|---|---|
+| C3-001 / Spec 88–91 | Supabase email/password login with no public registration | Admin auth API, login page, local Auth config | Implemented | Cycle 3 static/Auth tests added | Pending |
+| C3-002 | Persistent session initialization and expiry handling | `AuthProvider`, Supabase Auth listener | Implemented | Direct session persistence test added | Pending refresh/expiry check |
+| C3-003 | Logout invalidates the local browser session | Auth API and admin layout | Implemented | Direct logout test added | Pending |
+| C3-004 | Protect all operational admin routes | Admin router, `ProtectedRoute`, `PublicOnlyRoute` | Implemented | Static route-boundary test added | Pending |
+| C3-005 | Supabase account is not sufficient for administration | Own-profile policy and active-admin helper | Implemented | Non-admin persona tests added | Pending |
+| C3-006 | Inactive administrator remains denied | `admin_users.is_active`, Auth provider, RLS helper | Implemented | Inactive persona tests added | Pending |
+| C3-007 | Preserve owner/admin/editor without invented RBAC | Role constraint and active-admin helper | Implemented | Three-role authorization tests added | Pending |
+| C3-008 | Public catalog reads expose only customer-visible records | Catalog/delivery/testimonial SELECT policies | Implemented | pgTAP and direct anon queries added | Pending |
+| C3-009 | Public checkout contract excludes admin metadata | `checkout_payment_options` view | Implemented | View-column and direct metadata-denial tests added | Pending |
+| C3-010 / Spec 143–150 | Anonymous feedback submission; private feedback reads | Feedback grants and policies | Implemented | Insert/read attack tests added | Pending |
+| C3-011 | Public product/price and admin-user mutation denied | Explicit grants and RLS | Implemented | Direct mutation/enumeration attacks added | Pending |
+| C3-012 | Direct authoritative order creation remains denied | Orders default-deny write boundary | Implemented | Direct anon/admin insert attacks added | Pending Cycle 12 order engine |
+| C3-013 | Payment and checkout-setting mutation remain trusted | Read-only active-admin policies | Implemented | Direct mutation attacks added | Pending Cycles 11/14 |
+| C3-014 | Browser code contains no backend credentials | Central public client and env convention | Implemented | Static secret checks added | Pending bundle inspection |
+| C3-015 | Direct security evidence bypasses frontend | Local persona attack utility and pgTAP | Implemented | Pending execution with local Supabase | Pending |
+
+`Implemented` means the Cycle 3 code exists. It remains neither `Verified` nor `Accepted` until the complete automated and manual evidence passes.

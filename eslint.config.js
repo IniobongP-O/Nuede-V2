@@ -21,7 +21,7 @@ export default [
     },
   },
   {
-    files: ["*.js", "scripts/**/*.js", "apps/*/vite.config.js"],
+    files: ["*.js", "scripts/**/*.{js,mjs}", "apps/*/vite.config.js"],
     languageOptions: {
       globals: globals.node,
     },

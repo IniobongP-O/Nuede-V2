@@ -49,6 +49,42 @@ npm run verify:cycle2
 
 Do not run `supabase login`, `supabase link`, `supabase db push`, or `supabase db reset --linked` as part of the local Cycle 2 workflow.
 
+## Cycle 3 admin Auth development
+
+Copy `apps/admin/.env.example` to an ignored `apps/admin/.env.local` and set only:
+
+```text
+VITE_SUPABASE_URL=<local-or-approved-project-url>
+VITE_SUPABASE_ANON_KEY=<public-anon-key>
+```
+
+Never add a service-role key, password, access token, or refresh token to a Vite variable. The admin build must contain browser-safe credentials only.
+
+Public email signup is disabled in local `supabase/config.toml`. To bootstrap a manual local administrator:
+
+1. Start local Supabase and open the local Studio URL printed by the CLI.
+2. Use the local Auth administration screen to create an email/password user.
+3. Copy that Auth user's UUID.
+4. In local Studio SQL, insert a matching `admin_users` row with a lowercase email, optional display name, one of `owner`/`admin`/`editor`, and `is_active = true`.
+5. Keep the chosen password local; never add this identity to migrations or seed data.
+
+Cycle 3 security verification after the local stack is running:
+
+```sh
+npm run db:reset
+npm run db:test
+npm run test:security:cycle3
+npm run verify
+```
+
+Or run the combined command:
+
+```sh
+npm run verify:cycle3
+```
+
+The direct security utility reads temporary local credentials from `supabase status -o env`, refuses non-local API URLs, creates ephemeral Auth personas, attacks RLS through Supabase clients, and removes its test records. It never writes credentials to source or a frontend environment.
+
 The storefront uses port 5173. The admin application uses port 5174. Ports are strict so a conflict is visible instead of silently changing the expected URL.
 
 ## Development-cycle workflow

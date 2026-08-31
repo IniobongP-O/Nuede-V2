@@ -4,7 +4,7 @@
 
 Nuede V2 uses Supabase PostgreSQL as the source of truth for business data. Browser storage is permitted only for explicitly local customer conveniences such as future favorites, carts, and meal plans; it is not a trusted commerce database.
 
-Cycle 2 defines the initial commercial schema in `supabase/migrations/20260831000100_create_database_foundation.sql`. The implementation exists but remains subject to review, objective verification, and manual acceptance.
+Cycle 2 defines the initial commercial schema in `supabase/migrations/20260831000100_create_database_foundation.sql`. Cycle 3 adds authentication-aware privileges and RLS in `supabase/migrations/20260831000200_enable_auth_and_rls.sql`. Both remain subject to review, objective verification, and manual acceptance.
 
 ## Schema changes
 
@@ -92,4 +92,20 @@ One minimal migration-defined `set_updated_at()` helper is applied only to mutab
 
 ## Security boundary
 
-Cycle 2 intentionally does not enable RLS or create policies. The Cycle 2-only schema is not production-secure and must not be pushed to production before Cycle 3 authorization is implemented and verified.
+Cycle 3 enables RLS on all fifteen business tables and replaces project-dependent defaults with explicit `anon`, `authenticated`, and `service_role` grants.
+
+Public predicates are:
+
+- enabled categories;
+- products other than `hidden` or `archived`;
+- non-hidden variants whose parent is public;
+- available add-ons and assignments joining public products to available add-ons;
+- active delivery zones;
+- published testimonials;
+- the two-column `checkout_payment_options` view.
+
+Anonymous feedback insert is the only public table write. Feedback reads, administrator data, orders, item snapshots, payments, audit records, and checkout metadata require an active administrator. Direct client writes to trusted commerce state remain denied.
+
+The private `is_active_admin()` helper reads only the caller's own trusted authorization state. The checkout projection is deliberately privileged but exposes no singleton/admin metadata. Cycle 2 trigger-function execution is revoked from public client roles.
+
+The schema is implemented, not yet verified or accepted. Cycle 2 reset verification was explicitly skipped; a full migration replay and security suite remain required review evidence.

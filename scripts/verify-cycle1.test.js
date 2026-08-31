@@ -43,13 +43,9 @@ test("applications do not import one another", async () => {
   }
 });
 
-test("Cycle 1 application source contains no future-cycle integrations", async () => {
-  const files = [
-    ...(await walk("apps/storefront/src")),
-    ...(await walk("apps/admin/src")),
-  ].filter((file) => /\.jsx?$/.test(file));
-
-  const forbiddenPatterns = [
+test("application source stays within the currently approved integration boundaries", async () => {
+  const storefrontFiles = (await walk("apps/storefront/src")).filter((file) => /\.jsx?$/.test(file));
+  const storefrontForbiddenPatterns = [
     /from\s+["']@supabase\//,
     /supabase\.from\s*\(/,
     /\blocalStorage\b/,
@@ -57,11 +53,19 @@ test("Cycle 1 application source contains no future-cycle integrations", async (
     /PaystackPop|window\.Paystack|initializeTransaction/,
   ];
 
-  for (const file of files) {
+  for (const file of storefrontFiles) {
     const source = await readFile(path.join(repositoryRoot, file), "utf8");
-    for (const pattern of forbiddenPatterns) {
-      assert.doesNotMatch(source, pattern, `${file} contains future-cycle behavior`);
+    for (const pattern of storefrontForbiddenPatterns) {
+      assert.doesNotMatch(source, pattern, `${file} contains an unapproved storefront integration`);
     }
+  }
+
+  const adminFiles = (await walk("apps/admin/src")).filter((file) => /\.jsx?$/.test(file));
+  for (const file of adminFiles) {
+    const source = await readFile(path.join(repositoryRoot, file), "utf8");
+    assert.doesNotMatch(source, /from\s+\(["'](?:products|orders|payments|checkout_settings)["']\)/, `${file} starts Cycle 4+ data behavior`);
+    assert.doesNotMatch(source, /from\s+["']firebase|PaystackPop|window\.Paystack|initializeTransaction/, `${file} contains an unapproved backend integration`);
+    assert.doesNotMatch(source, /\blocalStorage\b/, `${file} implements custom browser persistence`);
   }
 });
 
