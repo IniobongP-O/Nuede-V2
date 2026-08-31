@@ -7,6 +7,7 @@ import {
   signOutCurrentSession,
   subscribeToAuthChanges,
 } from "../api/authApi.js";
+import { queryClient } from "../../../lib/queryClient.js";
 import { supabaseConfigurationError } from "../../../lib/supabaseClient.js";
 import { AuthContext } from "./authContext.js";
 
@@ -82,6 +83,7 @@ export function AuthProvider({ children }) {
         if (!active) return;
         if (event === "SIGNED_OUT" || !session?.user) {
           authorizationRun.current += 1;
+          queryClient.clear();
           setAuthState(signedOutState());
         } else if (["SIGNED_IN", "TOKEN_REFRESHED", "USER_UPDATED"].includes(event)) {
           void authorizeUser(session.user);
@@ -113,6 +115,7 @@ export function AuthProvider({ children }) {
   const signOut = useCallback(async () => {
     await signOutCurrentSession();
     authorizationRun.current += 1;
+    queryClient.clear();
     setAuthState(signedOutState());
   }, []);
 

@@ -1,0 +1,15 @@
+import { StatusBadge } from "../../../components/ui/AdminPrimitives.jsx";
+
+const statusPresentation = {
+  available: { label: "Available", tone: "success" },
+  sold_out: { label: "Sold out", tone: "warning" },
+  price_pending: { label: "Price pending", tone: "warning" },
+  hidden: { label: "Hidden", tone: "neutral" },
+  archived: { label: "Archived", tone: "danger" },
+  unavailable: { label: "Unavailable", tone: "neutral" },
+};
+
+export function ProductStatusBadge({ status }) {
+  const presentation = statusPresentation[status] || { label: status, tone: "neutral" };
+  return <StatusBadge tone={presentation.tone}>{presentation.label}</StatusBadge>;
+}

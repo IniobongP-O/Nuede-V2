@@ -89,9 +89,9 @@ Not implemented by Cycle 2:
 
 The presence of a table is not implementation evidence for its later feature workflow.
 
-## Cycle 3 implementation status
+## Cycle 3 checkpoint
 
-Supabase admin authentication and the database authorization foundation are implemented and awaiting review, verification, and manual acceptance.
+Supabase admin authentication and the database authorization foundation were reviewed and accepted at checkpoint `7a88c15 feat: implement admin authentication and RLS`. The checkpoint report recorded that local Docker-backed database execution was unavailable in that environment.
 
 Implemented in Cycle 3:
 
@@ -113,3 +113,27 @@ Still planned:
 - feedback/testimonial business workflows and production provisioning.
 
 RLS readiness does not mark any of those later workflows implemented.
+
+## Cycle 4 implementation status
+
+Implemented in Cycle 4:
+
+- live admin listing for all categories and standard products;
+- category creation, rename, display order, enable, and disable controls;
+- standard-product creation and editing for name, category, description, NGN price converted to integer kobo, optional nutrition, availability, and visibility;
+- product name search plus category and database-status filters;
+- quick available, sold-out, hide, show, archive, and restore operations;
+- responsive desktop table and narrow-screen product cards;
+- centralized Supabase API operations with TanStack Query caching and invalidation;
+- React Hook Form plus shared Zod validation and database constraints;
+- database-owned audit events for product create, edit, price, status, archive, and restore actions;
+- loading, empty, error, pending, success, destructive-confirmation, and validation states.
+
+Deliberately not implemented in Cycle 4:
+
+- product images, Storage, grouped products, variants, and add-ons (Cycle 5);
+- live storefront catalog consumption or Realtime (Cycle 6);
+- permanent product deletion (Spec 121 is absent from the Cycle 4 field-guide scope; archive/restore remains the approved lifecycle until a later cycle explicitly assigns deletion);
+- any order, checkout, payment, analytics, content, or later-cycle workflow.
+
+The implementation is not `Verified` until the new migration, pgTAP suite, direct local catalog/RLS utility, and manual UI/PostgreSQL acceptance sequence run against local Supabase.

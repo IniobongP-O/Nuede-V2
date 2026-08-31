@@ -95,3 +95,23 @@ Cycle 1 checkpoint: `65eadef feat: build storefront and admin application shells
 | C3-015 | Direct security evidence bypasses frontend | Local persona attack utility and pgTAP | Implemented | Pending execution with local Supabase | Pending |
 
 `Implemented` means the Cycle 3 code exists. It remains neither `Verified` nor `Accepted` until the complete automated and manual evidence passes.
+
+Cycle 3 was subsequently reviewed and accepted by the user at checkpoint `7a88c15`. Its checkpoint report preserved the unavailable local Docker/database evidence rather than claiming it passed.
+
+## Cycle 4 admin catalog management
+
+| Requirement ID | Requirement | Implementation location | Status | Automated verification | Manual acceptance |
+|---|---|---|---|---|---|
+| C4-001 | Create, rename, order, enable, and disable categories | Catalog API/hooks and `CategoryManagerDialog` | Implemented | Static/unit coverage passed; local database utility added | Pending local UI/PostgreSQL run |
+| C4-002 / Spec 114 | Browse standard products with operational states | `MenuPage`, `ProductList`, status badges | Implemented | Admin build and state-boundary tests passed | Pending viewport/data review |
+| C4-003 / Spec 115–116 | Create and edit standard products | `ProductEditorDialog`, catalog API | Implemented | Form/mapping tests passed | Pending local create/edit |
+| C4-004 / Spec 117–119 | Name search, category filter, and status filter | `ProductFilters`, `filterProducts` | Implemented | Composed-filter unit test passed | Pending live catalog exercise |
+| C4-005 / Spec 120 | Available, sold-out, hide, show, archive, restore | `ProductActions`, status mutation/transition utility | Implemented | Transition tests and direct local utility added | Pending local lifecycle exercise |
+| C4-006 / Spec 64, 166, 183–184 | Integer-kobo, optional nutrition, runtime form validation | `@nuede/validation/catalog`, `@nuede/domain/currency`, DB constraints | Implemented | Money and validation unit tests passed | Pending invalid UI/database submission |
+| C4-007 / Spec 168–169, 182 | Loading/error/empty/pending states and query cache invalidation | TanStack Query hooks, feedback states, toasts | Implemented | Architecture tests and builds passed | Pending controlled UI-state review |
+| C4-008 / Spec 159, 161 | Active-admin writes and anonymous write rejection | Existing Cycle 3 RLS; centralized browser client | Implemented | Static RLS boundary and local attack utility added | Pending local persona run |
+| C4-009 / Spec 167 | Product created, edited, price, status, archive, and restore audit events | Cycle 4 audit migration and pgTAP test | Implemented | Static audit tests passed; pgTAP/direct run pending Docker | Pending audit-row inspection |
+| C4-010 / Spec 175–177 | Responsive and accessible admin catalog | Desktop table, mobile cards, labels, native dialogs, live feedback | Implemented | Lint/build passed | Pending desktop/tablet/mobile/keyboard review |
+| C4-011 / Spec 121 | Preserve archive-first lifecycle and scope boundary | No delete control; traceable deferral | Deferred | Scope test confirms no delete/Storage/variant/add-on work | Product deletion not assigned by Cycle 4 roadmap |
+
+Cycle 5 deferrals remain `Planned`: product image/Storage management, grouped-product creation, variants, add-ons, and their relationships. Cycle 6 live storefront queries and Realtime also remain `Planned`.

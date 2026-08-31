@@ -80,7 +80,14 @@ test("mock content remains application-owned fixtures", async () => {
 
   assert.match(storefrontFixture, /demoMeals/);
   assert.match(adminFixture, /demoMetrics/);
-  assert.deepEqual(sharedFiles, []);
+  assert.deepEqual(sharedFiles.map((file) => file.replaceAll("\\", "/")).sort(), [
+    "packages/domain/src/currency.js",
+    "packages/validation/src/catalog.js",
+  ]);
+  for (const file of sharedFiles) {
+    const source = await readFile(path.join(repositoryRoot, file), "utf8");
+    assert.doesNotMatch(source, /fixtures|demoMeals|demoAdminMeals/, `${file} contains application fixture content`);
+  }
 });
 
 test("shared config exports brand tokens without React", async () => {

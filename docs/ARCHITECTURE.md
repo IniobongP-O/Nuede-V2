@@ -90,6 +90,18 @@ The route guard is a presentation boundary. PostgreSQL grants and RLS enforce pu
 
 The storefront remains fixture-backed in Cycle 3. Public RLS is ready for its later data cycle, but no storefront Supabase query layer exists yet.
 
+## Cycle 4 admin catalog management
+
+The admin `/menu` route replaces its fixture table with a feature-scoped catalog implementation under `apps/admin/src/features/catalog`. Supabase operations live only in the feature API adapter, while TanStack Query owns catalog loading, caching, mutation state, and invalidation. Product and category visual components do not create clients or issue raw database calls.
+
+The standard-product editor uses React Hook Form and the shared Zod schema exported by `@nuede/validation/catalog`. NGN text is converted deterministically to integer kobo before it reaches the API adapter; `@nuede/domain/currency` formats existing integer-kobo values without making React authoritative for price.
+
+Cycle 4 uses the existing single `products.status` model rather than adding contradictory visibility flags. The form presents availability and visibility concepts, then maps them to the constrained database state. Restoring an archived product returns it to `hidden` so restoration does not publish it accidentally.
+
+`apps/admin/src/lib/queryClient.js` configures the application query cache. Auth logout clears cached administrator data, and inactive query data is discarded when protected routes unmount. The menu route is lazy-loaded so its form/query dependencies do not inflate the initial admin shell.
+
+Product audit events are created by a narrowly scoped PostgreSQL trigger, not by browser-written audit rows. The Cycle 3 catalog RLS policies remain the write authorization boundary.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.

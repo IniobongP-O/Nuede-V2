@@ -85,6 +85,20 @@ npm run verify:cycle3
 
 The direct security utility reads temporary local credentials from `supabase status -o env`, refuses non-local API URLs, creates ephemeral Auth personas, attacks RLS through Supabase clients, and removes its test records. It never writes credentials to source or a frontend environment.
 
+## Cycle 4 catalog development
+
+The protected `/menu` route reads categories and standard products from the configured Supabase project. Use a local active administrator created through the Cycle 3 bootstrap steps. Do not add a service-role key to the admin environment.
+
+Cycle 4 local verification after the local stack is running:
+
+```sh
+npm run verify:cycle4
+```
+
+This resets the local database, runs every pgTAP test, reruns the Cycle 3 persona attacks, exercises category and standard-product CRUD/status/audit behavior, then runs lint, static/unit tests, and both production builds. The catalog utility refuses non-local Supabase URLs and removes its ephemeral Auth, category, product, and audit data.
+
+Manual catalog acceptance must use the admin UI and directly inspect local PostgreSQL for category changes, the standard-product create/edit/archive/restore sequence, integer-kobo storage, and audit events. Docker Desktop or another Docker-compatible runtime is required; do not substitute a linked or production database.
+
 The storefront uses port 5173. The admin application uses port 5174. Ports are strict so a conflict is visible instead of silently changing the expected URL.
 
 ## Development-cycle workflow

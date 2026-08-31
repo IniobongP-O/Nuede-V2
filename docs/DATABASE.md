@@ -4,7 +4,7 @@
 
 Nuede V2 uses Supabase PostgreSQL as the source of truth for business data. Browser storage is permitted only for explicitly local customer conveniences such as future favorites, carts, and meal plans; it is not a trusted commerce database.
 
-Cycle 2 defines the initial commercial schema in `supabase/migrations/20260831000100_create_database_foundation.sql`. Cycle 3 adds authentication-aware privileges and RLS in `supabase/migrations/20260831000200_enable_auth_and_rls.sql`. Both remain subject to review, objective verification, and manual acceptance.
+Cycle 2 defines the initial commercial schema in `supabase/migrations/20260831000100_create_database_foundation.sql`. Cycle 3 adds authentication-aware privileges and RLS in `supabase/migrations/20260831000200_enable_auth_and_rls.sql`. Cycle 4 adds database-owned product audit events in `supabase/migrations/20260831000300_audit_admin_catalog_changes.sql` without changing the catalog entity model.
 
 ## Schema changes
 
@@ -109,3 +109,13 @@ Anonymous feedback insert is the only public table write. Feedback reads, admini
 The private `is_active_admin()` helper reads only the caller's own trusted authorization state. The checkout projection is deliberately privileged but exposes no singleton/admin metadata. Cycle 2 trigger-function execution is revoked from public client roles.
 
 The schema is implemented, not yet verified or accepted. Cycle 2 reset verification was explicitly skipped; a full migration replay and security suite remain required review evidence.
+
+## Cycle 4 catalog persistence
+
+Cycle 4 uses the existing category columns (`name`, `slug`, `is_enabled`, and non-negative `sort_order`) and the existing standard-product columns. No new product state, visibility flag, or money column was added.
+
+Admin product writes continue through the browser-safe anon client under an authenticated active-admin session. RLS authorizes the write; database constraints enforce product type, state, price, and nutrition integrity. Category disablement changes only `categories.is_enabled` and never rewrites or deletes related products.
+
+The Cycle 4 audit trigger records active-admin product creation, general edits, price changes, status changes, archive, and restore operations. It snapshots the authenticated admin identity and relevant old/new values. The trigger is `SECURITY DEFINER` with an empty search path and is not executable as a public RPC. Authenticated clients retain read-only access to `admin_audit_log` and cannot forge audit rows.
+
+Permanent product deletion remains outside the Cycle 4 field-guide scope. The database relationship behavior is preserved, and archive/restore is the implemented lifecycle path. Images, grouped variants, and add-ons remain Cycle 5 work.

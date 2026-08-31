@@ -18,6 +18,6 @@ npm run db:reset
 npm run db:test
 ```
 
-Do not link, push, or remotely reset a Supabase project during local Cycle 2 development. RLS/auth behavior begins in Cycle 3, Storage buckets in Cycle 5, and commerce Edge Functions in later cycles.
+Do not link, push, or remotely reset a Supabase project during local verification. RLS/auth behavior begins in Cycle 3, admin catalog auditing begins in Cycle 4, Storage buckets begin in Cycle 5, and commerce Edge Functions arrive in later cycles.
 
 Backend code must never be imported into a Vite application.

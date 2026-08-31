@@ -2,5 +2,11 @@
   "name": "@nuede/validation",
   "version": "0.0.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "exports": {
+    "./catalog": "./src/catalog.js"
+  },
+  "dependencies": {
+    "zod": "^4.5.4"
+  }
 }

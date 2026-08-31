@@ -75,3 +75,11 @@ Production bootstrap is deferred to Cycle 18. It will create the initial owner t
 Every cycle must review new trust boundaries, data exposure, validation, authorization, secret handling, and failure states. Security checks must not be weakened or suppressed to obtain passing output.
 
 Cycle 3 security code is implemented but is not `Verified` or `Accepted` until the local database tests, direct attack suite, and manual login/session matrix pass.
+
+## Cycle 4 catalog security
+
+Catalog management is rendered only inside the existing protected admin route, but route protection is not the authorization boundary. Category and product queries use the browser anon key plus the authenticated session; the Cycle 3 active-admin RLS policies decide whether hidden/archived rows can be read and whether writes succeed.
+
+The catalog feature adds no service-role credential, custom token persistence, or browser-side RLS bypass. Anonymous and inactive/non-admin clients retain no category/product mutation path. Standard-product mutations are additionally constrained by PostgreSQL rules for product type, integer-kobo price, allowed status, and non-negative nutrition.
+
+Trusted audit records are written only by `private.audit_product_change()` after an RLS-approved product insert or update. Browser roles cannot call the function directly or insert into `admin_audit_log`. Trusted backend/migration operations without an end-user JWT are not assigned a fabricated administrator identity.
