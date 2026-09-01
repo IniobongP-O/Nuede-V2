@@ -63,7 +63,7 @@ Products use one constrained state instead of contradictory flags: `available`, 
 
 Available and sold-out standard products/variants require a price. Hidden and unavailable drafts may remain incomplete. Grouped parents derive orderable price and nutrition from variants and either require explicit selection or reference a default variant belonging to that same parent.
 
-Cycle 5 will implement the workflow rule that a grouped product cannot become orderable without a valid orderable variant.
+Cycle 5 implements the workflow rule that a grouped product cannot become orderable without a valid orderable variant.
 
 ## Checkout-setting invariant
 
@@ -118,4 +118,14 @@ Admin product writes continue through the browser-safe anon client under an auth
 
 The Cycle 4 audit trigger records active-admin product creation, general edits, price changes, status changes, archive, and restore operations. It snapshots the authenticated admin identity and relevant old/new values. The trigger is `SECURITY DEFINER` with an empty search path and is not executable as a public RPC. Authenticated clients retain read-only access to `admin_audit_log` and cannot forge audit rows.
 
-Permanent product deletion remains outside the Cycle 4 field-guide scope. The database relationship behavior is preserved, and archive/restore is the implemented lifecycle path. Images, grouped variants, and add-ons remain Cycle 5 work.
+Permanent product deletion remains outside the Cycle 4 field-guide scope. The database relationship behavior is preserved, and archive/restore is the implemented lifecycle path.
+
+## Cycle 5 catalog completion
+
+`20260901000100_complete_catalog_images_variants_addons.sql` configures the public `product-images` bucket with a five-megabyte limit and JPEG, PNG, WebP, and AVIF MIME allowlist. Product and variant rows store bucket-relative object paths. New admin uploads use `products/<product UUID>/<object UUID>.webp` or `variants/<variant UUID>/<object UUID>.webp`.
+
+An available grouped parent must have at least one `available`, priced child. A protected transition trigger rejects hiding, selling out, unpricing, deleting, or moving the final valid child while its parent remains available. A configured default must be an available priced child of the same group and cannot be invalidated or removed until the parent changes its selection configuration.
+
+`reorder_product_variants(uuid, uuid[])` accepts the exact stable child-ID set once and writes normalized sort positions atomically. `replace_product_addon_assignments(uuid, uuid[])` validates an existing product and a unique set of existing global add-ons before atomically replacing compatible relationships. Both functions require an active admin in addition to authenticated execution grants.
+
+Cycle 5 extends trusted trigger-owned auditing to grouped-parent settings, variant lifecycle/price/status/order changes, add-on lifecycle changes, and product/add-on assignment changes. Browser roles still cannot insert audit rows.

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./currency": "./src/currency.js"
+    "./currency": "./src/currency.js",
+    "./catalog": "./src/catalog.js"
   }
 }

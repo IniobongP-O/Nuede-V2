@@ -137,3 +137,25 @@ Deliberately not implemented in Cycle 4:
 - any order, checkout, payment, analytics, content, or later-cycle workflow.
 
 The implementation is not `Verified` until the new migration, pgTAP suite, direct local catalog/RLS utility, and manual UI/PostgreSQL acceptance sequence run against local Supabase.
+
+## Cycle 5 implementation status
+
+Implemented in Cycle 5:
+
+- standard-product, grouped-parent, and variant images with preview, validation, browser optimization, safe replacement, and Storage-path persistence;
+- reproducible public-read/admin-write `product-images` bucket configuration and policies;
+- grouped meal creation, editing, search/filter, status lifecycle, shared add-ons, selection mode, and valid default variant configuration;
+- independent variant creation/editing/removal, stable IDs, integer-kobo prices, nutrition, images, visibility, sold-out state, and accessible reorder buttons;
+- reusable add-on library CRUD, availability, nutrition, integer-kobo prices, standard-product compatibility, and grouped shared assignments;
+- database safeguards preventing orderable groups without an orderable child, invalid defaults, final-valid-child invalidation, and cross-group variant movement;
+- atomic variant reordering and product/add-on assignment replacement;
+- trusted audit coverage for grouped settings, variants, add-ons, assignments, and image-reference changes;
+- shared Zod/domain rules, static/unit tests, pgTAP coverage, and a local-only direct RLS/Storage lifecycle utility.
+
+Deliberately not implemented in Cycle 5:
+
+- live storefront Supabase catalog queries or Realtime subscriptions (Cycle 6);
+- customer variant/add-on selection or Add to Cart configuration (Cycle 7+);
+- cart, planner, checkout, orders, payments, fulfilment, analytics, or later-cycle workflows.
+
+The implementation is not `Verified` or ready for its checkpoint until Docker-backed migration reset, pgTAP, direct RLS/Storage checks, and the documented manual admin/PostgreSQL/Storage acceptance sequence pass.

@@ -87,7 +87,7 @@ test("Cycle 4 centralizes catalog data access and uses TanStack Query invalidati
   const page = await read("apps/admin/src/pages/MenuPage.jsx");
   assert.match(api, /\.from\("categories"\)/);
   assert.match(api, /\.from\("products"\)/);
-  assert.match(api, /\.eq\("product_type", "standard"\)/);
+  assert.match(api, /product\.product_type === "standard"/);
   assert.match(hooks, /useQuery/);
   assert.match(hooks, /invalidateQueries/);
   assert.doesNotMatch(page, /supabase\.from|\.from\("products"\)/);
@@ -104,12 +104,12 @@ test("Cycle 4 audit migration records trusted product events without client audi
   assert.doesNotMatch(migration, /grant insert[^;]*admin_audit_log[^;]*authenticated/is);
 });
 
-test("Cycle 4 remains inside standard catalog scope", async () => {
-  const files = [
-    await read("apps/admin/src/pages/MenuPage.jsx"),
-    await read("apps/admin/src/features/catalog/components/ProductEditorDialog.jsx"),
-    await read("apps/admin/src/features/catalog/api/catalogApi.js"),
-  ].join("\n");
-  assert.doesNotMatch(files, /storage\.from|upload\(|product_variants|product_addons|createGrouped/i);
-  assert.doesNotMatch(files, /\.delete\(\)/);
+test("Cycle 4 standard-product contracts remain intact after the Cycle 5 extension", async () => {
+  const editor = await read("apps/admin/src/features/catalog/components/ProductEditorDialog.jsx");
+  const api = await read("apps/admin/src/features/catalog/api/catalogApi.js");
+  assert.match(editor, /productFormSchema/);
+  assert.match(editor, /productFormToRecord/);
+  assert.match(api, /createStandardProduct/);
+  assert.match(api, /updateStandardProduct/);
+  assert.match(api, /record\.product_type/);
 });

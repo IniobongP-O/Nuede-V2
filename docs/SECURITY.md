@@ -83,3 +83,11 @@ Catalog management is rendered only inside the existing protected admin route, b
 The catalog feature adds no service-role credential, custom token persistence, or browser-side RLS bypass. Anonymous and inactive/non-admin clients retain no category/product mutation path. Standard-product mutations are additionally constrained by PostgreSQL rules for product type, integer-kobo price, allowed status, and non-negative nutrition.
 
 Trusted audit records are written only by `private.audit_product_change()` after an RLS-approved product insert or update. Browser roles cannot call the function directly or insert into `admin_audit_log`. Trusted backend/migration operations without an end-user JWT are not assigned a fabricated administrator identity.
+
+## Cycle 5 catalog and Storage security
+
+The `product-images` bucket is public only for image reads. Insert, update, and delete policies require `authenticated`, `private.is_active_admin()`, the correct bucket, and a UUID-owned product/variant object path. Anonymous and ordinary authenticated customers receive no image-write policy. No service-role credential is used by the admin application.
+
+Existing catalog RLS continues to authorize grouped-parent, variant, add-on, and assignment writes. Database triggers additionally reject impossible orderable groups, invalid or cross-group defaults, moving stable variants between groups, and invalidating the final orderable/default variant. Atomic reorder and assignment functions explicitly recheck active-admin authorization and validate exact relationship sets.
+
+Image replacement follows upload -> database reference -> old-object cleanup. A database failure removes the newly uploaded object, while a successful reference update occurs before any old object is removed. Supported type, five-megabyte size, image decoding, and optimization checks run before upload; bucket restrictions provide an independent persistence boundary.

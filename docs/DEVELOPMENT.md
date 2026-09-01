@@ -99,6 +99,21 @@ This resets the local database, runs every pgTAP test, reruns the Cycle 3 person
 
 Manual catalog acceptance must use the admin UI and directly inspect local PostgreSQL for category changes, the standard-product create/edit/archive/restore sequence, integer-kobo storage, and audit events. Docker Desktop or another Docker-compatible runtime is required; do not substitute a linked or production database.
 
+## Cycle 5 catalog completion development
+
+The admin `/menu` workspace manages standard images/add-ons plus grouped parents, variants, shared add-ons, default selection, and variant ordering. Image uploads are optimized to WebP and written to the migration-created `product-images` bucket using the authenticated browser session.
+
+Run the complete Cycle 5 local verification after the local stack is running:
+
+```sh
+npm run supabase:start
+npm run verify:cycle5
+```
+
+This resets migrations/seed, runs all pgTAP suites including Storage policies and grouped-state transitions, reruns Cycle 3 and Cycle 4 direct checks, exercises Cycle 5 grouped/variant/add-on/Storage operations and attacks, then runs lint, JavaScript tests, and both production builds. The direct utility refuses non-local Supabase URLs and cleans up its ephemeral administrator, catalog rows, audit rows, and Storage object.
+
+Manual acceptance must still exercise valid/corrupt/unsupported/oversized image selection, persisted image replacement and cleanup, grouped creation with three independently configured variants, stable reorder IDs, default invalidation protection, shared/standard add-on relationships, responsive/keyboard behavior, and direct PostgreSQL/Storage inspection.
+
 The storefront uses port 5173. The admin application uses port 5174. Ports are strict so a conflict is visible instead of silently changing the expected URL.
 
 ## Development-cycle workflow

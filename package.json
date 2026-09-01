@@ -30,7 +30,9 @@
     "test:security:cycle3": "node scripts/verify-cycle3-security.mjs",
     "verify:cycle3": "npm run db:reset && npm run db:test && npm run test:security:cycle3 && npm run verify",
     "test:catalog:cycle4": "node scripts/verify-cycle4-catalog.mjs",
-    "verify:cycle4": "npm run db:reset && npm run db:test && npm run test:security:cycle3 && npm run test:catalog:cycle4 && npm run verify"
+    "verify:cycle4": "npm run db:reset && npm run db:test && npm run test:security:cycle3 && npm run test:catalog:cycle4 && npm run verify",
+    "test:catalog:cycle5": "node scripts/verify-cycle5-catalog.mjs",
+    "verify:cycle5": "npm run db:reset && npm run db:test && npm run test:security:cycle3 && npm run test:catalog:cycle4 && npm run test:catalog:cycle5 && npm run verify"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

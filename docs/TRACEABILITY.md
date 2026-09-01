@@ -114,4 +114,27 @@ Cycle 3 was subsequently reviewed and accepted by the user at checkpoint `7a88c1
 | C4-010 / Spec 175–177 | Responsive and accessible admin catalog | Desktop table, mobile cards, labels, native dialogs, live feedback | Implemented | Lint/build passed | Pending desktop/tablet/mobile/keyboard review |
 | C4-011 / Spec 121 | Preserve archive-first lifecycle and scope boundary | No delete control; traceable deferral | Deferred | Scope test confirms no delete/Storage/variant/add-on work | Product deletion not assigned by Cycle 4 roadmap |
 
-Cycle 5 deferrals remain `Planned`: product image/Storage management, grouped-product creation, variants, add-ons, and their relationships. Cycle 6 live storefront queries and Realtime also remain `Planned`.
+Cycle 6 live storefront queries and Realtime remain `Planned` and were not started by Cycle 5.
+
+## Cycle 5 images, grouped variants, and add-ons
+
+| Requirement ID | Required | Implemented | Tested | Manual acceptance |
+|---|---|---|---|---|
+| C5-001 / Spec 130–134 | Supabase Storage image bucket, upload, preview, validation, and practical optimization | Migration-owned `product-images` bucket; `imageApi.js`; `CatalogImageField` | JS validation/safe-ordering tests passed; pgTAP/direct Storage tests added, pending Docker | Pending upload/replace/reload/cleanup flow |
+| C5-002 / Spec 115 | Standard meal image and compatible optional add-ons | Extended `ProductEditorDialog`, image orchestration, assignment RPC | Lint/unit/admin build passed; live persistence pending | Pending |
+| C5-003 / Spec 11–12, 122–123 | Create/edit/search/status-manage grouped parents with parent image/settings | Menu type filter/list and `GroupedProductEditorDialog` | Mapping/orderability unit tests passed; direct lifecycle test added, pending Docker | Pending |
+| C5-004 / Spec 12–13, 124–125 | Create/edit/remove variants with permanent IDs and complete independent fields | `VariantEditorDialog`, variant API/hooks, stable UUID inserts | Stable-ID/price/state unit tests passed; direct CRUD test added, pending Docker | Pending three-variant flow |
+| C5-005 / Spec 124–125 | Accessible variant reorder without changing IDs | Labelled up/down controls and `reorder_product_variants` | Pure reorder test passed; pgTAP/function/direct-order tests added, pending Docker | Pending keyboard/reload inspection |
+| C5-006 / Spec 14 | Automatic default or explicit customer-choice configuration | Group selection mode and same-group available default options | Schema/domain tests passed; database transition tests added, pending Docker | Pending persisted mode/default flow |
+| C5-007 / Spec 15 | Variant-specific availability and visibility | Independent constrained variant state and edit controls | Independent state tests passed; direct test added, pending Docker | Pending reload/independence flow |
+| C5-008 / Spec 126 | Group cannot be orderable without a valid orderable variant | UI explanation plus product/variant transition triggers | Unit tests passed; zero/hidden/sold-out/final-child pgTAP/direct tests added, pending Docker | Pending invalid-transition UI flow |
+| C5-009 / Spec 19–20, 127–128 | Add-on create/edit/remove, kobo price, nutrition, stable ID, and availability | `AddonManagerDialog`, schemas, API/hooks | Unit tests passed; direct CRUD/audit test added, pending Docker | Pending create/edit/disable/reload |
+| C5-010 / Spec 21 | Foundation for multiple compatible add-ons | Existing many-to-many assignments exposed through reusable picker and atomic replacement RPC | Static/unit relationship tests passed; direct multi-surface test added, pending Docker | Pending multi-add-on selection inspection |
+| C5-011 / Spec 129 | Group-level add-ons shared across every variant | Group parent assignment picker; no variant-specific add-on model introduced | Architecture tests passed; direct group assignment test added, pending Docker | Pending reload inspection |
+| C5-012 / Spec 159–161 | Anonymous catalog/Storage writes denied; active admins succeed | Existing catalog RLS plus four Storage policies using `private.is_active_admin()` | Static tests passed; pgTAP and direct attack tests added, pending Docker | Pending logged-out/admin checks |
+| C5-013 / Spec 166, 183–184 | Central runtime validation for grouped, variant, add-on, image, relationship, and money input | Shared Zod schemas and domain rules | JS validation suite passed | Pending invalid-form review |
+| C5-014 / Spec 167 | Important grouped/variant/add-on/image-reference actions audited | Extended trusted trigger functions; browser audit writes remain denied | Static audit checks passed; pgTAP/direct event tests added, pending Docker | Pending audit-row inspection |
+| C5-015 / Spec 168–170, 175 | Complete feedback states and accessible controls/dialogs/reorder/upload | Existing primitives extended with labelled inputs, alerts, busy states, confirmations, preview fallback, and arrow controls | Lint and both builds passed; React review completed | Pending desktop/mobile/keyboard review |
+| C5-016 | Preserve Cycle 6+ boundary | Storefront remains fixture-backed; no customer selector/cart/live query | Explicit scope test passed | Confirmed by source review |
+
+`Tested` above distinguishes executed evidence from tests merely added. Docker-backed migration, pgTAP, RLS/Storage utilities, and the full manual sequence remain pending; therefore Cycle 5 is `Implemented`, not `Verified` or `Accepted`.

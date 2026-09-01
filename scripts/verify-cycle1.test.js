@@ -81,6 +81,7 @@ test("mock content remains application-owned fixtures", async () => {
   assert.match(storefrontFixture, /demoMeals/);
   assert.match(adminFixture, /demoMetrics/);
   assert.deepEqual(sharedFiles.map((file) => file.replaceAll("\\", "/")).sort(), [
+    "packages/domain/src/catalog.js",
     "packages/domain/src/currency.js",
     "packages/validation/src/catalog.js",
   ]);

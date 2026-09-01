@@ -102,6 +102,16 @@ Cycle 4 uses the existing single `products.status` model rather than adding cont
 
 Product audit events are created by a narrowly scoped PostgreSQL trigger, not by browser-written audit rows. The Cycle 3 catalog RLS policies remain the write authorization boundary.
 
+## Cycle 5 images, variants, and add-ons
+
+Cycle 5 extends the existing catalog feature instead of introducing another data path. `catalogApi.js` owns product, variant, add-on, assignment, and reorder operations; `imageApi.js` is the only browser module that calls Supabase Storage. TanStack Query invalidates the shared catalog keys after mutations, while React Hook Form and the shared Zod schemas validate standard-product, grouped-parent, variant, and add-on inputs.
+
+The `product-images` bucket is public for project-independent storefront-safe reads and accepts writes only from authenticated active admins. PostgreSQL stores object paths, never binaries or project URLs. New images are validated and optimized in the browser, uploaded under UUID ownership directories, committed to the database, and only then replace the prior object. Failed persistence compensates by removing the newly uploaded object.
+
+Grouped parents remain unpriced families. Variants own their stable UUID, price, nutrition, image, status, and sort order. PostgreSQL triggers prevent an available group from having zero orderable variants, prevent invalidating the configured default, and prevent moving a stable variant to another group. Atomic database functions reorder an exact child set and replace a product's compatible add-on set.
+
+The admin menu now manages standard meals, grouped parents, variants, and reusable add-ons. It does not query from the storefront, provide customer variant/add-on selection, or implement any Cycle 6+ behavior.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.

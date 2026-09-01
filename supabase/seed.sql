@@ -41,7 +41,7 @@ values
     48.00,
     62.00,
     18.00,
-    'products/grilled-citrus-chicken.jpg',
+    'products/20000000-0000-4000-8000-000000000001/seed.jpg',
     'available',
     false,
     true,
@@ -59,7 +59,7 @@ values
     44.00,
     null,
     24.00,
-    'products/smoky-beef-rice-bowl.jpg',
+    'products/20000000-0000-4000-8000-000000000002/seed.jpg',
     'sold_out',
     false,
     false,
@@ -95,7 +95,7 @@ values
     46.00,
     54.00,
     null,
-    'products/coconut-fish-curry.jpg',
+    'products/20000000-0000-4000-8000-000000000004/seed.jpg',
     'hidden',
     false,
     false,
@@ -131,7 +131,7 @@ values
     4.00,
     48.00,
     3.00,
-    'products/roasted-sweet-potato-wedges.jpg',
+    'products/20000000-0000-4000-8000-000000000006/seed.jpg',
     'available',
     false,
     false,
@@ -167,8 +167,8 @@ values
     null,
     null,
     null,
-    'products/peppered-chicken-bowl.jpg',
-    'available',
+    'products/20000000-0000-4000-8000-000000000008/seed.jpg',
+    'hidden',
     true,
     true,
     10
@@ -199,7 +199,7 @@ values
     52.00,
     82.00,
     22.00,
-    'products/peppered-chicken-rice.jpg',
+    'variants/30000000-0000-4000-8000-000000000001/seed.jpg',
     'available',
     10
   ),
@@ -213,7 +213,7 @@ values
     50.00,
     null,
     25.00,
-    'products/peppered-chicken-pasta.jpg',
+    'variants/30000000-0000-4000-8000-000000000002/seed.jpg',
     'sold_out',
     20
   ),
@@ -235,7 +235,8 @@ values
 update public.products
 set
   requires_variant_selection = false,
-  default_variant_id = '30000000-0000-4000-8000-000000000001'
+  default_variant_id = '30000000-0000-4000-8000-000000000001',
+  status = 'available'
 where id = '20000000-0000-4000-8000-000000000008';
 
 insert into public.product_addons (
