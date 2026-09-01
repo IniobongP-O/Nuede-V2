@@ -19,6 +19,8 @@ export function useMenuRealtime() {
       .channel("storefront-menu-catalog")
       .on("postgres_changes", { event: "*", schema: "public", table: "products" }, invalidateProducts)
       .on("postgres_changes", { event: "*", schema: "public", table: "product_variants" }, invalidateProducts)
+      .on("postgres_changes", { event: "*", schema: "public", table: "product_addons" }, invalidateProducts)
+      .on("postgres_changes", { event: "*", schema: "public", table: "product_addon_assignments" }, invalidateProducts)
       .on("postgres_changes", { event: "*", schema: "public", table: "categories" }, invalidateCategories)
       .subscribe();
 

@@ -9,7 +9,8 @@ const menuProductFields = [
   "calories", "protein_g", "carbohydrates_g", "fat_g", "image_path", "status",
   "requires_variant_selection", "default_variant_id", "sort_order", "updated_at",
   "category:categories!inner(id,name,slug,is_enabled,sort_order)",
-  "product_variants(id,product_id,name,description,price_kobo,calories,protein_g,carbohydrates_g,fat_g,image_path,status,sort_order,updated_at)",
+  "product_variants!product_variants_product_fk(id,product_id,name,description,price_kobo,calories,protein_g,carbohydrates_g,fat_g,image_path,status,sort_order,updated_at)",
+  "product_addon_assignments(addon_id,sort_order,addon:product_addons!product_addon_assignments_addon_fk(id,name,price_kobo,calories,protein_g,carbohydrates_g,fat_g,is_available,updated_at))",
 ].join(",");
 
 function requireSupabase() {

@@ -181,3 +181,50 @@ Deliberately not implemented in Cycle 6:
 - cart, planner, checkout, orders, payments, admin orders, analytics, or later-cycle workflows.
 
 Cycle 6 automated verification and any environment-limited manual status are recorded in `TRACEABILITY.md`; implementation does not imply unperformed live Supabase or viewport checks.
+
+## Cycle 7 implementation status
+
+Implemented in Cycle 7:
+
+- live meal details opened from explicit controls on every standard and grouped menu card;
+- large responsive image, description, price, availability, nutrition, add-on, and quantity presentation;
+- grouped variant radios using stable IDs, configured-default initialization, and explicit-choice behavior without first-row fallback;
+- variant-specific image, description, integer-kobo price, nutrition, and availability updates;
+- product-compatible multiple add-on selection with stable IDs and live invalid-selection reconciliation;
+- item-level derived price and quantity-aware nutrition display with honest partial-data indicators;
+- reusable Zod identity validation plus catalog-aware product, variant, add-on, availability, compatibility, uniqueness, and quantity validation;
+- normalized `{ productId, variantId, addonIds, quantity }` output through an `onConfigured` boundary with no trusted price or nutrition fields;
+- native modal semantics, focus containment/restoration, Escape close, labelled form controls, non-color selection/state indicators, and mobile full-screen behavior;
+- add-on/assignment Realtime publication and existing-query invalidation without new public grants;
+- focused domain/architecture tests, lint, and successful storefront/admin production builds.
+
+Deliberately not implemented in Cycle 7:
+
+- shared cross-surface nutrition totals, Saved Meals, or favorites (Cycle 8);
+- cart storage, persistence, merging, drawer, subtotal, or cart nutrition (Cycle 9);
+- planner, checkout, authoritative order pricing, payments, fulfilment, analytics, or later-cycle workflows.
+
+Connected-project verification loaded the live seven-product menu and exercised standard customization, grouped default selection, multiple add-ons, quantity, dynamic price/nutrition, unavailable/sold-out/price-pending states, Escape close, focus restoration, and 320/390/768/1280px layouts. Axe reported zero WCAG A/AA violations in the open dialog. The connected catalog has no explicit-required group and no second selectable variant; those paths remain automated-test verified rather than live-data verified. No live admin mutation was made, so two-browser Realtime reconciliation and remote migration publication state remain pending.
+
+## Cycle 8 implementation status
+
+Implemented in Cycle 8:
+
+- one framework-independent nutrition engine for standard meals, selected grouped variants, add-ons, quantity, generic totals, cart-style fixtures, plan days/slots, explicit-duration daily averages, and centralized formatting;
+- machine-readable complete, partial, and unavailable results with field-level completeness and null-preserving arithmetic;
+- Cycle 7 detail nutrition and Cycle 6 menu completeness/formatting delegated to that shared engine;
+- device-local product-level Saved Meals using the validated `nuede:v2:saved-meals` UUID list;
+- one Saved Meals provider for immediate same-tab updates and lightweight cross-tab `storage` synchronization;
+- accessible save/remove controls on menu cards and product details with semantic pressed state and existing-toast feedback;
+- `/saved` live-menu reconciliation, grouped detail reopening, current sold-out/price-pending states, stale/private exclusion, removal, confirmed Clear All, query feedback, and a purposeful empty state;
+- responsive one/two/three-column layouts inherited from live menu cards and keyboard-operable native controls/dialogs;
+- deterministic nutrition/persistence/model/source tests plus connected-browser acceptance checks.
+
+Deliberately not implemented in Cycle 8:
+
+- customer accounts, cloud favorites, full product/configuration snapshots, or a favorites database table;
+- cart context, storage, drawer, line merging, subtotals, checkout handoff, or any other Cycle 9 behavior;
+- planner dates, slots UI, state, persistence, summary UI, or any other Cycle 10 behavior;
+- checkout, orders, payments, fulfilment, analytics, and later-cycle workflows.
+
+Cycle 8 added no database migration and did not alter RLS. The cart and meal-plan nutrition APIs are domain preparation only.

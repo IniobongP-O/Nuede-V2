@@ -4,12 +4,14 @@ import { Container } from "../components/layout/Container.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { EmptyState, ErrorState } from "../components/ui/FeedbackStates.jsx";
 import { PageHeader } from "../components/ui/Surface.jsx";
+import { useToast } from "../components/ui/toastContext.js";
 import { MenuControls } from "../features/menu/components/MenuControls.jsx";
 import { MenuProductCard } from "../features/menu/components/MenuProductCard.jsx";
 import { MenuSkeleton } from "../features/menu/components/MenuSkeleton.jsx";
 import { useCategories, useMenu } from "../features/menu/hooks/useMenu.js";
 import { useMenuRealtime } from "../features/menu/hooks/useMenuRealtime.js";
 import { filterMenuProducts } from "../features/menu/utils/menuModel.js";
+import { ProductDetailDialog } from "../features/product-detail/components/ProductDetailDialog.jsx";
 
 const emptyList = Object.freeze([]);
 
@@ -17,6 +19,8 @@ export function MenuPage() {
   const [search, setSearch] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("all");
   const [filters, setFilters] = useState([]);
+  const [detailSelection, setDetailSelection] = useState(null);
+  const { notify } = useToast();
   const categoriesQuery = useCategories();
   const menuQuery = useMenu();
   useMenuRealtime();
@@ -32,6 +36,18 @@ export function MenuPage() {
   );
   const isLoading = categoriesQuery.isPending || menuQuery.isPending;
   const hasError = categoriesQuery.isError || menuQuery.isError;
+  const liveDetailProduct = detailSelection
+    ? products.find((product) => product.id === detailSelection.id)
+    : null;
+  const selectedProduct = useMemo(
+    () => liveDetailProduct || (detailSelection ? {
+      ...detailSelection,
+      status: "hidden",
+      menuStatus: "unavailable",
+      isOrderable: false,
+    } : null),
+    [detailSelection, liveDetailProduct],
+  );
 
   const resetFilters = () => {
     setSearch("");
@@ -44,6 +60,10 @@ export function MenuPage() {
       : [...current, filterId]);
   };
   const retry = () => Promise.all([categoriesQuery.refetch(), menuQuery.refetch()]);
+  const handleConfigured = (configuration) => {
+    const configuredProduct = products.find((product) => product.id === configuration.productId);
+    notify(`${configuredProduct?.name || "Your meal"} selection is valid and ready.`);
+  };
 
   return (
     <Container className="py-10 sm:py-14 lg:py-18">
@@ -71,12 +91,21 @@ export function MenuPage() {
             <EmptyState className="mt-8" title="The menu is being prepared" message="There are no customer-visible meals right now. Please check back soon." />
           ) : visibleProducts.length ? (
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3">
-              {visibleProducts.map((product) => <MenuProductCard key={product.id} product={product} />)}
+              {visibleProducts.map((product) => <MenuProductCard key={product.id} product={product} onOpenDetails={setDetailSelection} />)}
             </div>
           ) : (
             <EmptyState className="mt-8" title="No meals match" message="Try a different search, category, or filter combination." action={<Button variant="secondary" onClick={resetFilters}>Show all meals</Button>} />
           )}
         </>
+      ) : null}
+      {selectedProduct ? (
+        <ProductDetailDialog
+          key={selectedProduct.id}
+          product={selectedProduct}
+          open
+          onClose={() => setDetailSelection(null)}
+          onConfigured={handleConfigured}
+        />
       ) : null}
     </Container>
   );

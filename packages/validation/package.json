@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./catalog": "./src/catalog.js"
+    "./catalog": "./src/catalog.js",
+    "./customization": "./src/customization.js",
+    "./saved-meals": "./src/savedMeals.js"
   },
   "dependencies": {
     "zod": "^4.5.4"

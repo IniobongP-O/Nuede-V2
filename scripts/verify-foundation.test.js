@@ -132,14 +132,18 @@ test("shared packages do not depend on application packages", async () => {
   }
 });
 
-test("only environment examples are present and their values are placeholders", async () => {
+test("environment examples remain placeholders and local environment files stay ignored", async () => {
   const files = await walk();
   const environmentFiles = files.filter((file) => path.basename(file).startsWith(".env"));
+  const environmentExamples = environmentFiles.filter((file) => path.basename(file) === ".env.example");
+  const gitignore = await readFile(path.join(repositoryRoot, ".gitignore"), "utf8");
 
-  assert.ok(environmentFiles.length > 0);
-  assert.ok(environmentFiles.every((file) => path.basename(file) === ".env.example"));
+  assert.ok(environmentExamples.length > 0);
+  assert.match(gitignore, /^\.env$/m);
+  assert.match(gitignore, /^\.env\.\*$/m);
+  assert.match(gitignore, /^!\*\*\/\.env\.example$/m);
 
-  for (const environmentFile of environmentFiles) {
+  for (const environmentFile of environmentExamples) {
     const lines = (await readFile(path.join(repositoryRoot, environmentFile), "utf8"))
       .split(/\r?\n/)
       .filter((line) => line && !line.startsWith("#"));

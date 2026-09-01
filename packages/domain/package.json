@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./currency": "./src/currency.js",
-    "./catalog": "./src/catalog.js"
+    "./catalog": "./src/catalog.js",
+    "./nutrition": "./src/nutrition.js"
   }
 }

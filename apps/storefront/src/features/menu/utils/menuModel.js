@@ -1,3 +1,5 @@
+import { calculateNutrition, NUTRITION_STATUS } from "@nuede/domain/nutrition";
+
 export const HIGH_PROTEIN_MINIMUM_GRAMS = 30;
 
 const visibleVariantStatuses = new Set(["available", "sold_out", "unavailable"]);
@@ -22,17 +24,50 @@ function isOrderableVariant(variant) {
 }
 
 function normalizedNutrition(source) {
-  return {
+  return calculateNutrition([{
     calories: numberOrNull(source?.calories),
     proteinG: numberOrNull(source?.protein_g),
     carbohydratesG: numberOrNull(source?.carbohydrates_g),
     fatG: numberOrNull(source?.fat_g),
+  }]);
+}
+
+function normalizeVariant(variant, imageUrlForPath) {
+  const imagePath = variant.image_path || null;
+  return {
+    id: variant.id,
+    productId: variant.product_id,
+    name: variant.name,
+    description: variant.description || "",
+    priceKobo: koboOrNull(variant.price_kobo),
+    nutrition: normalizedNutrition(variant),
+    imagePath,
+    imageUrl: imagePath ? imageUrlForPath(imagePath) : "",
+    status: variant.status,
+    isOrderable: isOrderableVariant(variant),
+    sortOrder: variant.sort_order,
   };
 }
 
+function normalizeAddons(assignments) {
+  return [...(assignments || [])]
+    .sort((left, right) => left.sort_order - right.sort_order || left.addon_id.localeCompare(right.addon_id))
+    .flatMap((assignment) => {
+      const addon = assignment.addon;
+      if (!addon) return [];
+      return [{
+        id: addon.id,
+        name: addon.name,
+        priceKobo: koboOrNull(addon.price_kobo),
+        nutrition: normalizedNutrition(addon),
+        isAvailable: addon.is_available === true,
+        sortOrder: assignment.sort_order,
+      }];
+    });
+}
+
 export function hasCompleteNutrition(nutrition) {
-  return [nutrition?.calories, nutrition?.proteinG, nutrition?.carbohydratesG, nutrition?.fatG]
-    .every((value) => value !== null && value !== undefined);
+  return calculateNutrition([nutrition]).status === NUTRITION_STATUS.complete;
 }
 
 function deriveGroupedStatus(product, variants) {
@@ -60,17 +95,19 @@ function groupedPrice(product, variants, menuStatus) {
 }
 
 export function normalizeMenuProduct(product, imageUrlForPath = () => "") {
-  const variants = [...(product.product_variants || [])]
+  const rawVariants = [...(product.product_variants || [])]
     .filter((variant) => visibleVariantStatuses.has(variant.status))
     .sort((left, right) => left.sort_order - right.sort_order || left.id.localeCompare(right.id));
   const grouped = product.product_type === "grouped";
-  const previewVariant = grouped ? representativeVariant(product, variants) : null;
-  const menuStatus = grouped ? deriveGroupedStatus(product, variants) : product.status;
+  const previewVariant = grouped ? representativeVariant(product, rawVariants) : null;
+  const menuStatus = grouped ? deriveGroupedStatus(product, rawVariants) : product.status;
   const price = grouped
-    ? groupedPrice(product, variants, menuStatus)
+    ? groupedPrice(product, rawVariants, menuStatus)
     : { priceKobo: koboOrNull(product.price_kobo), pricePrefix: "" };
   const nutrition = normalizedNutrition(previewVariant || product);
   const imagePath = product.image_path || previewVariant?.image_path || null;
+  const variants = rawVariants.map((variant) => normalizeVariant(variant, imageUrlForPath));
+  const addons = normalizeAddons(product.product_addon_assignments);
 
   return {
     id: product.id,
@@ -81,12 +118,15 @@ export function normalizeMenuProduct(product, imageUrlForPath = () => "") {
     categoryName: product.category?.name || "",
     productType: product.product_type,
     isGrouped: grouped,
+    status: product.status,
     requiresVariantSelection: Boolean(product.requires_variant_selection),
+    defaultVariantId: product.default_variant_id || null,
     variants,
+    addons,
     variantCount: variants.length,
-    orderableVariantCount: variants.filter(isOrderableVariant).length,
+    orderableVariantCount: variants.filter((variant) => variant.isOrderable).length,
     menuStatus,
-    isOrderable: menuStatus === "available" && price.priceKobo !== null && (!grouped || variants.some(isOrderableVariant)),
+    isOrderable: menuStatus === "available" && price.priceKobo !== null && (!grouped || variants.some((variant) => variant.isOrderable)),
     priceKobo: price.priceKobo,
     pricePrefix: price.pricePrefix,
     nutrition,

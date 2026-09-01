@@ -24,4 +24,9 @@ Cycle 5 creates the `product-images` bucket, active-admin Storage policies, grou
 orderability/default safeguards, atomic variant/add-on helpers, and expanded catalog
 auditing through `20260901000100_complete_catalog_images_variants_addons.sql`.
 
+Cycle 7 adds `product_addons` and `product_addon_assignments` to the existing
+`supabase_realtime` publication through
+`20260901000300_enable_customization_catalog_realtime.sql`. It grants no new table
+privileges and leaves anonymous visibility controlled by the existing RLS policies.
+
 Backend code must never be imported into a Vite application.

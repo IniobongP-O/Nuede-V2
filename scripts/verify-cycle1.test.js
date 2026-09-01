@@ -45,14 +45,17 @@ test("applications do not import one another", async () => {
 
 test("application source stays outside unapproved future integration boundaries", async () => {
   const storefrontFiles = (await walk("apps/storefront/src")).filter((file) => /\.jsx?$/.test(file));
+  const savedMealsStorage = path.normalize("apps/storefront/src/features/saved-meals/storage/savedMealsStorage.js");
   const storefrontForbiddenPatterns = [
-    /\blocalStorage\b/,
     /from\s+["']firebase/,
     /PaystackPop|window\.Paystack|initializeTransaction/,
   ];
 
   for (const file of storefrontFiles) {
     const source = await readFile(path.join(repositoryRoot, file), "utf8");
+    if (path.normalize(file) !== savedMealsStorage) {
+      assert.doesNotMatch(source, /\blocalStorage\b/, `${file} bypasses centralized Saved Meals persistence`);
+    }
     for (const pattern of storefrontForbiddenPatterns) {
       assert.doesNotMatch(source, pattern, `${file} contains an unapproved storefront integration`);
     }
@@ -81,7 +84,10 @@ test("mock content remains application-owned fixtures", async () => {
   assert.deepEqual(sharedFiles.map((file) => file.replaceAll("\\", "/")).sort(), [
     "packages/domain/src/catalog.js",
     "packages/domain/src/currency.js",
+    "packages/domain/src/nutrition.js",
     "packages/validation/src/catalog.js",
+    "packages/validation/src/customization.js",
+    "packages/validation/src/savedMeals.js",
   ]);
   for (const file of sharedFiles) {
     const source = await readFile(path.join(repositoryRoot, file), "utf8");

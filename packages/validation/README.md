@@ -11,3 +11,6 @@ integer kobo without floating-point arithmetic.
 Cycle 5 extends that module with grouped-parent, variant, add-on, and catalog-image
 validation. Supported image MIME types and the five-megabyte limit are shared with
 the admin upload workflow and migration-owned bucket configuration.
+
+Cycle 8 adds `saved-meals` validation for the device-local list of stable product
+UUIDs. Browser data is treated as untrusted and invalid entries are discarded.

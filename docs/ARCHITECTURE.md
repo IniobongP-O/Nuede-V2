@@ -120,6 +120,24 @@ The storefront `/menu` route consumes the catalog through `apps/storefront/src/f
 
 The storefront query client caches categories and products under stable `storefront-menu` keys. One lifecycle-owned channel listens only to `categories`, `products`, and `product_variants`, then invalidates the affected query keys. A 60-second active-page refetch and window-focus refetch provide recovery when a connection or row-visibility transition prevents a Realtime event from reaching the anonymous client. The Cycle 6 migration adds only these tables to `supabase_realtime`; existing grants and RLS remain unchanged.
 
+## Cycle 7 product details and customization
+
+Cycle 7 extends the existing `/menu` query rather than introducing a detail-query path. The single product read embeds public variants and product-level add-on assignments; `menuModel.js` converts raw relationships, Storage paths, money, nutrition, selection mode, and stable IDs into the storefront model. Realtime invalidation also covers add-ons and assignments so an open detail view receives the same TanStack Query updates as the menu.
+
+`apps/storefront/src/features/product-detail` separates visual controls, React state reconciliation, and reusable domain calculations. The state layer initializes only a valid configured default, never selects the first variant for an explicit-choice group, removes selections made invalid by refreshed catalog data, and revalidates at the output boundary. Hidden variants are omitted; sold-out/unavailable variants remain non-orderable; add-ons are limited to the product's existing assignments.
+
+`@nuede/validation/customization` validates the structural configuration identity, while `customizationModel.js` validates current catalog membership and orderability. A valid output contains only `{ productId, variantId, addonIds, quantity }`. Display price and item-level nutrition are derived separately; integer-kobo estimates and partial-nutrition flags never become trusted checkout input. The dialog emits this object through `onConfigured` but intentionally adds no cart store, persistence, merging, subtotal, planner, or favorites behavior.
+
+The existing native-dialog primitive now supports a large responsive mode and restores focus even when the owning detail component unmounts. Native modal behavior supplies background inertness and focus containment; the detail UI adds labelled radio buttons, checkboxes, quantity controls, textual state labels, Escape closing, image fallback, mobile full-screen layout, and desktop columns.
+
+## Cycle 8 nutrition engine and Saved Meals
+
+`@nuede/domain/nutrition` is the only nutrition arithmetic and formatting authority. Domain inputs use `calories`, `proteinG`, `carbohydratesG`, and `fatG`; results preserve each known value plus field-level completeness, `hasAny`, `isComplete`, and a machine-readable `complete`, `partial`, or `unavailable` status. Missing values stay `null`. Configured items choose the variant instead of the grouped parent, add each selected add-on once, and multiply the complete configured unit by quantity. Generic aggregation feeds the cart-style adapter, while the meal-plan adapter flattens days/slots and divides totals by explicit plan duration. Neither adapter introduces cart or planner state.
+
+Cycle 7's `customizationModel.js` remains the catalog-selection adapter but delegates all nutrition arithmetic to the shared engine. Menu normalization uses the same completeness rules, and card/detail formatting uses the same edge formatter. The engine is framework-independent, deterministic, and contains no Supabase or browser imports.
+
+`apps/storefront/src/features/saved-meals` owns account-free favorites. The only persisted representation is a validated, deduplicated array of product UUIDs under `nuede:v2:saved-meals`; no product snapshot, price, image, nutrition, or configuration is stored. `SavedMealsProvider` owns active-tab state and listens for browser `storage` events. Menu cards and product details consume one accessible favorite control, while `/saved` intersects local IDs with the existing public `useMenu()` result. Consequently hidden, archived, deleted, disabled-category, and invalid IDs cannot disclose catalog data; sold-out and price-pending meals retain their current public state. Clear All uses the existing native-dialog confirmation pattern.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.

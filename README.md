@@ -2,7 +2,7 @@
 
 Nuede V2 is a fresh food-commerce and nutrition platform with two independent React applications and one trusted Supabase backend.
 
-This repository contains the Cycle 0 engineering foundation, the Cycle 1 storefront/admin application shells, and the implemented Cycle 2 PostgreSQL database foundation awaiting review and verification. The frontends still use Cycle 1 fixtures and intentionally contain no live database connection, authentication, cart, planner, checkout, payment, order, or analytics behavior.
+The accepted Cycle 0–7 foundation and Cycle 8 nutrition/Saved Meals implementation are present. The storefront reads the live public catalog, derives complete/partial/unavailable nutrition through one shared domain engine, emits validated meal configurations, and keeps product-level saved IDs on the current device. The admin application manages the catalog. Cart, planner UI/state, checkout, order, payment, fulfilment, and analytics workflows remain assigned to later cycles.
 
 ## Applications
 
