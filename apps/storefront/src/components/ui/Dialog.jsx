@@ -6,6 +6,7 @@ import { IconButton } from "./Button.jsx";
 const dialogSizes = {
   default: "w-[min(42rem,calc(100%-2rem))] rounded-dialog",
   large: "h-dvh w-full max-w-none rounded-none sm:h-auto sm:w-[min(72rem,calc(100%-2rem))] sm:rounded-dialog",
+  cart: "h-dvh w-full max-w-none rounded-none sm:h-[min(52rem,calc(100dvh-2rem))] sm:w-[min(48rem,calc(100%-2rem))] sm:rounded-dialog",
 };
 
 export function Dialog({ open, onClose, title, description, children, footer, size = "default", contentClassName = "", footerClassName = "" }) {

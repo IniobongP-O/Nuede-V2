@@ -9,12 +9,16 @@ import {
   validateProductConfiguration,
 } from "../utils/customizationModel.js";
 
-export function useProductCustomization(product, onConfigured) {
+export function useProductCustomization(product, onConfigured, initialConfiguration = null) {
   const [state, setState] = useState(() => ({
     catalogProduct: product,
-    variantId: getDefaultVariant(product)?.id || null,
-    addonIds: [],
-    quantity: 1,
+    variantId: initialConfiguration?.productId === product.id
+      ? initialConfiguration.variantId
+      : getDefaultVariant(product)?.id || null,
+    addonIds: initialConfiguration?.productId === product.id ? [...initialConfiguration.addonIds] : [],
+    quantity: initialConfiguration?.productId === product.id && Number.isSafeInteger(initialConfiguration.quantity) && initialConfiguration.quantity > 0
+      ? initialConfiguration.quantity
+      : 1,
     submissionIssues: [],
     catalogNotice: "",
   }));

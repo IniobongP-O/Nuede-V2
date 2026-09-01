@@ -106,11 +106,11 @@ function AddonSelector({ addons, selectedIds, onToggle }) {
   );
 }
 
-export function ProductDetailDialog({ product, open, onClose, onConfigured }) {
+export function ProductDetailDialog({ product, open, onClose, onConfigured, initialConfiguration = null, submitLabel = "Add to basket" }) {
   const customization = useProductCustomization(product, (configuration) => {
     onConfigured?.(configuration);
     onClose();
-  });
+  }, initialConfiguration);
   const displaySource = product.isGrouped ? customization.selectedVariant : product;
   const displayImageUrl = displaySource?.imageUrl || product.imageUrl;
   const displayDescription = displaySource?.description || product.description;
@@ -136,7 +136,7 @@ export function ProductDetailDialog({ product, open, onClose, onConfigured }) {
             <p className="mt-1 font-display text-2xl text-brand-950">{price.complete ? formatKobo(price.linePriceKobo) : "Price unavailable"}</p>
           </div>
           <Button size="large" disabled={!customization.validation.valid} onClick={customization.submit}>
-            Confirm selection
+            {submitLabel}
           </Button>
         </>
       )}

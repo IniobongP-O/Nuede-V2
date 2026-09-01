@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./catalog": "./src/catalog.js",
+    "./cart": "./src/cart.js",
     "./customization": "./src/customization.js",
     "./saved-meals": "./src/savedMeals.js"
   },

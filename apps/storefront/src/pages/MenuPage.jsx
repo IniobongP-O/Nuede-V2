@@ -5,11 +5,11 @@ import { Button } from "../components/ui/Button.jsx";
 import { EmptyState, ErrorState } from "../components/ui/FeedbackStates.jsx";
 import { PageHeader } from "../components/ui/Surface.jsx";
 import { useToast } from "../components/ui/toastContext.js";
+import { useCart } from "../features/cart/context/cartContext.js";
 import { MenuControls } from "../features/menu/components/MenuControls.jsx";
 import { MenuProductCard } from "../features/menu/components/MenuProductCard.jsx";
 import { MenuSkeleton } from "../features/menu/components/MenuSkeleton.jsx";
 import { useCategories, useMenu } from "../features/menu/hooks/useMenu.js";
-import { useMenuRealtime } from "../features/menu/hooks/useMenuRealtime.js";
 import { filterMenuProducts } from "../features/menu/utils/menuModel.js";
 import { ProductDetailDialog } from "../features/product-detail/components/ProductDetailDialog.jsx";
 
@@ -21,9 +21,9 @@ export function MenuPage() {
   const [filters, setFilters] = useState([]);
   const [detailSelection, setDetailSelection] = useState(null);
   const { notify } = useToast();
+  const { addItem } = useCart();
   const categoriesQuery = useCategories();
   const menuQuery = useMenu();
-  useMenuRealtime();
 
   const categories = categoriesQuery.data || emptyList;
   const products = menuQuery.data || emptyList;
@@ -62,7 +62,11 @@ export function MenuPage() {
   const retry = () => Promise.all([categoriesQuery.refetch(), menuQuery.refetch()]);
   const handleConfigured = (configuration) => {
     const configuredProduct = products.find((product) => product.id === configuration.productId);
-    notify(`${configuredProduct?.name || "Your meal"} selection is valid and ready.`);
+    const result = addItem(configuration);
+    const message = result.merged
+      ? `${configuredProduct?.name || "Meal"} quantity updated in your basket`
+      : `${configuredProduct?.name || "Meal"} added to your basket`;
+    notify(result.persisted ? message : `${message} for this visit, but browser persistence is blocked.`, result.persisted ? "success" : "error");
   };
 
   return (

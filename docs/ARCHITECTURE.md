@@ -41,7 +41,7 @@ Shared packages must remain independent of React and application routing unless 
 
 Each application owns a separate React Router tree.
 
-Storefront routes are `/`, `/menu`, `/saved`, `/planner`, `/checkout`, and `/payment`. The storefront root layout owns the header, desktop/mobile navigation, static basket entry point, main landmark, notifications, and footer. About, FAQ, and Contact are homepage anchors until the Cycle 17 content work justifies any dedicated route.
+Storefront routes are `/`, `/menu`, `/saved`, `/planner`, `/checkout`, and `/payment`. The storefront root layout owns the header, desktop/mobile navigation, basket entry point, main landmark, notifications, and footer. About, FAQ, and Contact are homepage anchors until the Cycle 17 content work justifies any dedicated route.
 
 Admin routes are `/login`, `/dashboard`, `/menu`, `/orders`, `/analytics`, `/delivery`, `/testimonials`, `/feedback`, and `/settings`. Login renders outside the operational layout. The remaining routes use the admin sidebar, top bar, mobile navigation, and content canvas. There are deliberately no auth guards in Cycle 1.
 
@@ -137,6 +137,14 @@ The existing native-dialog primitive now supports a large responsive mode and re
 Cycle 7's `customizationModel.js` remains the catalog-selection adapter but delegates all nutrition arithmetic to the shared engine. Menu normalization uses the same completeness rules, and card/detail formatting uses the same edge formatter. The engine is framework-independent, deterministic, and contains no Supabase or browser imports.
 
 `apps/storefront/src/features/saved-meals` owns account-free favorites. The only persisted representation is a validated, deduplicated array of product UUIDs under `nuede:v2:saved-meals`; no product snapshot, price, image, nutrition, or configuration is stored. `SavedMealsProvider` owns active-tab state and listens for browser `storage` events. Menu cards and product details consume one accessible favorite control, while `/saved` intersects local IDs with the existing public `useMenu()` result. Consequently hidden, archived, deleted, disabled-category, and invalid IDs cannot disclose catalog data; sold-out and price-pending meals retain their current public state. Clear All uses the existing native-dialog confirmation pattern.
+
+## Cycle 9 anonymous shopping cart
+
+`@nuede/domain/cart` owns canonical add-on ordering, configuration identity, deterministic immutable cart operations, quantity rules, duplicate merging, replacement, and item-count aggregation. Configuration identity is exactly the JSON tuple `[productId, variantId, sortedUniqueAddonIds]`; quantity is state on that identity, never part of it. `@nuede/validation/cart` validates the versioned browser payload and each stable catalog reference.
+
+`apps/storefront/src/features/cart` owns the React provider, storage adapter, live-catalog hydration, and basket dialog. The only persisted data under `nuede:v2:cart` is `{ version: 1, items: [{ productId, variantId, addonIds, quantity }] }`. Stored lines are untrusted, structurally validated, canonicalized, and merged on restoration. Names, images, prices, availability, compatibility, and nutrition are never persisted; the cart resolves them through the existing public TanStack Query menu cache.
+
+Missing public products render a generic removable line without exposing stale details. Current sold-out, price-pending, unavailable, invalid-variant, and invalid-add-on configurations remain visible and block checkout readiness. Display-only integer-kobo prices and subtotals are derived from current public catalog values, exclude invalid lines, and are explicitly non-authoritative. Delivery is not invented before checkout. Cart nutrition delegates to the Cycle 8 engine and preserves partial/unavailable completeness. The native dialog supplies Escape, focus containment/restoration, and responsive full-screen mobile behavior; the provider supplies same-tab updates and lightweight cross-tab `storage` synchronization.
 
 ## Frozen technology decisions
 

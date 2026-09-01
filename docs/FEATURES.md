@@ -228,3 +228,29 @@ Deliberately not implemented in Cycle 8:
 - checkout, orders, payments, fulfilment, analytics, and later-cycle workflows.
 
 Cycle 8 added no database migration and did not alter RLS. The cart and meal-plan nutrition APIs are domain preparation only.
+
+## Cycle 9 implementation status
+
+Implemented in Cycle 9:
+
+- anonymous cart state for normalized standard/grouped configurations, variants, add-ons, and positive whole quantities;
+- deterministic identity using product, variant, and sorted unique add-on IDs, with identical configurations merged and quantity excluded from identity;
+- validated versioned `nuede:v2:cart` persistence, malformed-data recovery, duplicate restoration merging, and lightweight cross-tab updates;
+- Cycle 7 Add to basket and cart reconfiguration flows using the existing product-detail validation and form;
+- live total-quantity header badge plus an accessible responsive native basket dialog;
+- current product, variant, add-on, price, image, availability, and nutrition hydration through the existing TanStack Query menu cache;
+- independent increment, decrement-at-minimum-one, remove, confirmed clear, edit/replace, and merge-on-edit behavior;
+- integer-kobo unit price, line total, estimated subtotal, and delivery-at-checkout wording with no authoritative price persistence;
+- Cycle 8 nutrition totals with quantity/add-on/variant semantics and partial/unavailable warnings;
+- generic stale/private product lines, current sold-out/price-pending states, invalid-variant/add-on detection, removal, and blocked checkout readiness;
+- deterministic cart/storage/hydration/source tests plus connected-browser accessibility and responsive checks.
+
+Deliberately not implemented in Cycle 9:
+
+- customer accounts, database carts, cloud restore, or cross-device synchronization;
+- Cycle 10 planner dates, slots, drag/drop, plan persistence, or plan checkout;
+- Cycle 11 delivery selection, customer form, payment-method selection, or completed checkout behavior;
+- Cycle 12 authoritative repricing, order creation, order items, or Edge Function submission;
+- Paystack, WhatsApp ordering, fulfilment, analytics, and later-cycle workflows.
+
+Cycle 9 added no database migration and did not alter grants or RLS. Basket prices remain display estimates; a future trusted server boundary must re-read catalog values and calculate authoritative totals.

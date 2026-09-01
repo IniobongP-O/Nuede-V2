@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 
 import { storefrontNavigation, storefrontPaths } from "../../app/routePaths.js";
+import { CartDialog } from "../../features/cart/components/CartDialog.jsx";
+import { useCart } from "../../features/cart/context/cartContext.js";
 import { Dialog } from "../ui/Dialog.jsx";
 import { IconButton } from "../ui/Button.jsx";
 import { Container } from "./Container.jsx";
@@ -31,6 +33,8 @@ function NavigationLink({ item, onNavigate, mobile = false }) {
 
 export function StorefrontHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const { itemCount } = useCart();
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-canvas/95 backdrop-blur">
@@ -42,11 +46,11 @@ export function StorefrontHeader() {
           <a className="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-brand-950" href="/#faq">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
-          <Link className="inline-flex min-h-11 items-center gap-2 rounded-control px-3 text-sm font-semibold text-brand-950 hover:bg-brand-100" to={storefrontPaths.checkout} aria-label="Basket, 0 items. Cycle 1 placeholder.">
+          <button className="inline-flex min-h-11 items-center gap-2 rounded-control px-3 text-sm font-semibold text-brand-950 hover:bg-brand-100" type="button" onClick={() => setCartOpen(true)} aria-label={`Open basket, ${itemCount} ${itemCount === 1 ? "item" : "items"}`} aria-haspopup="dialog" aria-expanded={cartOpen}>
             <ShoppingBasket className="size-5" aria-hidden="true" />
             <span className="hidden sm:inline">Basket</span>
-            <span className="grid size-6 place-items-center rounded-full bg-brand-950 text-xs text-white">0</span>
-          </Link>
+            <span className="grid min-w-6 place-items-center rounded-full bg-brand-950 px-1.5 text-xs leading-6 text-white" aria-hidden="true">{itemCount}</span>
+          </button>
           <IconButton className="lg:hidden" label="Open navigation menu" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}>
             <Menu className="size-5" aria-hidden="true" />
           </IconButton>
@@ -60,6 +64,7 @@ export function StorefrontHeader() {
           <a className="flex min-h-12 items-center text-lg font-semibold text-brand-950" href="/#contact" onClick={() => setMobileOpen(false)}>Contact</a>
         </nav>
       </Dialog>
+      <CartDialog open={cartOpen} onClose={() => setCartOpen(false)} />
     </header>
   );
 }

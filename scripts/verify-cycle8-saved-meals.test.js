@@ -82,6 +82,7 @@ test("Cycle 8 keeps persistence centralized and Saved Meals tied to the live que
   const card = await read("apps/storefront/src/features/menu/components/MenuProductCard.jsx");
   const detail = await read("apps/storefront/src/features/product-detail/components/ProductDetailDialog.jsx");
   const page = await read("apps/storefront/src/pages/SavedPage.jsx");
+  const layout = await read("apps/storefront/src/components/layout/StorefrontLayout.jsx");
 
   assert.match(storage, /nuede:v2:saved-meals/);
   assert.match(provider, /addEventListener\("storage"/);
@@ -91,18 +92,18 @@ test("Cycle 8 keeps persistence centralized and Saved Meals tied to the live que
   assert.match(card, /FavoriteButton/);
   assert.match(detail, /FavoriteButton/);
   assert.match(page, /useMenu\(\)/);
-  assert.match(page, /useMenuRealtime\(\)/);
+  assert.match(layout, /useMenuRealtime\(\)/);
   assert.match(page, /ProductDetailDialog/);
   assert.match(page, /Clear all saved meals/);
   assert.doesNotMatch(`${card}\n${detail}\n${page}`, /localStorage|\.from\("|supabase/);
   assert.doesNotMatch(storage, /price|nutrition|image|productName/);
 });
 
-test("Cycle 8 does not add customer accounts, cart state, planner state, or a favorites table", async () => {
+test("Cycle 8 remains separate from customer accounts, planner state, and a favorites table", async () => {
   const page = await read("apps/storefront/src/pages/SavedPage.jsx");
   const layout = await read("apps/storefront/src/components/layout/StorefrontLayout.jsx");
   const schema = await read("supabase/migrations/20260831000100_create_database_foundation.sql");
   assert.match(layout, /SavedMealsProvider/);
-  assert.doesNotMatch(`${page}\n${layout}`, /customerAuth|CartProvider|PlannerProvider/);
+  assert.doesNotMatch(`${page}\n${layout}`, /customerAuth|PlannerProvider/);
   assert.doesNotMatch(schema, /create table public\.(favorites|saved_meals)/i);
 });

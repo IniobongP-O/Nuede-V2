@@ -7,10 +7,10 @@ import { Dialog } from "../components/ui/Dialog.jsx";
 import { EmptyState, ErrorState } from "../components/ui/FeedbackStates.jsx";
 import { PageHeader } from "../components/ui/Surface.jsx";
 import { useToast } from "../components/ui/toastContext.js";
+import { useCart } from "../features/cart/context/cartContext.js";
 import { MenuProductCard } from "../features/menu/components/MenuProductCard.jsx";
 import { MenuSkeleton } from "../features/menu/components/MenuSkeleton.jsx";
 import { useMenu } from "../features/menu/hooks/useMenu.js";
-import { useMenuRealtime } from "../features/menu/hooks/useMenuRealtime.js";
 import { ProductDetailDialog } from "../features/product-detail/components/ProductDetailDialog.jsx";
 import { useSavedMeals } from "../features/saved-meals/context/savedMealsContext.js";
 import { selectSavedProducts } from "../features/saved-meals/utils/savedMealsModel.js";
@@ -22,8 +22,8 @@ export function SavedPage() {
   const [clearConfirmationOpen, setClearConfirmationOpen] = useState(false);
   const { savedMealIds, clearSavedMeals } = useSavedMeals();
   const { notify } = useToast();
+  const { addItem } = useCart();
   const menuQuery = useMenu();
-  useMenuRealtime();
 
   const products = menuQuery.data || emptyList;
   const productsById = useMemo(
@@ -45,7 +45,11 @@ export function SavedPage() {
 
   function handleConfigured(configuration) {
     const product = productsById.get(configuration.productId);
-    notify(`${product?.name || "Your meal"} selection is valid and ready.`);
+    const result = addItem(configuration);
+    const message = result.merged
+      ? `${product?.name || "Meal"} quantity updated in your basket`
+      : `${product?.name || "Meal"} added to your basket`;
+    notify(result.persisted ? message : `${message} for this visit, but browser persistence is blocked.`, result.persisted ? "success" : "error");
   }
 
   const clearAction = savedMealIds.length ? (
