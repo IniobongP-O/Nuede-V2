@@ -150,11 +150,7 @@ test("Cycle 5 migration owns bucket policies, group safeguards, atomic helpers, 
   assert.doesNotMatch(migration, /grant (insert|update|delete)[^;]*storage\.objects[^;]*anon/is);
 });
 
-test("Cycle 5 does not begin live storefront catalog integration", async () => {
-  const storefrontFiles = [
-    await read("apps/storefront/src/App.jsx"),
-    await read("apps/storefront/src/pages/MenuPage.jsx"),
-    await read("apps/storefront/src/fixtures/storefrontFixtures.js"),
-  ].join("\n");
-  assert.doesNotMatch(storefrontFiles, /@supabase|createClient|\.from\("products"\)|realtime/i);
+test("Cycle 5 preserves its historical Cycle 6 boundary in project traceability", async () => {
+  const features = await read("docs/FEATURES.md");
+  assert.match(features, /Deliberately not implemented in Cycle 5:[\s\S]*live storefront Supabase catalog queries or Realtime subscriptions \(Cycle 6\)/);
 });

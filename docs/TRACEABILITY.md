@@ -138,3 +138,20 @@ Cycle 6 live storefront queries and Realtime remain `Planned` and were not start
 | C5-016 | Preserve Cycle 6+ boundary | Storefront remains fixture-backed; no customer selector/cart/live query | Explicit scope test passed | Confirmed by source review |
 
 `Tested` above distinguishes executed evidence from tests merely added. Docker-backed migration, pgTAP, RLS/Storage utilities, and the full manual sequence remain pending; therefore Cycle 5 is `Implemented`, not `Verified` or `Accepted`.
+
+## Cycle 6 live storefront menu
+
+| Requirement ID | Required | Implemented | Verification status | Manual acceptance |
+|---|---|---|---|---|
+| C6-001 | `/menu` reads Supabase rather than catalog fixtures | Feature API and TanStack Query hooks replace `demoMeals` on the live route | Focused architecture test, lint, and storefront build passed | Pending live configured environment |
+| C6-002 | Centralized, non-N+1 public data access | Separate category read and one product read embedding enabled category plus variants | Static architecture assertions added | Pending network inspection |
+| C6-003 | Database-driven enabled categories and All concept | Category query ordered by `sort_order`; responsive ID-based category chips | Filter unit coverage added | Pending admin create/rename/reorder/disable exercise |
+| C6-004 | Standard/grouped products, images, prices, and nutrition previews | Stable menu model, Storage URL adapter, grouped card indicator, representative variant preview | Model tests include standard/grouped paths | Pending visual/live data review |
+| C6-005 | Correct public product states | Available, sold-out, price-pending, unavailable presentations; hidden/archive excluded by query and RLS | Group state and query-contract tests added | Pending admin lifecycle exercise |
+| C6-006 | Search and composable filters | Case-insensitive name/description/category search; category/grouped/available/high-protein/complete-nutrition intersection | Pure filter tests added | Pending keyboard/mobile exercise |
+| C6-007 | Loading, error, retry, empty-menu, and no-results states | Skeleton plus shared feedback primitives and reset/retry actions | Source tests, lint, and storefront build passed | Pending induced network/empty-data review |
+| C6-008 | Selective Realtime updates and cleanup | Categories/products/variants channel invalidates query cache; publication migration; focus/interval recovery | Subscription/publication static tests added | Pending two-browser admin/storefront exercise |
+| C6-009 | Responsive and accessible menu | 1/2/3-column grid, horizontal category overflow, wrapping refinements, labelled search, pressed buttons, textual status, alt/fallback images | Lint and storefront build passed | Pending target viewport and keyboard review |
+| C6-010 | Preserve security and future-cycle boundaries | Anon key only; no writes/service role; no cart/customization/favorites/planner implementation | Source and built-bundle secret scans plus boundary tests passed | Pending live RLS inspection |
+
+The High Protein menu refinement uses a transparent presentation threshold of at least 30g protein in the representative catalog nutrition record. Grouped nutrition is a preview from the configured default variant when public, otherwise the first orderable/priced public variant; full aggregate nutrition logic remains deferred to Cycle 8.

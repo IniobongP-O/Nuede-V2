@@ -159,3 +159,25 @@ Deliberately not implemented in Cycle 5:
 - cart, planner, checkout, orders, payments, fulfilment, analytics, or later-cycle workflows.
 
 The implementation is not `Verified` or ready for its checkpoint until Docker-backed migration reset, pgTAP, direct RLS/Storage checks, and the documented manual admin/PostgreSQL/Storage acceptance sequence pass.
+
+## Cycle 6 implementation status
+
+Implemented in Cycle 6:
+
+- live anonymous storefront category and product reads through a feature-scoped Supabase API;
+- TanStack Query caching, retry/refetch behavior, stable query keys, and selective catalog Realtime invalidation;
+- enabled database-driven category controls and an application-only All view;
+- standard and grouped menu models with variant-aware orderability, display prices, image fallback, and honest nutrition completeness;
+- live product cards for available, sold-out, price-pending, and unavailable states while hidden/archived products remain excluded;
+- case-insensitive name, description, and category search composed with category, grouped, available, high-protein, and complete-nutrition filters;
+- deliberate skeleton, query-error/retry, empty-menu, and no-results states;
+- responsive overflow/wrapping/grid behavior plus semantic labels, pressed states, focus support, image alternatives, and non-color status text;
+- focused unit/architecture tests and Cycle 6 traceability.
+
+Deliberately not implemented in Cycle 6:
+
+- product detail, variant choice, add-on choice, or normalized orderable configurations (Cycle 7);
+- shared nutrition calculations, favorites, or Saved Meals (Cycle 8);
+- cart, planner, checkout, orders, payments, admin orders, analytics, or later-cycle workflows.
+
+Cycle 6 automated verification and any environment-limited manual status are recorded in `TRACEABILITY.md`; implementation does not imply unperformed live Supabase or viewport checks.

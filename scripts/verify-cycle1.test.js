@@ -43,11 +43,9 @@ test("applications do not import one another", async () => {
   }
 });
 
-test("application source stays within the currently approved integration boundaries", async () => {
+test("application source stays outside unapproved future integration boundaries", async () => {
   const storefrontFiles = (await walk("apps/storefront/src")).filter((file) => /\.jsx?$/.test(file));
   const storefrontForbiddenPatterns = [
-    /from\s+["']@supabase\//,
-    /supabase\.from\s*\(/,
     /\blocalStorage\b/,
     /from\s+["']firebase/,
     /PaystackPop|window\.Paystack|initializeTransaction/,

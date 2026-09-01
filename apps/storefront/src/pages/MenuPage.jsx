@@ -1,44 +1,83 @@
-import { Search } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Container } from "../components/layout/Container.jsx";
 import { Button } from "../components/ui/Button.jsx";
-import { Dialog } from "../components/ui/Dialog.jsx";
-import { TextInput } from "../components/ui/FormControls.jsx";
-import { Badge, Card, PageHeader } from "../components/ui/Surface.jsx";
-import { useToast } from "../components/ui/toastContext.js";
-import { demoMeals } from "../fixtures/storefrontFixtures.js";
+import { EmptyState, ErrorState } from "../components/ui/FeedbackStates.jsx";
+import { PageHeader } from "../components/ui/Surface.jsx";
+import { MenuControls } from "../features/menu/components/MenuControls.jsx";
+import { MenuProductCard } from "../features/menu/components/MenuProductCard.jsx";
+import { MenuSkeleton } from "../features/menu/components/MenuSkeleton.jsx";
+import { useCategories, useMenu } from "../features/menu/hooks/useMenu.js";
+import { useMenuRealtime } from "../features/menu/hooks/useMenuRealtime.js";
+import { filterMenuProducts } from "../features/menu/utils/menuModel.js";
 
-const filters = ["All meals", "Main meals", "Sides", "High protein", "Complete macros", "Available now"];
+const emptyList = Object.freeze([]);
 
 export function MenuPage() {
-  const [selectedMeal, setSelectedMeal] = useState(null);
-  const { notify } = useToast();
+  const [search, setSearch] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("all");
+  const [filters, setFilters] = useState([]);
+  const categoriesQuery = useCategories();
+  const menuQuery = useMenu();
+  useMenuRealtime();
+
+  const categories = categoriesQuery.data || emptyList;
+  const products = menuQuery.data || emptyList;
+  const categoryId = selectedCategoryId === "all" || categories.some((category) => category.id === selectedCategoryId)
+    ? selectedCategoryId
+    : "all";
+  const visibleProducts = useMemo(
+    () => filterMenuProducts(products, { search, categoryId, filters }),
+    [products, search, categoryId, filters],
+  );
+  const isLoading = categoriesQuery.isPending || menuQuery.isPending;
+  const hasError = categoriesQuery.isError || menuQuery.isError;
+
+  const resetFilters = () => {
+    setSearch("");
+    setSelectedCategoryId("all");
+    setFilters([]);
+  };
+  const toggleFilter = (filterId) => {
+    setFilters((current) => current.includes(filterId)
+      ? current.filter((item) => item !== filterId)
+      : [...current, filterId]);
+  };
+  const retry = () => Promise.all([categoriesQuery.refetch(), menuQuery.refetch()]);
 
   return (
-    <Container className="py-12 sm:py-16 lg:py-20">
-      <PageHeader eyebrow="Our menu" title="Prepared meals, not endless choices." description="This static shell establishes the future search, filter, product-card, availability, modal, and notification patterns." />
-      <div className="mt-8 max-w-3xl"><TextInput label="Search the menu" type="search" placeholder="Search meals, ingredients, or tags" help="Demo input only—results do not change in Cycle 1." /></div>
-      <div className="mt-5 flex flex-wrap gap-2" aria-label="Demonstration filter states">{filters.map((filter, index) => <button key={filter} type="button" aria-pressed={index === 0} className={`min-h-10 rounded-full border px-4 text-sm font-semibold ${index === 0 ? "border-brand-950 bg-brand-950 text-white" : "border-line bg-surface text-brand-950 hover:border-muted"}`}>{filter}</button>)}</div>
-      <p className="mt-4 inline-flex items-center gap-2 text-sm text-muted"><Search className="size-4" />Static controls preview layout only; no filtering is performed.</p>
+    <Container className="py-10 sm:py-14 lg:py-18">
+      <PageHeader eyebrow="Our menu" title="Prepared meals, made for real life." description="Explore Nuede meals, current availability, pricing, and nutrition directly from our live kitchen menu." />
 
-      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {demoMeals.map((meal) => (
-          <Card key={meal.id} className="flex overflow-hidden flex-col">
-            <div className={`aspect-[4/3] bg-gradient-to-br ${meal.tone}`} role="img" aria-label={`Decorative demo image placeholder for ${meal.name}`} />
-            <div className="flex flex-1 flex-col p-5">
-              <div className="flex items-center justify-between gap-3"><p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">{meal.category}</p>{meal.available ? <Badge tone="success">Available</Badge> : <Badge tone="warning">Sold out demo</Badge>}</div>
-              <h2 className="mt-3 font-display text-2xl text-brand-950">{meal.name}</h2><p className="mt-2 flex-1 text-sm leading-6 text-muted">{meal.description}</p><p className="mt-4 border-y border-line py-3 text-xs text-muted">{meal.nutrition}</p>
-              <div className="mt-4 flex items-center justify-between gap-4"><span className="font-semibold text-brand-950">{meal.price}</span><Button variant="ghost" size="small" onClick={() => setSelectedMeal(meal)}>Preview details</Button></div>
+      {isLoading ? <MenuSkeleton /> : null}
+      {!isLoading && hasError ? (
+        <ErrorState className="mt-8" title="We couldn't load the menu" message="Please check your connection and try again. The kitchen menu has not been replaced with placeholder meals." action={<Button onClick={retry}>Try again</Button>} />
+      ) : null}
+      {!isLoading && !hasError ? (
+        <>
+          <MenuControls
+            categories={categories}
+            search={search}
+            onSearchChange={setSearch}
+            categoryId={categoryId}
+            onCategoryChange={setSelectedCategoryId}
+            filters={filters}
+            onFilterToggle={toggleFilter}
+            resultCount={visibleProducts.length}
+            onReset={resetFilters}
+          />
+
+          {!products.length ? (
+            <EmptyState className="mt-8" title="The menu is being prepared" message="There are no customer-visible meals right now. Please check back soon." />
+          ) : visibleProducts.length ? (
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3">
+              {visibleProducts.map((product) => <MenuProductCard key={product.id} product={product} />)}
             </div>
-          </Card>
-        ))}
-      </div>
-
-      <Dialog open={Boolean(selectedMeal)} onClose={() => setSelectedMeal(null)} title={selectedMeal?.name || "Demo meal"} description="Accessible modal foundation—no customization or cart behavior is implemented." footer={<><Button variant="ghost" onClick={() => setSelectedMeal(null)}>Close</Button><Button onClick={() => notify("Demo notification only — no meal was added or saved.")}>Preview notification</Button></>}>
-        <div className={`aspect-[2/1] rounded-card bg-gradient-to-br ${selectedMeal?.tone || "from-brand-100 to-white"}`} aria-hidden="true" />
-        <div className="mt-5 grid gap-4 sm:grid-cols-3"><div><p className="text-xs text-muted">Price fixture</p><p className="mt-1 font-semibold text-brand-950">{selectedMeal?.price}</p></div><div><p className="text-xs text-muted">Nutrition fixture</p><p className="mt-1 font-semibold text-brand-950">{selectedMeal?.nutrition}</p></div><div><p className="text-xs text-muted">Availability</p><p className="mt-1 font-semibold text-brand-950">Demo only</p></div></div>
-      </Dialog>
+          ) : (
+            <EmptyState className="mt-8" title="No meals match" message="Try a different search, category, or filter combination." action={<Button variant="secondary" onClick={resetFilters}>Show all meals</Button>} />
+          )}
+        </>
+      ) : null}
     </Container>
   );
 }

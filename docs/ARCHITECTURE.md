@@ -112,6 +112,14 @@ Grouped parents remain unpriced families. Variants own their stable UUID, price,
 
 The admin menu now manages standard meals, grouped parents, variants, and reusable add-ons. It does not query from the storefront, provide customer variant/add-on selection, or implement any Cycle 6+ behavior.
 
+## Cycle 6 live storefront menu
+
+The storefront `/menu` route consumes the catalog through `apps/storefront/src/features/menu`. Raw Supabase operations are confined to `api/menuApi.js`; visual components consume normalized products through TanStack Query hooks. The public product query uses the existing anonymous RLS boundary, an enabled-category inner relationship, and a single embedded variant relationship to avoid N+1 reads. Hidden and archived states are excluded both by RLS and by the explicit public query contract.
+
+`menuModel.js` is the shared menu-level selector for standard/grouped state, variant-derived orderability, display pricing, representative nutrition, and composed search/filter behavior. Grouped products remain variant-aware without exposing Cycle 7 selection or customization behavior. Storage paths are converted to public `product-images` URLs in the API layer; card components own only loading and fallback presentation.
+
+The storefront query client caches categories and products under stable `storefront-menu` keys. One lifecycle-owned channel listens only to `categories`, `products`, and `product_variants`, then invalidates the affected query keys. A 60-second active-page refetch and window-focus refetch provide recovery when a connection or row-visibility transition prevents a Realtime event from reaching the anonymous client. The Cycle 6 migration adds only these tables to `supabase_realtime`; existing grants and RLS remain unchanged.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.
