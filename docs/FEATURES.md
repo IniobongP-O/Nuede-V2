@@ -339,7 +339,7 @@ Implemented in Cycle 14:
 - a verified post-payment WhatsApp handoff that does not depend on manual WhatsApp checkout enablement;
 - deterministic Node coverage plus pgTAP coverage for privileges, atomic creation, success, duplicates, fulfilment separation, and amount mismatch.
 
-Not implemented: admin order management (Cycle 15), analytics/revenue UI (Cycle 16), later content or launch work, refunds, or fulfilment transitions.
+At the Cycle 14 checkpoint, admin order management (Cycle 15) and analytics/revenue UI (Cycle 16) were not implemented. Later content or launch work and refunds remain outside the current scope.
 
 ## Cycle 15 implementation status
 
@@ -356,4 +356,20 @@ Implemented in Cycle 15:
 - database-authoritative active-admin authorization, row lock, transition validation, minimal update payload, and existing `admin_audit_log` integration;
 - query invalidation, 30-second operational freshness, duplicate-action prevention, success/error feedback, and stale-transition recovery.
 
-Cycle 15 does not re-price orders, query current catalog rows for historical truth, expose private orders publicly, allow manual payment reconciliation, create refunds, or implement Cycle 16 analytics.
+Cycle 15 does not re-price orders, query current catalog rows for historical truth, expose private orders publicly, allow manual payment reconciliation, or create refunds. Cycle 16 builds its reporting layer over those accepted records.
+
+## Cycle 16 implementation status
+
+Implemented in Cycle 16:
+
+- a private, canonical one-row-per-order eligible-sale relation requiring an order-level paid state and exact verified Paystack payment evidence;
+- PostgreSQL aggregate views for daily, product, variant, add-on, delivery-zone, and payment-method sales;
+- one active-admin-only date-range RPC returning a reconciliable summary and all report breakdowns without customer PII;
+- Revenue, Paid Orders, Average Order Value, and Items Sold from authoritative integer-kobo and quantity data;
+- Africa/Lagos business-date bucketing based on the trusted payment `verified_at` timestamp, with inclusive date inputs and an exclusive following-midnight boundary;
+- Today, 7-day, 30-day, 90-day, and validated custom range controls;
+- real dashboard KPI cards plus responsive Recharts revenue/order trends, payment mix, zone performance, and semantic ranking tables;
+- distinct loading, zero-activity, query-error, and retry states;
+- deterministic frontend/source checks and pgTAP reconciliation, boundary, historical snapshot, duplicate-payment, and authorization fixtures.
+
+Only Paystack currently has a trusted paid transition and persisted successful-payment timestamp. WhatsApp orders therefore remain excluded from paid revenue until a separate authorized manual-payment workflow exists; fulfilment progress never implies payment. Product and variant revenue is base-line revenue (`unit_base_price_kobo × quantity`), add-ons are separate (`purchased unit_price_kobo × parent item quantity`), and delivery fees remain visible in the zone breakdown. Their components reconcile to order subtotal/total without reading current catalog prices.

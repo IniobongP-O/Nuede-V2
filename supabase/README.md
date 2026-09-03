@@ -41,4 +41,9 @@ atomically stores an order and pending Paystack attempt before hosted-checkout
 initialization; the latter two share amount/currency-checked, idempotent, atomic
 payment reconciliation. Webhooks authenticate the raw body before mutation.
 
+Cycle 16 adds `20260903000500_add_first_party_sales_analytics.sql`. It derives one
+eligible sale per exact verified Paystack order, aggregates purchase-time snapshots
+in private PostgreSQL views, and exposes one range-filtered, active-admin-only RPC.
+The RPC returns counts and integer-kobo totals without customer PII or raw payments.
+
 Backend code must never be imported into a Vite application.

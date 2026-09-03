@@ -191,6 +191,20 @@ selection-only checkout -> shared authoritative engine -> atomic order + payment
 
 The result page fetches through one feature API/hook, performs at most six automatic refreshes, and renders confirming, successful, pending, and failed states. Only a verified database result can render success or provide the post-payment WhatsApp message. That message is independent of whether manual WhatsApp checkout remains enabled.
 
+## Cycle 16 first-party sales analytics
+
+Cycle 16 keeps business aggregation in PostgreSQL. `private.analytics_eligible_sales` is the canonical one-row-per-order relation: a Paystack order must be `paid` and have at least one exact-amount, NGN, `paid` plus `verified` payment record. A lateral `min(verified_at)` selection makes the payment date deterministic and prevents multiple attempts or webhook/reconciliation history from multiplying the order.
+
+The private `daily_sales`, `product_sales`, `variant_sales`, `addon_sales`, `delivery_zone_sales`, and `payment_method_sales` views preserve purchase-time snapshot grain. `public.get_admin_sales_analytics(date,date)` is the sole browser query boundary. It checks `private.is_active_admin()`, applies one inclusive business-date range to every aggregate, fills missing days with zero buckets, and returns exact money fields as integer-kobo text. No PII or raw order/payment rows are returned.
+
+```text
+verified payment + paid order -> one eligible sale -> private snapshot aggregates
+-> active-admin range RPC -> one TanStack Query payload
+-> exact KPI text + responsive Recharts/table views
+```
+
+The business reporting timezone is `Africa/Lagos`; persistence stays `timestamptz`/UTC. Revenue recognition and daily buckets use the trusted `payments.verified_at` instant converted to the Lagos date. The dashboard and Analytics page share the same query key and five-minute cache policy. The browser only converts aggregate values to numbers for chart geometry; exact displayed amounts continue through the shared integer-kobo formatter.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.

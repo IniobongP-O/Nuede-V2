@@ -164,6 +164,22 @@ npm run build:admin
 
 With Docker/local Supabase available, run `npm run db:reset` and `npm run db:test`, then serve all three functions and exercise Paystack test mode. Confirm success, failure/abandonment, duplicate webhook, invalid signature, wrong amount, disabled-before-init, disabled-after-init, fake redirect, unknown reference, provider outage, normal cart, and meal-plan paths. Never use production keys or real money for development acceptance.
 
+## Cycle 16 analytics development
+
+Run deterministic analytics coverage and both application regression builds with:
+
+```sh
+node --test scripts/verify-cycle16-sales-analytics.test.js
+npm run lint
+npm test
+npm run build:admin
+npm run build:storefront
+```
+
+With Docker/local Supabase available, `npm run db:reset` and `npm run db:test` apply the analytics migration and execute the 39-assertion `010_cycle16_sales_analytics.test.sql`. Its known dataset reconciles ₦30,000 revenue, two paid orders, ₦15,000 AOV, and five items while excluding a pending ₦50,000 order, a failed order, an unpaid WhatsApp order, and an out-of-range sale. It also covers a duplicate successful payment row, Lagos date boundary, meal-plan variant, purchased add-on, two historical zones, payment share, current-price change, zero-data range, and active/unauthorized access.
+
+Manual acceptance requires a configured admin Supabase session and data. Compare the selected Analytics range against paid orders and verified payment timestamps in Orders; exercise Today, 7 days, 30 days, 90 days, valid/invalid custom dates, and a zero-sales range on mobile and desktop. Do not treat a missing local database runtime as a passing database test.
+
 ## Development-cycle workflow
 
 Every cycle follows:

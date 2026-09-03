@@ -1,10 +1,37 @@
+import { RefreshCw } from "lucide-react";
+
 import { AdminPageHeader } from "../components/layout/AdminPageHeader.jsx";
-import { ErrorState } from "../components/ui/FeedbackStates.jsx";
-import { MetricCard, Panel } from "../components/ui/AdminPrimitives.jsx";
 import { Button } from "../components/ui/Button.jsx";
-import { SelectInput } from "../components/ui/FormControls.jsx";
-import { demoChartPoints, demoMetrics } from "../fixtures/adminFixtures.js";
+import { EmptyState, ErrorState } from "../components/ui/FeedbackStates.jsx";
+import { AnalyticsRangeControls } from "../features/analytics/components/AnalyticsRangeControls.jsx";
+import { AnalyticsSummaryCards } from "../features/analytics/components/AnalyticsSummaryCards.jsx";
+import { SalesRankingTable } from "../features/analytics/components/AnalyticsTables.jsx";
+import { DeliveryZoneChart, PaymentMixChart } from "../features/analytics/components/BreakdownCharts.jsx";
+import { SalesTrendChart } from "../features/analytics/components/SalesTrendChart.jsx";
+import { useSalesAnalytics } from "../features/analytics/hooks/useAnalytics.js";
+import { useAnalyticsRange } from "../features/analytics/hooks/useAnalyticsRange.js";
+import { analyticsErrorMessage, analyticsRangeLabel } from "../features/analytics/utils/analyticsUtils.js";
 
 export function AnalyticsPage() {
-  return <><AdminPageHeader eyebrow="Reporting foundation" title="Analytics" description="Cards, range controls, chart containers, and recovery states only. Production analytics is Cycle 16." actions={<div className="w-44"><SelectInput label="Date range" defaultValue="30"><option value="7">7 days · demo</option><option value="30">30 days · demo</option><option value="90">90 days · demo</option></SelectInput></div>} /><div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{demoMetrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}</div><div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_0.6fr]"><Panel className="p-5 sm:p-6"><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Revenue chart</p><h2 className="mt-2 text-xl font-semibold text-brand-950">Static reporting canvas</h2><div className="mt-8 flex h-64 items-end gap-2 border-b border-l border-line p-3">{demoChartPoints.map((point, index) => <div key={`${index}-${point}`} className="flex-1 rounded-t bg-brand-700" style={{ height: `${point}%`, opacity: 0.35 + index * 0.05 }} />)}</div><p className="mt-3 text-xs text-muted">No data aggregation or Recharts dependency exists.</p></Panel><ErrorState title="Recovery pattern" message="A real analytics failure will explain what is unavailable and provide a safe retry." action={<Button variant="secondary" disabled>Retry example</Button>} /></div></>;
+  const rangeController = useAnalyticsRange("30d");
+  const query = useSalesAnalytics(rangeController.range);
+  const data = query.data;
+  const hasSales = Number(data?.summary?.paid_orders || 0) > 0;
+
+  return <>
+    <AdminPageHeader eyebrow="First-party reporting" title="Sales analytics" description="Verified paid sales from permanent order, payment, and purchase-time snapshot records." />
+    <div className="mt-6"><AnalyticsRangeControls controller={rangeController} /></div>
+    <p className="mt-3 text-xs text-muted">All dates use Africa/Lagos business days. Active range: {analyticsRangeLabel(rangeController.range)}.</p>
+    <div className="mt-6"><AnalyticsSummaryCards data={data} range={rangeController.range} loading={query.isPending} /></div>
+
+    {query.isError ? <div className="mt-6"><ErrorState title="Unable to load sales analytics" message={analyticsErrorMessage(query.error)} action={<Button variant="secondary" onClick={() => query.refetch()}><RefreshCw className="size-4" aria-hidden="true" />Retry analytics</Button>} /></div> : null}
+    {!query.isPending && !query.isError && !hasSales ? <div className="mt-6"><EmptyState title="No verified paid sales in this period" message="The zero values are real. Pending, failed, unpaid, refunded, and unverified orders do not contribute." /></div> : null}
+
+    {!query.isPending && !query.isError && hasSales ? <>
+      <div className="mt-6 grid gap-6 xl:grid-cols-2"><SalesTrendChart dailySales={data.daily_sales} metric="revenue" /><SalesTrendChart dailySales={data.daily_sales} metric="orders" /></div>
+      <div className="mt-6 grid gap-6 xl:grid-cols-2"><PaymentMixChart rows={data.payment_method_sales} /><DeliveryZoneChart rows={data.delivery_zone_sales} /></div>
+      <div className="mt-6 grid gap-6 xl:grid-cols-2"><SalesRankingTable title="Top products" description="Ranked by base-product revenue; add-ons and delivery fees are reported separately." rows={data.product_sales} nameKey="product_name" rank /><SalesRankingTable title="Variant sales" description="Purchased variant snapshots grouped beneath their historical product labels." rows={data.variant_sales} nameKey="variant_name" secondaryNameKey="product_name" /></div>
+      <div className="mt-6"><SalesRankingTable title="Add-on sales" description="Purchased add-on prices multiplied by the parent item quantity." rows={data.addon_sales} nameKey="addon_name" /></div>
+    </> : null}
+  </>;
 }

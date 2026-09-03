@@ -142,6 +142,16 @@ The Cycle 4 audit trigger records active-admin product creation, general edits, 
 
 Permanent product deletion remains outside the Cycle 4 field-guide scope. The database relationship behavior is preserved, and archive/restore is the implemented lifecycle path.
 
+## Cycle 16 sales analytics
+
+`20260903000500_add_first_party_sales_analytics.sql` adds one partial payment index, seven private views, and one guarded public RPC. `private.analytics_eligible_sales` recognizes exactly one sale per paid Paystack order when a matching payment is `paid`, `verified`, has a non-null `verified_at`, matches the order total in both expected and provider amount, and records NGN. Refunded orders and payments, failed/pending/unpaid/unverified attempts, amount/currency mismatches, and all current WhatsApp orders are excluded. Fulfilment status is irrelevant to revenue; cancellation is not treated as a refund.
+
+Revenue is `sum(orders.total_kobo)`. Paid Orders is the count of eligible order rows. Average Order Value is integer-kobo `round(revenue / paid_orders)` with zero for an empty population. Items Sold is the sum of `order_items.quantity`, excluding add-ons. Payment evidence is reduced to `min(verified_at)` per order before aggregation, so multiple attempts or successful rows cannot duplicate an order.
+
+Views aggregate by the `Africa/Lagos` date of `payments.verified_at`. RPC inputs are inclusive local dates; their timestamp interpretation is `[p_from 00:00 Africa/Lagos, (p_to + 1) 00:00 Africa/Lagos)`. `daily_sales` contains observed dates while the RPC uses `generate_series` to return safe zero buckets. Product/variant base revenue uses `order_items.unit_base_price_kobo × quantity`; add-on revenue uses `order_item_addons.unit_price_kobo × parent item quantity`; delivery-zone and payment-method totals use the eligible order total. Names and IDs come from purchase-time order snapshots and optional stable foreign keys, never present-day menu prices.
+
+All views remain in the non-exposed `private` schema with privileges revoked. Only `authenticated` can reach `get_admin_sales_analytics`, and the `SECURITY DEFINER` function independently requires `private.is_active_admin()`. The payload exposes aggregate labels, IDs, counts, and money only—never customer identity, contact details, addresses, provider references, or raw payment rows.
+
 ## Cycle 5 catalog completion
 
 `20260901000100_complete_catalog_images_variants_addons.sql` configures the public `product-images` bucket with a five-megabyte limit and JPEG, PNG, WebP, and AVIF MIME allowlist. Product and variant rows store bucket-relative object paths. New admin uploads use `products/<product UUID>/<object UUID>.webp` or `variants/<variant UUID>/<object UUID>.webp`.

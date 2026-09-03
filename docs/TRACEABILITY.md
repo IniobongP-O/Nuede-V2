@@ -328,3 +328,24 @@ Cycle 14 post-implementation verification passed the focused 18-test Paystack su
 | C15-013 | Preserve Cycle 16+ boundary | No revenue metrics, charts, aggregates, or analytics work | Source and changed-file review |
 
 Cycle 15 post-implementation verification passed the focused 8-test order-management suite, the complete 141-test Node suite, repository lint, both production builds, and `git diff --check`. `npx supabase status` reported `docker: command not found (podman also not found)`, so migration replay, the 25-assertion Cycle 15 pgTAP file, database/RLS execution, crafted live transitions, and authenticated multi-admin/manual flows were not run. The deterministic tests validate transition parity and source boundaries; they do not substitute for applying the migration and exercising active, inactive, anonymous, and concurrent-admin personas against PostgreSQL.
+
+## Cycle 16 first-party sales analytics
+
+| Requirement ID | Required | Implemented | Tested |
+|---|---|---|---|
+| C16-001 | Revenue from verified paid orders only | `private.analytics_eligible_sales` requires paid order state plus exact verified Paystack amount/currency evidence | Source assertions passed; 39-assertion pgTAP fixture added, runtime pending |
+| C16-002 | Duplicate-payment protection | Lateral earliest-verification reduction produces one canonical row per order before every aggregate | Source assertion passed; duplicate-paid-row fixture added, runtime pending |
+| C16-003 | KPI reconciliation | Revenue, distinct paid orders, rounded integer-kobo AOV, and top-level item quantity from one range population | Formatting/source tests passed; ₦30,000 / 2 / ₦15,000 / 5 pgTAP reconciliation added |
+| C16-004 | Daily revenue/orders | Private `daily_sales` plus RPC zero buckets support both Recharts trends | Source/UI/build tests passed; Lagos boundary fixture pending database runtime |
+| C16-005 | Product and ranking | Historical product label/ID, quantity, base-line revenue, revenue and quantity ranks | Source/UI tests passed; historical current-price-change fixture added |
+| C16-006 | Variant sales | Historical parent/variant labels and stable IDs where persisted, quantity, base revenue | Source/UI tests passed; grouped meal-plan fixture added |
+| C16-007 | Add-on sales | Purchased add-on label/ID, parent item quantity, purchased-price revenue | Source/UI tests passed; exact quantity/revenue fixture added |
+| C16-008 | Delivery zones and payment methods | Historical zone order/revenue/fee totals and canonical method revenue/share | Source/UI tests passed; multi-zone/payment aggregate fixtures added |
+| C16-009 | Date ranges and timezone | Today/7/30/90/custom; inclusive Lagos dates based on trusted `verified_at` | Preset/custom unit tests passed; database boundary/reversed-range tests pending runtime |
+| C16-010 | Dashboard and Analytics UX | Real KPIs, responsive Recharts, semantic tables, loading/empty/error/retry states | Static UI tests, lint, and admin production build passed |
+| C16-011 | Admin-only privacy boundary | One active-admin RPC; private views revoked; aggregate payload contains no customer/payment PII | Security source tests passed; anonymous/active-admin pgTAP checks pending runtime |
+| C16-012 | Preserve commerce and later-cycle scope | Read-only analytics API, shared formatter, no storefront/payment/fulfilment writes, no Cycle 17/18 work | Full 150-test suite, Cycle 14/15 focused regressions, both builds, and changed-file audit passed |
+
+Cycle 16 post-implementation verification passed the focused 9-test analytics suite, the complete 150-test Node suite, repository lint, the 18-test Cycle 14 payment suite, the 8-test Cycle 15 order-management suite, both production builds, and `git diff --check`. The builds required a sandbox-relaxed rerun after esbuild was denied parent-directory access; both reruns passed with only the existing large-chunk advisory.
+
+`npx supabase status` was attempted and reported `docker: command not found (podman also not found)`. Migration replay, the 39-assertion Cycle 16 pgTAP file, live RLS/RPC execution, SQL reconciliation against PostgreSQL, and authenticated browser acceptance were therefore not run and are not claimed as passed. Deterministic tests validate the formulas, query boundaries, date presets, UI states, and source architecture; they do not substitute for applying the migration.

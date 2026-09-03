@@ -115,3 +115,11 @@ Failures log only an error code and validation stage. Customer PII, request bodi
 Anonymous callers have no execution privilege on either admin-orders RPC. Authenticated callers can reach the RPC entrypoints, but both independently require a current active `owner`, `admin`, or `editor` record, matching the existing undifferentiated role model. Direct authenticated `UPDATE` remains denied on both `orders` and `payments`.
 
 The fulfilment RPC locks and validates current state in PostgreSQL, obtains its audit actor from `auth.uid()`, and updates only `fulfilment_status`. A crafted browser request cannot skip workflow steps, reverse terminal states, forge the acting administrator, or overwrite payment state, provider references, totals, and purchase snapshots. Cancelling a paid order does not claim or initiate a refund.
+
+## Cycle 16 analytics boundary
+
+Analytics is read-only and private. Anonymous callers have no execute privilege on `get_admin_sales_analytics(date,date)`. Authenticated callers can reach the function only so it can perform the same current active-admin check used elsewhere; inactive, missing, and unrecognized identities receive `ADMIN_ACCESS_REQUIRED`. Private aggregate views have no browser grants, and the security-definer RPC pins an empty search path.
+
+The browser receives one aggregated payload with stable catalog/delivery IDs where retained, historical labels, counts, and integer-kobo totals. It receives no customer names, phones, emails, addresses, order references, provider references, transaction IDs, or raw payment history. No analytics component performs inserts, updates, deletes, payment verification, fulfilment changes, or source-data correction. The Vite bundle contains no service-role or Paystack secret.
+
+Eligibility requires trusted Cycle 14 Paystack evidence rather than an order creation, redirect, fulfilment state, or payment-method label. Multiple qualifying payment records are reduced to the earliest verification timestamp at order grain. The canonical relation excludes refunded state and cannot turn a cancellation into a refund. Because no trusted manual-paid workflow exists yet, WhatsApp orders remain excluded even if they have progressed operationally.
