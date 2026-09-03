@@ -8,6 +8,8 @@ function providerError(message, cause) {
 }
 
 async function paystackRequest(path, { secretKey, fetchImpl = fetch, method = "GET", body, timeoutMs = 12_000 } = {}) {
+  // The secret is accepted only by this Edge-runtime module and is never part of
+  // the Vite contract. A timeout bounds ambiguous provider/network failures.
   if (!secretKey) throw new OrderError("PAYSTACK_CONFIGURATION_ERROR", "Paystack is temporarily unavailable.", { status: 503, stage: "paystack_configuration" });
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -54,6 +56,8 @@ export async function initializePaystackTransaction({ email, amountKobo, referen
   const baseUrl = normalizeStorefrontUrl(storefrontUrl);
   const callbackUrl = new URL("payment", baseUrl);
   const cancelUrl = new URL("checkout", baseUrl);
+  // Paystack receives the server-calculated integer-kobo amount and permanent
+  // order reference. Neither value is copied from a browser subtotal.
   const payload = await paystackRequest("/transaction/initialize", {
     ...dependencies,
     method: "POST",
@@ -68,6 +72,8 @@ export async function initializePaystackTransaction({ email, amountKobo, referen
   });
   const parsed = paystackInitializeResponseSchema.safeParse(payload);
   if (!parsed.success || parsed.data.data.reference !== reference) throw providerError("Paystack returned an invalid transaction response.");
+  // Only Paystack's HTTPS hosted checkout is returned to the browser; validating
+  // the host prevents a malformed provider response becoming an open redirect.
   const authorizationUrl = new URL(parsed.data.data.authorization_url);
   if (authorizationUrl.protocol !== "https:" || authorizationUrl.hostname !== "checkout.paystack.com") {
     throw providerError("Paystack returned an invalid checkout address.");

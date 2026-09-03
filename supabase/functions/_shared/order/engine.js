@@ -8,6 +8,9 @@ import { buildOrderSnapshot } from "./snapshots.js";
 export async function createAuthoritativeOrder(candidate, client, dependencies = {}) {
   const loadContext = dependencies.loadContext || loadOrderContext;
   const persist = dependencies.persist || persistOrderAtomically;
+  // Keep the trust boundary linear: accept only the selection contract, reload
+  // every mutable commercial value, validate relationships, calculate, snapshot,
+  // and finally persist. Reordering these stages can make browser data authoritative.
   const request = parseCheckoutRequest(candidate);
   const sourceItems = flattenOrderItems(request);
   const context = await loadContext(client, request, sourceItems);

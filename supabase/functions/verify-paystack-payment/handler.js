@@ -18,6 +18,7 @@ export async function verifyKnownPaystackPayment(reference, client, {
   let payment = await loadPayment(client, reference);
   if (!payment) throw new OrderError("PAYMENT_NOT_FOUND", "We could not find that payment.", { status: 404, stage: "payment_lookup" });
   const current = normalizePaymentResult(payment, { whatsappRecipient });
+  // Terminal local states are authoritative and need no provider round trip.
   if (["paid", "failed"].includes(current.status)) return current;
 
   try {
@@ -28,6 +29,8 @@ export async function verifyKnownPaystackPayment(reference, client, {
     return normalizePaymentResult(payment, { whatsappRecipient });
   } catch (error) {
     if (error instanceof OrderError && error.code === "PAYSTACK_PROVIDER_ERROR") {
+      // Provider unavailability is not payment failure. Keep the attempt pending
+      // and let polling, a later verification, or the webhook resolve it.
       return normalizePaymentResult(payment, { statusOverride: "confirming", whatsappRecipient });
     }
     throw error;

@@ -20,6 +20,9 @@ export function persistenceItems(items) {
 }
 
 export async function persistOrderAtomically(client, snapshot) {
+  // The RPC is persistence-only: all pricing decisions were made from current
+  // database rows above. One transaction prevents an order header surviving
+  // without every item and add-on snapshot.
   const { data, error } = await client.rpc("create_order_atomic", {
     p_order: snapshot.order,
     p_items: persistenceItems(snapshot.items),

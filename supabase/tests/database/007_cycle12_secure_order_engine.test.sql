@@ -80,6 +80,8 @@ update public.product_addons
 set name = 'Extra Chicken Updated', price_kobo = 250000
 where id = '40000000-0000-4000-8000-000000000001';
 
+-- Regression guard: order snapshots must remain immutable when live catalog
+-- names and prices change after purchase.
 select is(
   (
     select concat(order_item.product_name, '|', order_item.unit_base_price_kobo, '|', addon.addon_name, '|', addon.unit_price_kobo)
@@ -129,6 +131,8 @@ select is(
   'sequence-backed order references are unique across multiple creations'
 );
 
+-- A failing child insert must roll back the header and every earlier child so an
+-- incomplete order can never enter fulfilment.
 select throws_ok(
   $$
     select public.create_order_atomic(

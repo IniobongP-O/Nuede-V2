@@ -14,6 +14,8 @@ select ok(not has_function_privilege('authenticated', 'public.reconcile_paystack
 select ok(has_function_privilege('service_role', 'public.reconcile_paystack_payment_atomic(text,text,bigint,text,text,timestamp with time zone)', 'EXECUTE'), 'service role can reconcile payments');
 
 update public.checkout_settings set paystack_enabled = false, whatsapp_enabled = true where id;
+-- Closing the race between an earlier settings read and persistence prevents a
+-- newly disabled method from creating a pending payment attempt.
 select throws_ok(
   $$select public.create_paystack_order_atomic('{"payment_method":"paystack"}'::jsonb, '[]'::jsonb, 'NUE-disabled-at-rpc')$$,
   'P0001',
@@ -70,6 +72,8 @@ select is((select payment_status from public.orders where id = (select (result -
 select is((select status from public.payments where provider_reference = 'NUE-cycle14-success'), 'pending', 'new Paystack payment attempt is pending');
 select is((select amount_kobo from public.payments where provider_reference = 'NUE-cycle14-success'), 2000000::bigint, 'payment stores authoritative order total');
 
+-- The same provider success may arrive more than once; reconciliation must remain
+-- idempotent and retain the single verified payment.
 select public.reconcile_paystack_payment_atomic('NUE-cycle14-success', 'success', 2000000, 'NGN', '4099260516', now());
 select is((select status from public.payments where provider_reference = 'NUE-cycle14-success'), 'paid', 'matching success marks payment paid');
 select is((select verification_status from public.payments where provider_reference = 'NUE-cycle14-success'), 'verified', 'matching success marks payment verified');
@@ -82,6 +86,8 @@ select is((select status from public.payments where provider_reference = 'NUE-cy
 
 update public.payments set status = 'pending', verification_status = 'unverified', verified_at = null, provider_transaction_id = null where provider_reference = 'NUE-cycle14-success';
 update public.orders set payment_status = 'pending' where id = (select (result ->> 'order_id')::uuid from cycle14_created);
+-- A forged or misapplied success with the wrong amount must fail closed even
+-- though the provider status itself says success.
 select public.reconcile_paystack_payment_atomic('NUE-cycle14-success', 'success', 1999999, 'NGN', '4099260517', now());
 select is((select status from public.payments where provider_reference = 'NUE-cycle14-success'), 'failed', 'wrong amount cannot mark payment paid');
 select is((select failure_code from public.payments where provider_reference = 'NUE-cycle14-success'), 'amount_mismatch', 'wrong amount records integrity failure');

@@ -9,6 +9,9 @@ function persistenceFailure(message, cause) {
 }
 
 export async function persistPaystackOrderAtomically(client, snapshot, reference) {
+  // The order and pending attempt must either both exist or neither exist. This
+  // permanent record is created before contacting hosted checkout so later
+  // webhook/verification events always reconcile against a known amount.
   const { data, error } = await client.rpc("create_paystack_order_atomic", {
     p_order: snapshot.order,
     p_items: persistenceItems(snapshot.items),
@@ -32,6 +35,8 @@ export async function failPaystackInitialization(client, reference, failureCode 
 }
 
 export async function reconcilePaystackPayment(client, transaction) {
+  // Webhooks and browser-triggered verification deliberately share the same
+  // locked RPC, making duplicate or concurrent provider events idempotent.
   const { data, error } = await client.rpc("reconcile_paystack_payment_atomic", {
     p_provider_reference: transaction.reference,
     p_provider_status: transaction.status,
@@ -84,6 +89,8 @@ export function normalizePaymentResult(row, { statusOverride, whatsappRecipient 
   if (!order?.order_reference || amountKobo === null) throw persistenceFailure("The payment status record is invalid.");
   let status = statusOverride;
   if (!status) {
+    // A Paystack success is exposed as paid only when the attempt is verified and
+    // the order agrees. Redirect/query-string state alone can never satisfy this.
     if (row.status === "paid" && row.verification_status === "verified" && order.payment_status === "paid") status = "paid";
     else if (row.status === "failed" || row.verification_status === "failed" || order.payment_status === "failed") status = "failed";
     else status = "pending";

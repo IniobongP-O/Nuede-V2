@@ -14,6 +14,9 @@ export const PLANNER_SLOTS = Object.freeze([
 ]);
 export const PLANNER_SLOT_KEYS = Object.freeze(PLANNER_SLOTS.map(({ key }) => key));
 
+// Plan shape: { durationDays, startDate, days: [{ date, slots }] }. Each named
+// slot is either null or one canonical quantity-1 product configuration.
+
 function pad(value) {
   return String(value).padStart(2, "0");
 }
@@ -28,6 +31,8 @@ export function addCalendarDays(calendarDate, amount) {
     throw new TypeError("A valid calendar date and whole-day offset are required.");
   }
   const [year, month, day] = calendarDate.split("-").map(Number);
+  // Calendar arithmetic uses UTC so schedules do not shift across local DST or
+  // timezone boundaries; display conversion is deliberately handled separately.
   const date = new Date(Date.UTC(year, month - 1, day + amount));
   return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
 }
@@ -39,6 +44,8 @@ export function getNextPlanStartDate(now = new Date()) {
 export function calendarDateToLocalDate(calendarDate) {
   plannerDateSchema.parse(calendarDate);
   const [year, month, day] = calendarDate.split("-").map(Number);
+  // Local noon avoids midnight-offset edge cases when formatting a date-only
+  // value while preserving the user's intended calendar day.
   return new Date(year, month - 1, day, 12);
 }
 
@@ -77,6 +84,8 @@ export function createPlan({ durationDays = DEFAULT_PLANNER_DURATION, startDate 
 
 export function resizePlan(plan, durationDays) {
   plannerDurationSchema.parse(durationDays);
+  // Match by date rather than array position so retained days keep their meals;
+  // callers separately confirm before shrinking away populated trailing days.
   const existingDays = new Map((plan?.days || []).map((day) => [day.date, day]));
   const dates = generatePlanDates(plan.startDate, durationDays);
   return {
@@ -141,6 +150,8 @@ export function getNextEmptySlot(plan) {
 }
 
 export function quickAddMeal(plan, configuration) {
+  // Quick-add is deterministic: fill chronological days and the declared slot
+  // order before reporting that the plan has no remaining capacity.
   const address = getNextEmptySlot(plan);
   return address ? { plan: setSlotMeal(plan, address, configuration), address } : { plan, address: null };
 }
@@ -149,6 +160,8 @@ export function moveSlotMeal(plan, source, target) {
   if (!isSlotAddress(source) || !isSlotAddress(target)) return plan;
   const sourceMeal = getSlotMeal(plan, source);
   if (!sourceMeal || source.date === target.date && source.slot === target.slot) return plan;
+  // Moving onto an occupied slot swaps the meals instead of silently deleting
+  // the target selection.
   const targetMeal = getSlotMeal(plan, target);
   return setSlotMeal(setSlotMeal(plan, target, sourceMeal), source, targetMeal);
 }
@@ -159,6 +172,8 @@ export function populatedDaysRemovedByResize(plan, durationDays) {
 }
 
 export function serializePlanForCheckout(plan) {
+  // Serialization intentionally emits catalog identities and schedule only;
+  // display data and estimates are reloaded authoritatively by checkout.
   return {
     orderType: "meal_plan",
     durationDays: plan.durationDays,

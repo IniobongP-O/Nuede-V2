@@ -44,6 +44,8 @@ export function parseNairaToKobo(value) {
     throw new Error("Enter a non-negative NGN amount with no more than two decimal places.");
   }
 
+  // Parse decimal text as digits instead of multiplying a JavaScript float;
+  // rounding at this boundary would corrupt the integer-kobo source of truth.
   const [wholeNaira, fractionalNaira = ""] = normalized.split(".");
   const kobo = (BigInt(wholeNaira) * 100n) + BigInt(fractionalNaira.padEnd(2, "0"));
   if (kobo > maximumSafeKobo) {
@@ -76,6 +78,8 @@ export const productFormSchema = z.object({
   visibility: z.enum(productVisibilityValues),
   addonIds: addonIdsSchema,
 }).superRefine((values, context) => {
+  // These paired rules keep the UI representation compatible with database
+  // constraints: orderable states have a price, while price_pending has none.
   if (["available", "sold_out"].includes(values.availability) && values.priceNgn === "") {
     context.addIssue({
       code: "custom",
@@ -103,6 +107,8 @@ export const groupedProductFormSchema = z.object({
   defaultVariantId: z.union([z.literal(""), uuidSchema]),
   addonIds: addonIdsSchema,
 }).superRefine((values, context) => {
+  // Automatic selection is only meaningful when it resolves to an explicit
+  // default; the database separately verifies that variant belongs to the group.
   if (values.selectionMode === "automatic" && values.defaultVariantId === "") {
     context.addIssue({
       code: "custom",

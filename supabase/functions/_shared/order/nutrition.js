@@ -16,6 +16,8 @@ export function nutritionFromRow(row) {
 }
 
 export function calculateAuthoritativeItemNutrition(item) {
+  // Grouped parent nutrition is not combined with its variant: the selected
+  // variant is the purchased base, matching storefront calculations.
   return calculateItemNutrition({
     product: {
       isGrouped: item.product.product_type === "grouped",

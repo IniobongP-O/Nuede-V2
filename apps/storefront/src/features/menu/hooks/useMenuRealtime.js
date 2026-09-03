@@ -15,6 +15,8 @@ export function useMenuRealtime() {
       queryClient.invalidateQueries({ queryKey: menuQueryKeys.categories }),
       queryClient.invalidateQueries({ queryKey: menuQueryKeys.products }),
     ]);
+    // Realtime is only an invalidation signal; refetching through the normal query
+    // preserves normalization and RLS filtering when row visibility changes.
     const channel = supabase
       .channel("storefront-menu-catalog")
       .on("postgres_changes", { event: "*", schema: "public", table: "products" }, invalidateProducts)

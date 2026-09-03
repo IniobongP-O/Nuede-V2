@@ -37,6 +37,8 @@ declare
   addon jsonb;
   created_item_id uuid;
 begin
+  -- Initial payment and fulfilment states are hard-coded here rather than trusted
+  -- from JSON so even a compromised caller cannot create a paid/delivered order.
   if jsonb_typeof(p_order) is distinct from 'object' then
     raise exception using errcode = '22023', message = 'Order payload must be an object.';
   end if;
@@ -49,6 +51,8 @@ begin
     raise exception using errcode = '22023', message = 'Order items must be a non-empty array.';
   end if;
 
+  -- Catalog names, prices, nutrition, and delivery data are purchase-time
+  -- snapshots; later catalog edits must not rewrite order history.
   insert into public.orders (
     id,
     order_reference,

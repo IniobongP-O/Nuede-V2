@@ -7,6 +7,11 @@ export function canonicalizeAddonIds(addonIds = []) {
   return [...new Set(addonIds)].sort((left, right) => left.localeCompare(right));
 }
 
+/**
+ * Reduces browser cart input to stable catalog identifiers and quantity.
+ * Product details and prices are deliberately absent because persisted browser
+ * state is untrusted and must be hydrated from the current catalog.
+ */
 export function normalizeCartConfiguration(configuration) {
   if (!configuration || typeof configuration !== "object") return null;
   const { productId, variantId = null, addonIds = [], quantity = 1 } = configuration;
@@ -20,6 +25,11 @@ export function normalizeCartConfiguration(configuration) {
   });
 }
 
+/**
+ * Creates the identity used for cart merging. Quantity is excluded so adding
+ * the same product/variant/add-on tuple increases one line instead of creating
+ * a visually duplicate line; any variant or add-on difference stays distinct.
+ */
 export function createCartItemKey(configuration) {
   const normalized = normalizeCartConfiguration({ ...configuration, quantity: 1 });
   if (!normalized) return null;
@@ -78,6 +88,8 @@ export function decrementCartItem(items, key) {
 }
 
 export function replaceCartItem(items, key, configuration) {
+  // Removal followed by canonical addition also merges into an already-existing
+  // line when the replacement configuration matches it.
   return addCartItem(removeCartItem(items, key), configuration);
 }
 

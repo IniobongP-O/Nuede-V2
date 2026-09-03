@@ -11,6 +11,8 @@ function addonSnapshot(addon) {
 }
 
 export function buildOrderSnapshot(request, validated) {
+  // Names, prices, nutrition, and delivery details are copied at purchase time.
+  // Historical orders must not change when the live catalog or zones are edited.
   const items = validated.items.map((item) => {
     const pricing = calculateItemPrice(item);
     const nutrition = calculateAuthoritativeItemNutrition(item);
@@ -32,6 +34,7 @@ export function buildOrderSnapshot(request, validated) {
     };
   });
 
+  // Delivery is charged once per order, not once per item or meal-plan day.
   const subtotalKobo = addKobo(items.map((item) => item.line_total_kobo));
   const totalKobo = addKobo([subtotalKobo, validated.deliveryZone.feeKobo]);
   const nutrition = calculateAuthoritativeOrderNutrition(items.map((item) => item.calculatedNutrition));

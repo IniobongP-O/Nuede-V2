@@ -10,6 +10,8 @@ export function isValidPaystackReference(value) {
 }
 
 export function paymentResultState({ reference, isPending, isError, payment }) {
+  // Redirect presence or query parameters are never proof of payment; only the
+  // backend's reconciled status can produce the successful UI state.
   if (!isValidPaystackReference(reference) || isError) return PAYMENT_RESULT_STATES.failed;
   if (isPending || !payment || payment.status === "confirming") return PAYMENT_RESULT_STATES.confirming;
   if (payment.status === "paid") return PAYMENT_RESULT_STATES.successful;

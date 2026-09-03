@@ -35,8 +35,12 @@ export function AuthProvider({ children }) {
 
     try {
       const admin = await getOwnAdminProfile(user.id);
+      // Auth events can overlap slow profile requests. Ignore stale completions so
+      // an earlier identity cannot overwrite the latest session's authorization.
       if (run !== authorizationRun.current) return;
 
+      // This client gate controls presentation only. RLS and database grants are
+      // the security boundary when an authenticated caller bypasses the UI.
       if (!admin) {
         setAuthState({ status: "unauthorized", user, admin: null, error: null });
       } else if (!admin.is_active) {
@@ -83,6 +87,7 @@ export function AuthProvider({ children }) {
         if (!active) return;
         if (event === "SIGNED_OUT" || !session?.user) {
           authorizationRun.current += 1;
+          // Cached admin data must not survive into a later identity's session.
           queryClient.clear();
           setAuthState(signedOutState());
         } else if (["SIGNED_IN", "TOKEN_REFRESHED", "USER_UPDATED"].includes(event)) {

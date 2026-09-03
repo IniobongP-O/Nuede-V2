@@ -37,6 +37,8 @@ function responseItem(item) {
 
 function scheduleFor(request, items) {
   if (request.orderType !== "meal_plan") return null;
+  // Reconstruct the sparse schedule from persisted item coordinates so the
+  // response mirrors every empty and occupied slot in the submitted plan.
   const itemBySlot = new Map(items.map((item) => [`${item.scheduled_for}:${item.meal_slot}`, item]));
   return {
     durationDays: request.durationDays,

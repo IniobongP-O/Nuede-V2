@@ -45,6 +45,8 @@ export async function prepareCatalogImage(file) {
     const sourceWidth = image.width || image.naturalWidth;
     const sourceHeight = image.height || image.naturalHeight;
     if (!sourceWidth || !sourceHeight) throw new Error("The selected image has invalid dimensions.");
+    // Downscale only; upscaling adds bytes without recovering image detail. A
+    // common WebP output keeps storefront delivery predictable across input types.
     const scale = Math.min(1, 1600 / Math.max(sourceWidth, sourceHeight));
     const canvas = document.createElement("canvas");
     canvas.width = Math.max(1, Math.round(sourceWidth * scale));
@@ -64,6 +66,8 @@ export async function prepareCatalogImage(file) {
 export async function uploadCatalogImage({ file, entityType, entityId }) {
   const optimized = await prepareCatalogImage(file);
   const directory = entityType === "variant" ? "variants" : "products";
+  // UUID-owned paths satisfy Storage policy structure and a fresh object name
+  // avoids stale public-cache content when an image is replaced.
   const path = `${directory}/${entityId}/${crypto.randomUUID()}.webp`;
   const { error } = await requireSupabase().storage
     .from(catalogImageBucket)

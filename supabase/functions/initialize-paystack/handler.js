@@ -43,6 +43,8 @@ export async function createPaystackCheckout(candidate, client, {
   if (candidate?.paymentMethod !== "paystack") throw methodError();
   normalizeStorefrontUrl(storefrontUrl);
   const reference = createReference();
+  // Persist the authoritative order and pending attempt before the provider call.
+  // If initialization fails, support still has a permanent reference to diagnose.
   const order = await createOrder(candidate, client, {
     persist: (trustedClient, snapshot) => persistAttempt(trustedClient, snapshot, reference),
   });
@@ -66,6 +68,8 @@ export async function createPaystackCheckout(candidate, client, {
     };
   } catch (error) {
     try {
+      // Recording provider failure must never downgrade an attempt that a racing
+      // webhook has already verified as paid.
       await failAttempt(client, reference, "initialization_failed");
     } catch (reconciliationError) {
       throw new PaystackInitializationError(order, reference, reconciliationError);

@@ -14,6 +14,8 @@ function browserStorage(storage) {
 }
 
 export function normalizeStoredCartItems(value) {
+  // localStorage is an anonymous convenience, not a catalog snapshot. Invalid
+  // entries are discarded and valid entries are canonicalized/merged before use.
   const container = cartStorageSchema.safeParse(value);
   if (!container.success) return [];
   const validItems = container.data.items.flatMap((candidate) => {
@@ -46,6 +48,8 @@ export function setCartItems(items, storage) {
   const target = browserStorage(storage);
   if (!target) return false;
   try {
+    // Persist identifiers and quantities only. All mutable catalog and display
+    // attributes are resolved from the live menu on every load.
     target.setItem(CART_STORAGE_KEY, JSON.stringify({ version: CART_STORAGE_VERSION, items: normalizeCartItems(items) }));
     return true;
   } catch {

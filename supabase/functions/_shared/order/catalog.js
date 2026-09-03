@@ -19,6 +19,9 @@ function throwCatalogFailure(error) {
 
 export async function loadOrderContext(client, request, items) {
   const { productIds, variantIds, addonIds } = collectSelectionIds(items);
+  // The Edge Function uses a service-role client so it can distinguish missing,
+  // hidden, and unavailable records without weakening anonymous catalog RLS.
+  // Unique IDs are fetched in batches to avoid an N+1 query per order line.
   const productsQuery = productIds.length
     ? client.from("products").select(PRODUCT_COLUMNS).in("id", productIds)
     : noRows();
@@ -64,6 +67,9 @@ function selectionError(code, message) {
 }
 
 export function validateOrderContext(request, items, context) {
+  // Payment availability and delivery fees are checked from the same current
+  // backend snapshot used for pricing; the browser's checkout screen is only a
+  // convenience preview and may have gone stale before submission.
   const settingsKey = request.paymentMethod === "paystack" ? "paystack_enabled" : "whatsapp_enabled";
   if (!context.checkoutSettings?.[settingsKey]) {
     throw selectionError("PAYMENT_METHOD_DISABLED", "That payment method is not currently available.");
@@ -88,6 +94,8 @@ export function validateOrderContext(request, items, context) {
     let variant = null;
     let basePriceKobo = safeKobo(product.price_kobo);
     if (product.product_type === "grouped") {
+      // Even groups with an automatic storefront default submit the concrete
+      // variant ID. This makes the purchased base unambiguous in the snapshot.
       if (!configuration.variantId) {
         throw selectionError("INVALID_VARIANT", "Choose an available option for every grouped meal.");
       }
@@ -112,6 +120,8 @@ export function validateOrderContext(request, items, context) {
       const addon = addonsById.get(addonId);
       if (!addon) throw selectionError("INVALID_ADDON", "A selected add-on does not exist.");
       if (!assignments.has(`${product.id}:${addonId}`)) {
+        // Existence alone is insufficient: compatibility is product-specific
+        // and must be rechecked to prevent crafted cross-product selections.
         throw selectionError("INVALID_ADDON", "A selected add-on is not offered with that meal.");
       }
       if (addon.is_available !== true || safeKobo(addon.price_kobo) === null) {

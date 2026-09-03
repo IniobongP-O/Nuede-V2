@@ -39,6 +39,8 @@ export async function getCategories() {
 }
 
 export async function getMenuProducts() {
+  // The enabled-category inner relationship and public RLS jointly define what
+  // anonymous customers may see. Embedded variants/add-ons avoid N+1 requests.
   const { data, error } = await requireSupabase()
     .from("products")
     .select(menuProductFields)

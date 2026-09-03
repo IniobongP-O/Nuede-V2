@@ -43,6 +43,8 @@ begin
     raise exception using errcode = '22023', message = 'Paystack persistence requires a Paystack order.';
   end if;
 
+  -- Recheck the setting inside the persistence transaction. The storefront and
+  -- Edge Function may have read an enabled value just before an admin disabled it.
   perform 1
   from public.checkout_settings
   where id and paystack_enabled
@@ -59,6 +61,8 @@ begin
     raise exception using errcode = '22023', message = 'Invalid Paystack reference.';
   end if;
 
+  -- The permanent order and its pending attempt commit together before Paystack
+  -- hosted checkout is initialized.
   created := public.create_order_atomic(p_order, p_items);
   created_order_id := (created ->> 'order_id')::uuid;
 
@@ -109,6 +113,7 @@ as $$
 declare
   payment_record public.payments%rowtype;
 begin
+  -- Serialize competing webhook and verification requests for this reference.
   select * into payment_record
   from public.payments
   where provider = 'paystack' and provider_reference = p_provider_reference
@@ -172,6 +177,8 @@ begin
 
   perform 1 from public.orders where id = payment_record.order_id for update;
 
+  -- A duplicate success is a no-op, and no later event may downgrade a verified
+  -- payment. Paystack retries webhooks until it receives acknowledgement.
   if payment_record.status = 'paid' and payment_record.verification_status = 'verified' then
     return jsonb_build_object(
       'payment_id', payment_record.id,
@@ -182,6 +189,8 @@ begin
     );
   end if;
 
+  -- Provider success is insufficient on its own: amount and NGN currency must
+  -- match the server-created attempt before the order can become paid.
   if p_provider_amount_kobo is distinct from payment_record.amount_kobo then
     outcome := 'amount_mismatch';
   elsif normalized_currency <> 'NGN' then
@@ -206,6 +215,8 @@ begin
       verified_at = case when outcome = 'paid' then coalesce(verified_at, now()) else null end
   where id = payment_record.id;
 
+  -- Payment reconciliation deliberately never changes fulfilment_status; payment
+  -- confirmation and operational delivery progress are separate state machines.
   update public.orders
   set payment_status = case outcome when 'paid' then 'paid' when 'pending' then 'pending' else 'failed' end
   where id = payment_record.order_id and payment_status <> 'paid';

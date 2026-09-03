@@ -37,6 +37,8 @@ export function CartProvider({ children }) {
   }, [replaceState]);
 
   useEffect(() => {
+    // The storage event synchronizes other tabs; same-tab writes update React
+    // state through commit because browsers do not echo this event to the writer.
     function handleStorage(event) {
       if (event.key !== CART_STORAGE_KEY) return;
       replaceState(parseCartItems(event.newValue));
@@ -49,6 +51,8 @@ export function CartProvider({ children }) {
     const key = createCartItemKey(configuration);
     if (!key) return { changed: false, merged: false, persisted: false };
     const current = itemsRef.current;
+    // Identity excludes quantity, so an identical product/variant/add-on tuple
+    // merges while a customization difference creates another line.
     const merged = current.some((item) => createCartItemKey(item) === key);
     const next = addCartItem(current, configuration);
     const changed = getCartItemCount(next) !== getCartItemCount(current);

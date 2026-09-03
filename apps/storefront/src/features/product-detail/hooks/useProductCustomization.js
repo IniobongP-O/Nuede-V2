@@ -26,6 +26,8 @@ export function useProductCustomization(product, onConfigured, initialConfigurat
   const visibleVariants = useMemo(() => getVisibleVariants(product), [product]);
   const compatibleAddons = useMemo(() => getCompatibleAddons(product), [product]);
   if (state.catalogProduct !== product) {
+    // Realtime/query refreshes can invalidate an open dialog. Reconcile selected
+    // IDs before submission so a removed variant or add-on is not retained unseen.
     const currentVariant = visibleVariants.find((variant) => variant.id === state.variantId);
     const variantId = isVariantOrderableForProduct(product, currentVariant) ? state.variantId : null;
     const availableAddonIds = new Set(compatibleAddons.filter((addon) => addon.isAvailable).map((addon) => addon.id));

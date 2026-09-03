@@ -20,6 +20,8 @@ function browserStorage(storage) {
 }
 
 export function normalizeStoredPlan(value, fallbackOptions = {}) {
+  // Browser storage may be stale or manually edited. Rebuild the canonical date
+  // grid and salvage only individually valid slots that belong to that grid.
   const envelope = plannerStorageEnvelopeSchema.safeParse(value);
   if (!envelope.success) return createPlan(fallbackOptions);
   const { durationDays, startDate } = envelope.data;
@@ -75,6 +77,8 @@ export function setStoredPlan(plan, storage) {
   const target = browserStorage(storage);
   if (!target) return false;
   try {
+    // Reuse the checkout serializer so persistence and submission cannot drift in
+    // slot shape, while still treating the saved plan as untrusted on restoration.
     const checkoutInput = serializePlanForCheckout(plan);
     target.setItem(PLANNER_STORAGE_KEY, JSON.stringify({
       version: PLANNER_STORAGE_VERSION,

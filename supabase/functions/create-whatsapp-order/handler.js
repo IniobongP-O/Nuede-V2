@@ -45,6 +45,8 @@ export async function createWhatsappOrder(candidate, client, {
   const normalizedRecipient = normalizeWhatsappRecipient(recipient);
   let order;
   try {
+    // WhatsApp is only a handoff channel. The permanent, server-priced order is
+    // created first so closing or blocking WhatsApp cannot lose the transaction.
     order = await createOrder(candidate, client);
   } catch (error) {
     if (error instanceof OrderError && error.code === "PAYMENT_METHOD_DISABLED") {
@@ -60,6 +62,8 @@ export async function createWhatsappOrder(candidate, client, {
   try {
     return { ...order, whatsapp: buildHandoff(order, normalizedRecipient) };
   } catch (error) {
+    // Formatting failure occurs after persistence, so return a recoverable order
+    // reference instead of pretending the entire operation rolled back.
     throw new WhatsappHandoffError(order, error);
   }
 }

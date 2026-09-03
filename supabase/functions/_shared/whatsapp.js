@@ -81,6 +81,8 @@ function mealPlanLines(order) {
 
 export function buildWhatsappMessage(order) {
   try {
+    // Build exclusively from the authoritative response/snapshots. The customer
+    // cannot substitute display totals or names in the generated handoff.
     const orderLines = order.orderType === "meal_plan" ? mealPlanLines(order) : cartLines(order);
     return [
       `Nuede Order ${order.orderReference}`,

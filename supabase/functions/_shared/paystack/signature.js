@@ -11,6 +11,8 @@ export async function signPaystackPayload(rawPayload, secretKey, cryptoImpl = cr
 export async function verifyPaystackSignature(rawPayload, signature, secretKey, cryptoImpl = crypto) {
   if (!secretKey || !/^[a-f0-9]{128}$/i.test(signature || "")) return false;
   const expected = await signPaystackPayload(rawPayload, secretKey, cryptoImpl);
+  // Compare the complete digest without returning at the first mismatched byte;
+  // this avoids the obvious matching-prefix timing leak of a naive comparison.
   let mismatch = expected.length ^ signature.length;
   for (let index = 0; index < expected.length; index += 1) {
     mismatch |= expected.charCodeAt(index) ^ (signature.charCodeAt(index) || 0);

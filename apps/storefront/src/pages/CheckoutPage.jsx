@@ -99,6 +99,8 @@ export function CheckoutPage() {
   }, [enabledMethods, selectedPaymentMethod, setValue, settingsQuery.isSuccess]);
 
   async function submit(values, event) {
+    // Lock both React state and the form node before awaiting. This narrows the
+    // double-submit window that exists before React commits a disabled state.
     const submittedForm = event?.currentTarget;
     if (submissionLocked || submittedForm?.dataset.orderSubmissionLocked === "true") return;
     if (submittedForm) submittedForm.dataset.orderSubmissionLocked = "true";
@@ -108,6 +110,8 @@ export function CheckoutPage() {
     setPaystackReady(null);
     setPaystackFailure(null);
     try {
+      // Refresh mutable checkout inputs for immediate feedback. These checks do
+      // not replace the server's authoritative reload and validation.
       const [menuResult, zoneResult, settingsResult] = await Promise.all([menuQuery.refetch(), deliveryQuery.refetch(), settingsQuery.refetch()]);
       if (menuResult.isError || zoneResult.isError || settingsResult.isError) throw new Error("Checkout data could not be refreshed.");
       const liveZone = (zoneResult.data || []).find((zone) => zone.id === values.deliveryZoneId) || null;
@@ -141,6 +145,8 @@ export function CheckoutPage() {
         const liveSubtotalKobo = source === CHECKOUT_SOURCE.cart ? calculateCartSubtotal(liveCart).subtotalKobo : livePlanner.estimatedFoodTotalKobo;
         const liveTotalKobo = calculateEstimatedTotal(liveSubtotalKobo, liveZone.feeKobo);
         const priceChanged = payment.amountKobo !== liveTotalKobo;
+        // Initialization has already created a permanent order and pending
+        // payment attempt, so local selections can now be cleared safely.
         if (source === CHECKOUT_SOURCE.cart) cart.clearCart();
         else planner.clearMeals();
         if (priceChanged || !redirectToPaystackCheckout(payment.authorizationUrl)) {
@@ -153,6 +159,8 @@ export function CheckoutPage() {
       const order = await createWhatsappOrder(contract);
       const completedHandoff = { ...order, automaticOpenBlocked: false };
       setHandoff(completedHandoff);
+      // WhatsApp is opened only after the backend has persisted the permanent
+      // unpaid/pending order and returned its authoritative snapshot.
       if (source === CHECKOUT_SOURCE.cart) cart.clearCart();
       else planner.clearMeals();
       const opened = openWhatsappHandoff(order.whatsapp.url);

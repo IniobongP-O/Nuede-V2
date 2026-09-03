@@ -71,6 +71,8 @@ export function hasCompleteNutrition(nutrition) {
 }
 
 function deriveGroupedStatus(product, variants) {
+  // Group availability is derived from its children: an available parent is not
+  // orderable when every currently public variant is sold out or unavailable.
   if (product.status !== "available") return product.status;
   if (variants.some(isOrderableVariant)) return "available";
   if (variants.some((variant) => variant.status === "sold_out" && isPriced(variant))) return "sold_out";
@@ -78,6 +80,8 @@ function deriveGroupedStatus(product, variants) {
 }
 
 function representativeVariant(product, variants) {
+  // Cards need one preview only; prefer configured intent, then an orderable or
+  // at least priced variant, while the detail view still exposes every option.
   const defaultVariant = variants.find((variant) => variant.id === product.default_variant_id);
   return defaultVariant || variants.find(isOrderableVariant) || variants.find(isPriced) || variants[0] || null;
 }
@@ -88,6 +92,8 @@ function groupedPrice(product, variants, menuStatus) {
   if (!product.requires_variant_selection && defaultVariant) {
     return { priceKobo: koboOrNull(defaultVariant.price_kobo), pricePrefix: "" };
   }
+  // Required-selection groups display the lowest eligible price as "From"; this
+  // remains an estimate until a concrete variant is selected and server-priced.
   const candidates = variants
     .filter((variant) => variant.status !== "unavailable" && isPriced(variant))
     .map((variant) => koboOrNull(variant.price_kobo));

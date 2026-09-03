@@ -10,6 +10,8 @@ export function usePaystackPayment(reference) {
     enabled: isValidPaystackReference(reference),
     retry: 1,
     refetchOnWindowFocus: true,
+    // Poll only while reconciliation is non-terminal and cap attempts so a
+    // provider outage does not create an unbounded background request loop.
     refetchInterval: (query) => {
       const status = query.state.data?.status;
       if (["paid", "failed"].includes(status)) return false;

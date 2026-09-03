@@ -56,6 +56,8 @@ async function readProduct(id) {
 }
 
 async function replaceAssignments(productId, addonIds) {
+  // The RPC replaces the exact compatible set atomically, avoiding a transient
+  // partially updated assignment list from separate delete/insert requests.
   const { error } = await requireSupabase().rpc("replace_product_addon_assignments", {
     p_product_id: productId,
     p_addon_ids: addonIds,
@@ -75,6 +77,8 @@ async function saveProduct({ id, record, addonIds = [], imageFile, previousImage
   if (imageFile) uploadedPath = await uploadCatalogImage({ file: imageFile, entityType: "product", entityId });
   const imagePath = uploadedPath || existingImagePath || null;
 
+  // Storage and PostgreSQL do not share a transaction. Track which side committed
+  // so failure compensation never removes the only image of a persisted product.
   try {
     const query = id
       ? client.from("products").update({ ...record, slug, image_path: imagePath }).eq("id", id).eq("product_type", record.product_type)
@@ -225,6 +229,8 @@ export async function deleteVariant({ productId, variant }) {
 }
 
 export async function reorderVariants({ productId, variantIds }) {
+  // The database validates the full stable child set and applies ordering in one
+  // operation, preventing partial or cross-product reorders.
   const { error } = await requireSupabase().rpc("reorder_product_variants", {
     p_product_id: productId,
     p_variant_ids: variantIds,

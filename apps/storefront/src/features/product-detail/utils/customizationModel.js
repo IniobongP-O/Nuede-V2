@@ -53,6 +53,8 @@ function selectedAddons(product, addonIds) {
 }
 
 export function calculateConfiguredDisplayPrice(product, variantId, addonIds = [], quantity = 1) {
+  // This is deliberately a display calculation. The checkout contract sends IDs
+  // and quantity only, and the Edge Function re-prices from current database rows.
   const base = selectedBase(product, variantId);
   const addons = selectedAddons(product, addonIds);
   const componentPrices = [base?.priceKobo, ...addons.map((addon) => addon.priceKobo)];
@@ -77,6 +79,8 @@ export function calculateConfiguredItemNutrition(product, variantId, addonIds = 
 }
 
 export function validateProductConfiguration({ product, variantId = null, addonIds = [], quantity = 1 }) {
+  // Structural validation protects the shared contract; the checks below bind
+  // those IDs to the current product and its current orderability/compatibility.
   const issues = [];
   if (!product?.id) {
     return { valid: false, issues: [issue("missing_product", "This meal is no longer available.", "productId")], configuration: null };

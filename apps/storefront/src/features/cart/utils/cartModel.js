@@ -57,6 +57,9 @@ function resolveStatus(item, product, variant, selectedAddons, missingAddonIds) 
 }
 
 export function hydrateCartItem(item, publicProducts = []) {
+  // Stored configurations are never trusted as current. Hydration resolves each
+  // stable ID against the public catalog and keeps stale lines visible/removable
+  // without leaking a deleted product's former details.
   const key = createCartItemKey(item);
   const product = publicProducts.find((candidate) => candidate.id === item.productId) || null;
   if (!product) {
@@ -86,6 +89,8 @@ export function hydrateCartItem(item, publicProducts = []) {
     ? Object.freeze({ unitPriceKobo: null, linePriceKobo: null, complete: false })
     : Object.freeze(rawPrice);
   const knownNutrition = calculateConfiguredItemNutrition(product, item.variantId, item.addonIds, item.quantity);
+  // A missing add-on makes the total incomplete even though known components can
+  // still be displayed, so inject an unknown contribution instead of assuming 0.
   const nutrition = missingAddonIds.length ? calculateNutrition([knownNutrition, {}]) : knownNutrition;
   const details = statusDetails[status];
 
@@ -109,6 +114,8 @@ export function hydrateCartItems(items = [], publicProducts = []) {
 }
 
 export function calculateCartSubtotal(hydratedItems = []) {
+  // This subtotal supports review UI only. Invalid lines are excluded and mark
+  // the estimate incomplete; checkout independently reloads and prices on server.
   let subtotalKobo = 0;
   let includedLineCount = 0;
   for (const item of hydratedItems) {

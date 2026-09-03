@@ -4,6 +4,11 @@ export function isOrderableVariant(variant) {
     && variant.price_kobo >= 0;
 }
 
+/**
+ * Describes the invariant that lets an available grouped product be ordered.
+ * Automatic-selection groups additionally need an orderable default because
+ * the customer is not required to choose a variant themselves.
+ */
 export function groupedProductOrderabilityMessage(product, variants = []) {
   if (product?.product_type !== "grouped" || product.status !== "available") return null;
   const belongsToGroup = (variant) => !product.id || variant?.product_id === product.id;
@@ -19,6 +24,10 @@ export function groupedProductOrderabilityMessage(product, variants = []) {
   return null;
 }
 
+/**
+ * Returns the complete variant ID order after one bounded move. Returning all
+ * IDs is intentional because the database reorder RPC validates the exact set.
+ */
 export function moveVariantIds(variants, variantId, direction) {
   const ordered = [...variants].sort((left, right) => left.sort_order - right.sort_order || left.id.localeCompare(right.id));
   const index = ordered.findIndex((variant) => variant.id === variantId);

@@ -34,6 +34,8 @@ export function usePlanner() {
   }, [replaceState]);
 
   useEffect(() => {
+    // Cross-tab updates replace local state; same-tab commits update both the ref
+    // and React state because storage events are not fired in the originating tab.
     function handleStorage(event) {
       if (event.key !== PLANNER_STORAGE_KEY) return;
       replaceState(parseStoredPlan(event.newValue));

@@ -32,6 +32,8 @@ function buildNutritionResult(values, completeness) {
     result[`${key}Complete`] = completeness[key] === true;
   }
 
+  // A known subtotal remains useful even when one component omitted that field;
+  // completeness records that the visible number is only a partial total.
   result.hasAny = NUTRITION_FIELDS.some(({ key }) => result[key] !== null);
   result.isComplete = result.hasAny
     && NUTRITION_FIELDS.every(({ key }) => result[`${key}Complete`]);
@@ -94,6 +96,12 @@ export function calculateNutrition(entries = []) {
   return buildNutritionResult(values, completeness);
 }
 
+/**
+ * Calculates one configured line using the selected variant as the grouped
+ * product base, then adds each selected add-on and applies quantity once.
+ * Missing nutrition is preserved as partial/unavailable rather than treated as
+ * zero, which prevents incomplete catalog data from looking nutritionally exact.
+ */
 export function calculateItemNutrition({ product, variant = null, addons = [], quantity = 1 } = {}) {
   requirePositiveQuantity(quantity);
   if (!Array.isArray(addons)) throw new TypeError("Nutrition add-ons must be an array.");

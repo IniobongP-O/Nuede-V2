@@ -9,6 +9,8 @@ export function flattenOrderItems(request) {
     }));
   }
 
+  // Flattening lets cart and meal-plan orders share one validation/pricing
+  // pipeline while retaining schedule coordinates for immutable snapshots.
   return request.days.flatMap((day) => MEAL_SLOTS.flatMap((mealSlot) => {
     const configuration = day.slots[mealSlot];
     return configuration ? [{ configuration, scheduledFor: day.date, mealSlot }] : [];
@@ -26,6 +28,8 @@ export function collectSelectionIds(items) {
     configuration.addonIds.forEach((id) => addonIds.add(id));
   }
 
+  // Deduplication reduces database work only; repeated configured lines remain
+  // separate source items and are still priced/snapshotted independently.
   return {
     productIds: [...productIds],
     variantIds: [...variantIds],

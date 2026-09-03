@@ -16,6 +16,8 @@ export const plannerConfigurationSchema = z.object({
   productId: stableCatalogIdSchema,
   variantId: stableCatalogIdSchema.nullable(),
   addonIds: z.array(stableCatalogIdSchema).max(100),
+  // A planner slot represents one scheduled serving. Cart quantities remain a
+  // separate model so a slot cannot silently expand into multiple fulfilments.
   quantity: z.literal(1),
 }).superRefine((configuration, context) => {
   if (new Set(configuration.addonIds).size !== configuration.addonIds.length) {

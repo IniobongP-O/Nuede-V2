@@ -34,6 +34,8 @@ export class CheckoutApiError extends Error {
 }
 
 async function functionErrorBody(error) {
+  // Supabase exposes non-2xx function bodies on the response context. Clone it so
+  // reading structured recovery data does not consume another caller's stream.
   const response = error?.context;
   if (!response || typeof response.clone !== "function") return null;
   try {
@@ -47,6 +49,8 @@ export async function createWhatsappOrder(contract) {
   const { data, error } = await requireSupabase().functions.invoke("create-whatsapp-order", { body: contract });
   if (error) {
     const body = await functionErrorBody(error);
+    // A network failure is ambiguous: the server may already have persisted the
+    // order, so the message avoids encouraging an automatic duplicate retry.
     throw new CheckoutApiError(
       body?.error?.message || "We couldn't confirm whether your order was recorded. Please check your connection before trying again.",
       { code: body?.error?.code, order: body?.order || null, cause: error },
@@ -75,6 +79,8 @@ export async function initializePaystackCheckout(contract) {
 }
 
 export async function verifyPaystackPayment(reference) {
+  // The reference is a lookup key only. The Edge Function verifies non-terminal
+  // attempts with Paystack; this client response cannot mark an order paid.
   const { data, error } = await requireSupabase().functions.invoke("verify-paystack-payment", { body: { reference } });
   if (error) {
     const body = await functionErrorBody(error);

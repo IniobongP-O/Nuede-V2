@@ -7,6 +7,8 @@ const stableIdSchema = z.string().uuid("Choose a valid option.");
 const optionalTrimmed = (maximum) => z.string().trim().max(maximum);
 
 function addCalendarDays(calendarDate, amount) {
+  // Calendar-only values are advanced in UTC so daylight-saving or host time
+  // zones cannot change the serialized meal-plan schedule.
   const [year, month, day] = calendarDate.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day + amount));
   const pad = (value) => String(value).padStart(2, "0");
@@ -44,6 +46,9 @@ export const checkoutSettingsFormSchema = z.object({
   message: "Keep at least one payment method enabled.",
 });
 
+// The checkout contract intentionally carries only customer input and stable
+// catalog selections. Prices, names, nutrition, availability, and delivery fees
+// must be reloaded by the server and cannot be asserted by the browser.
 const cartContractSchema = z.object({
   orderType: z.literal("cart"),
   customer: customerDeliverySchema,
@@ -75,6 +80,8 @@ const mealPlanContractSchema = z.object({
     context.addIssue({ code: "custom", path: ["days"], message: "The meal-plan days must match its duration." });
   }
   value.days.forEach((day, index) => {
+    // Consecutive dates prevent a client from disguising an arbitrary schedule
+    // as a shorter plan with a mismatched duration.
     if (day.date !== addCalendarDays(value.startDate, index)) {
       context.addIssue({ code: "custom", path: ["days", index, "date"], message: "Meal-plan dates must be consecutive from the start date." });
     }

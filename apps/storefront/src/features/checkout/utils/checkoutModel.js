@@ -40,6 +40,8 @@ export function getEnabledPaymentMethods(settings) {
 }
 
 export function calculateEstimatedTotal(subtotalKobo, deliveryFeeKobo) {
+  // Review totals are intentionally non-authoritative; the Edge Function reloads
+  // the delivery fee and catalog prices before creating either kind of order.
   if (!Number.isSafeInteger(subtotalKobo) || subtotalKobo < 0 || !Number.isSafeInteger(deliveryFeeKobo) || deliveryFeeKobo < 0) return null;
   const totalKobo = subtotalKobo + deliveryFeeKobo;
   return Number.isSafeInteger(totalKobo) ? totalKobo : null;
@@ -66,6 +68,8 @@ export function buildCheckoutSubmission({ source, customer, deliveryZoneId, paym
     deliveryZoneId,
     paymentMethod,
   };
+  // Only selections, schedule, and customer-entered delivery details cross the
+  // client/server boundary. Display prices and product snapshots are excluded.
   const candidate = source === CHECKOUT_SOURCE.cart
     ? { orderType: "cart", ...shared, items: cartItems.map(copyConfiguration) }
     : { ...serializePlanForCheckout(plan), ...shared };
@@ -73,6 +77,8 @@ export function buildCheckoutSubmission({ source, customer, deliveryZoneId, paym
 }
 
 export function getCheckoutReadiness({ source, sourcePending, sourceError, sourceEmpty, sourceIssues = [], zonesPending, zonesError, zone, settingsPending, settingsError, enabledMethods = [], paymentMethod }) {
+  // Readiness is a UX guard, not authorization. The server repeats all mutable
+  // catalog, delivery-zone, and payment-method checks at order creation time.
   const issues = [];
   if (!source) issues.push({ code: "invalid_source", message: "Choose whether to check out your basket or meal plan." });
   if (sourcePending) issues.push({ code: "source_loading", message: "Current meal details are still loading." });

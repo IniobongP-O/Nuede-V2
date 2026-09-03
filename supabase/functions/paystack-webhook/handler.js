@@ -12,6 +12,9 @@ export async function processPaystackWebhook(rawPayload, signature, client, {
   verifySignature = verifyPaystackSignature,
   reconcile = reconcilePaystackPayment,
 } = {}) {
+  // Verify the exact raw bytes before JSON parsing or any database access;
+  // re-serialization would change the signed content and unauthenticated events
+  // must never reach reconciliation.
   if (!await verifySignature(rawPayload, signature, secretKey)) {
     throw new OrderError("INVALID_WEBHOOK_SIGNATURE", "The webhook signature is invalid.", { status: 401, stage: "webhook_signature" });
   }
@@ -24,6 +27,8 @@ export async function processPaystackWebhook(rawPayload, signature, client, {
   }
   const envelope = paystackWebhookEnvelopeSchema.safeParse(candidate);
   if (!envelope.success) throw new OrderError("INVALID_WEBHOOK", "The webhook payload is invalid.", { status: 400, stage: "webhook_payload" });
+  // Acknowledge unrelated signed events so Paystack does not retry them, while
+  // keeping the mutation surface limited to charge terminal states.
   if (!["charge.success", "charge.failed"].includes(envelope.data.event)) return { received: true, matched: false, ignored: true };
   const parsed = paystackWebhookSchema.safeParse(candidate);
   if (!parsed.success) throw new OrderError("INVALID_WEBHOOK", "The webhook payload is invalid.", { status: 400, stage: "webhook_payload" });

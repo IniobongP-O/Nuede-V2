@@ -47,6 +47,8 @@ function statusFor(configuration, product, variant, addons, missingAddonIds) {
 }
 
 export function hydratePlannerMeal(configuration, products = []) {
+  // Plans persist stable IDs only. Re-resolving them keeps availability and
+  // compatibility current while preserving stale slots for customer correction.
   const product = products.find((candidate) => candidate.id === configuration.productId) || null;
   if (!product) {
     return {
@@ -70,6 +72,8 @@ export function hydratePlannerMeal(configuration, products = []) {
   const rawPrice = calculateConfiguredDisplayPrice(product, configuration.variantId, configuration.addonIds, 1);
   const price = missingAddonIds.length ? { unitPriceKobo: null, linePriceKobo: null, complete: false } : rawPrice;
   const knownNutrition = calculateConfiguredItemNutrition(product, configuration.variantId, configuration.addonIds, 1);
+  // Preserve known nutrition but mark it partial when a persisted add-on can no
+  // longer be resolved; treating the missing contribution as zero is misleading.
   const nutrition = missingAddonIds.length ? calculateNutrition([knownNutrition, {}]) : knownNutrition;
   return {
     configuration,
@@ -105,6 +109,8 @@ export function calculatePlannerSummary(plan, products = []) {
     durationDays: plan.durationDays,
     days: hydratedPlan.days.map((day) => PLANNER_SLOT_KEYS.flatMap((slot) => day.slots[slot]?.nutrition || [])),
   });
+  // Planner totals are live-catalog estimates. Invalid selections are omitted
+  // from the number and surfaced as issues that block checkout readiness.
   let estimatedFoodTotalKobo = 0;
   let pricedMealCount = 0;
   for (const meal of meals) {
