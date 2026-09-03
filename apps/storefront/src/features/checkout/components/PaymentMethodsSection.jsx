@@ -18,7 +18,7 @@ export function PaymentMethodsSection({ methods, register, error, disabled }) {
         ))}
       </fieldset>
       {error ? <p id="payment-method-error" className="mt-3 text-sm text-danger">{error}</p> : null}
-      <p className="mt-4 text-xs leading-5 text-muted">Cycle 11 validates your checkout details only. No payment or message is created.</p>
+      <p className="mt-4 text-xs leading-5 text-muted">WhatsApp orders are recorded before the conversation opens. Paystack payment remains unavailable until its later integration.</p>
     </Card>
   );
 }

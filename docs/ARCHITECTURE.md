@@ -162,6 +162,20 @@ The pure pricing/snapshot layers select a standard product or grouped variant as
 
 `create_order_atomic` is deliberately persistence-only rather than a second pricing API. Its only caller is `service_role`; it generates a private-sequence reference, hard-codes safe initial statuses, and inserts the order, item, and add-on snapshots in one database transaction. Cycles 13 and 14 can call the same shared engine before their method-specific behavior without copying pricing logic.
 
+## Cycle 13 WhatsApp handoff
+
+`supabase/functions/create-whatsapp-order` is the method-specific orchestration boundary. It rejects non-WhatsApp contracts, validates the backend-only `NUEDE_WHATSAPP_NUMBER`, and calls the unchanged Cycle 12 `createAuthoritativeOrder` pipeline. Current WhatsApp enablement therefore remains part of the same server-side settings read that gates persistence.
+
+Only the returned authoritative order response feeds `_shared/whatsapp.js`. The formatter uses the permanent reference, customer/delivery snapshot, item/variant/add-on snapshots, meal-plan schedule, and server totals, then encodes that deterministic text into an HTTPS `wa.me` URL. The browser receives no ability to choose a recipient, message, price, status, or order reference.
+
+```text
+selection-only checkout contract -> WhatsApp method pin -> Cycle 12 authoritative engine
+-> permanent unpaid/pending order -> server snapshot formatter -> encoded handoff
+-> separate storefront order-created state -> automatic open / same-URL manual retry
+```
+
+Cart or planner state is cleared only after the permanent response and never owns the retry URL. An unexpected formatter failure does not undo persistence; the server returns a minimal reference/status recovery payload. A network failure with no response remains intentionally ambiguous and is not automatically retried because no general idempotency key exists yet.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.

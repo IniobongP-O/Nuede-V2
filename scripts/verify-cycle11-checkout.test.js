@@ -80,7 +80,7 @@ test("Cycle 11 readiness blocks empty, invalid, stale-zone, disabled-method, and
   assert.match(changed.issues.map(({ code }) => code).join(","), /disabled_payment_method/);
 });
 
-test("Cycle 11 mock boundary validates once without orders, payments, Paystack, WhatsApp, or clearing local sources", async () => {
+test("Cycle 11 mock boundary remains isolated for the still-deferred Paystack branch", async () => {
   const contract = buildCheckoutSubmission({ source: "cart", customer, deliveryZoneId: zoneId, paymentMethod: "paystack", cartItems: [cartItem] });
   const result = await submitCheckoutMock(contract);
   assert.equal(result.accepted, true);
@@ -94,7 +94,9 @@ test("Cycle 11 mock boundary validates once without orders, payments, Paystack, 
   assert.match(page, /react-hook-form/);
   assert.match(page, /isSubmitting/);
   assert.match(page, /submissionLocked/);
-  assert.doesNotMatch(`${api}\n${page}`, /\.from\(["']orders|order_items|payments|wa\.me|paystack\.co|clearCart|clearMeals/i);
+  assert.doesNotMatch(api, /\.from\(["']orders|order_items|payments|wa\.me|paystack\.co|clearCart|clearMeals/i);
+  assert.match(page, /if \(values\.paymentMethod === "paystack"\)[\s\S]*submitCheckoutMock/);
+  assert.doesNotMatch(page, /paystack\.co|PAYSTACK_SECRET_KEY|\.from\(["'](?:orders|order_items|payments)/i);
 });
 
 test("Cycle 11 keeps live queries centralized and admin updates narrowly authorized", async () => {

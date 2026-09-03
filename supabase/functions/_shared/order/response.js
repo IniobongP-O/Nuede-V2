@@ -69,6 +69,19 @@ export function buildSuccessResponse(request, snapshot, persisted) {
       id: snapshot.order.delivery_zone_id,
       name: snapshot.order.delivery_zone_name,
     },
+    customer: {
+      fullName: snapshot.order.customer_name,
+      phone: snapshot.order.customer_phone,
+      email: snapshot.order.customer_email,
+    },
+    delivery: {
+      address: snapshot.order.delivery_address,
+      landmark: snapshot.order.delivery_landmark,
+      zone: {
+        id: snapshot.order.delivery_zone_id,
+        name: snapshot.order.delivery_zone_name,
+      },
+    },
     nutrition: responseNutrition(snapshot.nutrition),
     items,
     schedule: scheduleFor(request, snapshot.items),

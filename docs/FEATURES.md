@@ -302,3 +302,26 @@ Deliberately not implemented in Cycle 12:
 - WhatsApp message/URL/navigation or completion behavior (Cycle 13);
 - Paystack initialization, payment rows, authorization URLs, callbacks, verification, or webhooks (Cycle 14);
 - admin fulfilment/order management, analytics, or later-cycle workflows.
+
+## Cycle 13 implementation status
+
+Implemented in Cycle 13:
+
+- a dedicated JavaScript `create-whatsapp-order` Edge Function that accepts only the WhatsApp method;
+- reuse of the Cycle 12 authoritative order engine, including the latest backend payment-setting check and atomic permanent persistence;
+- backend-only international WhatsApp recipient configuration and deterministic encoded `wa.me` handoff generation;
+- cart messages with permanent reference, purchase-time product/variant/add-on names, quantities, delivery snapshot, zone, and authoritative totals;
+- meal-plan messages preserving duration, dates, readable meal slots, and each scheduled purchase-time configuration;
+- storefront submission that awaits the permanent order before external navigation and clears only the successfully completed cart or plan;
+- a distinct order-recorded state with authoritative total, unpaid/pending states, and a safe retry link using the same handoff;
+- explicit recovery when an order persists but handoff formatting unexpectedly fails;
+- focused disabled-method, method-confusion, client-price-manipulation, recipient, formatter, encoding, retry, and source-boundary tests.
+
+Cycle 13 adds no database migration or payment record. WhatsApp orders remain `payment_method = 'whatsapp'`, `payment_status = 'unpaid'`, and `fulfilment_status = 'pending'` until later authorized workflows change those independent states.
+
+Deliberately not implemented in Cycle 13:
+
+- Paystack initialization, payment rows, hosted checkout, callbacks, verification, webhooks, or payment-result pages (Cycle 14);
+- admin order management or fulfilment transitions (Cycle 15);
+- paid-revenue analytics (Cycle 16), feedback/testimonial expansion (Cycle 17), or later deployment work;
+- a broad idempotency or public order-lookup subsystem. The UI prevents trivial duplicates and never automatically retries an ambiguous permanent-order request, but response-loss retry ambiguity remains documented.

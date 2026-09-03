@@ -92,6 +92,8 @@ Archiving or deactivation is preferred over destructive catalog/delivery deletio
 
 The RPC accepts only already validated authoritative snapshots from the Edge Function. It is `SECURITY DEFINER`, uses an empty `search_path`, is executable only by `service_role`, and hard-codes initial `payment_status = 'unpaid'` and `fulfilment_status = 'pending'`. PostgreSQL treats the function call as one transaction, so an item or add-on failure rolls back the order and all earlier children. No payment row is created.
 
+Cycle 13 reuses this exact persistence path for WhatsApp orders and requires no migration. The request's already validated method persists as `whatsapp`; the RPC still supplies `unpaid` and `pending`, and no WhatsApp URL/message column or synthetic payment record is added. Handoff text remains derivable from the permanent order response and purchase-time snapshots.
+
 Existing snapshot columns are reused without duplicating the Cycle 2 model. `orders` retains customer/delivery/zone/fee/totals/nutrition and plan dates; `order_items` retains product/variant names, base price, quantity, configured line total/nutrition, and schedule address; `order_item_addons` retains each add-on's purchase-time name, price, and nutrition.
 
 ## Updated timestamps
