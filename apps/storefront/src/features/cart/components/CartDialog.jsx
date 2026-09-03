@@ -132,7 +132,7 @@ function CartSummary({ items, subtotal, nutrition, onCheckout }) {
 
       <p className="mt-4 text-xs leading-5 text-muted">Prices are display estimates only. Nuede will recalculate current prices before an order can be created.</p>
       <div className="mt-4">
-        {ready ? <Button to={storefrontPaths.checkout} size="large" className="w-full" onClick={onCheckout}>Continue to checkout</Button> : <Button size="large" className="w-full" disabled>Resolve basket issues to continue</Button>}
+        {ready ? <Button to={`${storefrontPaths.checkout}?source=cart`} size="large" className="w-full" onClick={onCheckout}>Continue to checkout</Button> : <Button size="large" className="w-full" disabled>Resolve basket issues to continue</Button>}
       </div>
     </section>
   );

@@ -6,7 +6,9 @@
   "exports": {
     "./catalog": "./src/catalog.js",
     "./cart": "./src/cart.js",
+    "./checkout": "./src/checkout.js",
     "./customization": "./src/customization.js",
+    "./planner": "./src/planner.js",
     "./saved-meals": "./src/savedMeals.js"
   },
   "dependencies": {

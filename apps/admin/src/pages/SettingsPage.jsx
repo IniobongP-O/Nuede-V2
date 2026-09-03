@@ -1,8 +1,44 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { checkoutSettingsFormSchema } from "@nuede/validation/checkout";
+import { ShieldCheck } from "lucide-react";
+import { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
+
 import { AdminPageHeader } from "../components/layout/AdminPageHeader.jsx";
-import { Panel } from "../components/ui/AdminPrimitives.jsx";
 import { Button } from "../components/ui/Button.jsx";
-import { CheckboxField, SelectInput, TextInput } from "../components/ui/FormControls.jsx";
+import { ErrorState, LoadingState } from "../components/ui/FeedbackStates.jsx";
+import { CheckboxField } from "../components/ui/FormControls.jsx";
+import { Panel } from "../components/ui/AdminPrimitives.jsx";
+import { useToast } from "../components/ui/toastContext.js";
+import { useAuth } from "../features/auth/hooks/useAuth.js";
+import { useAdminCheckoutSettings, useUpdateAdminCheckoutSettings } from "../features/checkout-settings/hooks/useCheckoutSettingsAdmin.js";
 
 export function SettingsPage() {
-  return <><AdminPageHeader eyebrow="Configuration foundation" title="Settings" description="A grouped settings-form architecture with non-persisting examples. Backend settings and permissions do not exist yet." /><div className="mt-6 grid gap-6 xl:grid-cols-2"><Panel className="p-5 sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">Checkout presentation</p><h2 className="mt-2 text-xl font-semibold text-brand-950">Payment options</h2><p className="mt-2 text-sm leading-6 text-muted">The final controls will be backed by authorized settings and server enforcement.</p><form className="mt-6 grid gap-5" onSubmit={(event) => event.preventDefault()}><CheckboxField label="Paystack available" help="Checked for visual demonstration only" defaultChecked /><CheckboxField label="WhatsApp available" help="No payment or messaging flow is connected" defaultChecked /><Button disabled>Persistence begins in a later cycle</Button></form></Panel><Panel className="p-5 sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">Store details</p><h2 className="mt-2 text-xl font-semibold text-brand-950">Operational defaults</h2><form className="mt-6 grid gap-5" onSubmit={(event) => event.preventDefault()}><TextInput label="Store display name" defaultValue="Nuede · demo" /><SelectInput label="Timezone" defaultValue="lagos"><option value="lagos">Africa/Lagos</option></SelectInput><TextInput label="Support email" type="email" placeholder="Approved address later" help="No production contact has been invented" /><Button disabled>Save unavailable</Button></form></Panel></div></>;
+  const auth = useAuth();
+  const { notify } = useToast();
+  const query = useAdminCheckoutSettings();
+  const mutation = useUpdateAdminCheckoutSettings();
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm({ resolver: zodResolver(checkoutSettingsFormSchema), defaultValues: { paystackEnabled: false, whatsappEnabled: false } });
+  const values = useWatch({ control });
+  useEffect(() => {
+    if (!query.data) return;
+    reset({ paystackEnabled: query.data.paystack_enabled, whatsappEnabled: query.data.whatsapp_enabled });
+  }, [query.data, reset]);
+
+  function save(formValues) {
+    mutation.mutate({ ...formValues, updatedBy: auth.user.id }, {
+      onSuccess: () => notify("Checkout payment options updated.", "success"),
+      onError: () => notify("Checkout settings could not be updated. At least one method must remain enabled.", "error"),
+    });
+  }
+
+  return (
+    <><AdminPageHeader eyebrow="Configuration" title="Settings" description="Control which payment routes appear in the customer checkout. This does not initialize payments or create orders." />
+      <div className="mt-6 max-w-3xl">
+        {query.isPending ? <LoadingState title="Loading checkout settings" message="Reading the current payment-method availability." /> : null}
+        {query.isError ? <ErrorState title="Checkout settings are unavailable" message="No defaults are assumed and no changes were made." action={<Button onClick={() => query.refetch()}>Try again</Button>} /> : null}
+        {query.isSuccess ? <Panel className="p-5 sm:p-7"><div className="flex items-start gap-3"><div className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-100 text-brand-700"><ShieldCheck className="size-5" aria-hidden="true" /></div><div><h2 className="text-xl font-semibold text-brand-950">Customer checkout methods</h2><p className="mt-1 text-sm leading-6 text-muted">Disabled methods disappear from checkout after its next refresh. The database rejects attempts to disable both.</p></div></div><form className="mt-6 grid gap-5" noValidate onSubmit={handleSubmit(save)}><CheckboxField label="Paystack available" help="Shows Pay with Paystack as a selectable intent. Real initialization remains Cycle 14." {...register("paystackEnabled")} /><CheckboxField label="WhatsApp available" help="Shows Continue on WhatsApp as a selectable intent. Messaging remains Cycle 13." {...register("whatsappEnabled")} />{!values.paystackEnabled && !values.whatsappEnabled ? <p className="rounded-control bg-amber-50 p-3 text-sm text-warning" role="alert">Enable at least one method before saving.</p> : null}{errors.root?.message ? <p className="text-sm text-danger" role="alert">{errors.root.message}</p> : null}<Button type="submit" busy={mutation.isPending} disabled={!values.paystackEnabled && !values.whatsappEnabled}>Save checkout settings</Button></form></Panel> : null}
+      </div>
+    </>
+  );
 }

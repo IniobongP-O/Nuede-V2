@@ -47,7 +47,8 @@ test("application source stays outside unapproved future integration boundaries"
   const storefrontFiles = (await walk("apps/storefront/src")).filter((file) => /\.jsx?$/.test(file));
   const savedMealsStorage = path.normalize("apps/storefront/src/features/saved-meals/storage/savedMealsStorage.js");
   const cartStorage = path.normalize("apps/storefront/src/features/cart/storage/cartStorage.js");
-  const approvedStorageFiles = new Set([savedMealsStorage, cartStorage]);
+  const plannerStorage = path.normalize("apps/storefront/src/features/planner/storage/plannerStorage.js");
+  const approvedStorageFiles = new Set([savedMealsStorage, cartStorage, plannerStorage]);
   const storefrontForbiddenPatterns = [
     /from\s+["']firebase/,
     /PaystackPop|window\.Paystack|initializeTransaction/,
@@ -90,7 +91,9 @@ test("mock content remains application-owned fixtures", async () => {
     "packages/domain/src/nutrition.js",
     "packages/validation/src/cart.js",
     "packages/validation/src/catalog.js",
+    "packages/validation/src/checkout.js",
     "packages/validation/src/customization.js",
+    "packages/validation/src/planner.js",
     "packages/validation/src/savedMeals.js",
   ]);
   for (const file of sharedFiles) {

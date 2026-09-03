@@ -254,3 +254,29 @@ Deliberately not implemented in Cycle 9:
 - Paystack, WhatsApp ordering, fulfilment, analytics, and later-cycle workflows.
 
 Cycle 9 added no database migration and did not alter grants or RLS. Basket prices remain display estimates; a future trusted server boundary must re-read catalog values and calculate authoritative totals.
+
+## Cycle 11 implementation status
+
+Implemented in Cycle 11:
+
+- one checkout experience with refresh-stable explicit cart and meal-plan sources;
+- live active delivery areas and current integer-kobo delivery fees through centralized TanStack Query data access;
+- guest delivery details using React Hook Form, shared Zod validation, inline errors, and browser autofill attributes;
+- live public Paystack/WhatsApp availability with enabled-only choices, invalid-selection reconciliation, and pre-submit refresh;
+- cart and scheduled meal-plan reviews reusing the accepted hydration, subtotal, and nutrition engines;
+- explicitly estimated subtotal, delivery, and total presentation with no financial values in the submission contract;
+- a discriminated, selection-only cart/meal-plan contract for the future Cycle 12 server engine;
+- a pure mocked submission boundary for Paystack and WhatsApp intent that creates nothing and clears nothing;
+- defensive loading, error, empty, unavailable-selection, zero-zone, and zero-payment-method states;
+- minimal protected admin delivery and checkout-settings controls plus a scoped active-admin singleton-update migration;
+- responsive checkout layout and semantic form, radio, focus, status, and review structure.
+
+Deliberately not implemented in Cycle 11:
+
+- server-authoritative pricing, permanent orders, order references, item snapshots, or an order Edge Function (Cycle 12);
+- WhatsApp order creation, final message construction, or opening WhatsApp (Cycle 13);
+- Paystack initialization, redirect, verification, webhook, payment records, or payment-result states (Cycle 14);
+- customer accounts, persisted customer profiles, or long-lived local storage of delivery PII;
+- admin orders, fulfilment, analytics, content completion, or deployment work from later cycles.
+
+Frontend prices remain review estimates. The future server must independently load the selected catalog records, delivery zone, fee, and payment settings before creating an order.

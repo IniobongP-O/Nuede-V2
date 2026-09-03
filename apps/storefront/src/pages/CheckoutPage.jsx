@@ -1,22 +1,170 @@
-import { LockKeyhole } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { formatKobo } from "@nuede/domain/currency";
+import { checkoutFormSchema } from "@nuede/validation/checkout";
+import { AlertTriangle, CheckCircle2, LockKeyhole } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
 
+import { storefrontPaths } from "../app/routePaths.js";
 import { Container } from "../components/layout/Container.jsx";
 import { Button } from "../components/ui/Button.jsx";
-import { SelectInput, TextArea, TextInput } from "../components/ui/FormControls.jsx";
-import { Card, PageHeader } from "../components/ui/Surface.jsx";
-import { demoOrderItems } from "../fixtures/storefrontFixtures.js";
+import { EmptyState, ErrorState, LoadingState } from "../components/ui/FeedbackStates.jsx";
+import { PageHeader } from "../components/ui/Surface.jsx";
+import { submitCheckoutMock } from "../features/checkout/api/mockCheckout.js";
+import { CheckoutReview } from "../features/checkout/components/CheckoutReview.jsx";
+import { DeliveryDetailsSection } from "../features/checkout/components/DeliveryDetailsSection.jsx";
+import { PaymentMethodsSection } from "../features/checkout/components/PaymentMethodsSection.jsx";
+import { useCheckoutRealtime, useCheckoutSettings, useDeliveryZones } from "../features/checkout/hooks/useCheckoutQueries.js";
+import { buildCheckoutSubmission, calculateEstimatedTotal, CHECKOUT_SOURCE, getCheckoutReadiness, getEnabledPaymentMethods, parseCheckoutSource } from "../features/checkout/utils/checkoutModel.js";
+import { useCart } from "../features/cart/context/cartContext.js";
+import { calculateCartSubtotal, calculateHydratedCartNutrition, hydrateCartItems } from "../features/cart/utils/cartModel.js";
+import { useMenu } from "../features/menu/hooks/useMenu.js";
+import { usePlanner } from "../features/planner/hooks/usePlanner.js";
+import { calculatePlannerSummary } from "../features/planner/utils/plannerHydration.js";
+
+const emptyList = Object.freeze([]);
+const defaultValues = Object.freeze({ fullName: "", phone: "", email: "", address: "", landmark: "", deliveryZoneId: "", paymentMethod: "" });
+
+function SourceActions({ source }) {
+  return <div className="flex flex-wrap justify-center gap-3"><Button to={source === CHECKOUT_SOURCE.mealPlan ? storefrontPaths.planner : storefrontPaths.menu}>{source === CHECKOUT_SOURCE.mealPlan ? "Return to meal planner" : "Return to menu"}</Button>{!source ? <Button variant="secondary" to={`${storefrontPaths.checkout}?source=meal-plan`}>Review meal plan</Button> : null}</div>;
+}
+
+function sourceProblem(source, cartCount, plannerCount) {
+  if (source === CHECKOUT_SOURCE.cart && cartCount === 0) return { title: "Your basket is empty", message: "Add at least one meal before starting basket checkout." };
+  if (source === CHECKOUT_SOURCE.mealPlan && plannerCount === 0) return { title: "Your meal plan is empty", message: "Choose at least one scheduled meal before starting meal-plan checkout." };
+  return null;
+}
 
 export function CheckoutPage() {
+  const [searchParams] = useSearchParams();
+  const source = parseCheckoutSource(searchParams.get("source"));
+  const cart = useCart();
+  const planner = usePlanner();
+  const menuQuery = useMenu();
+  const deliveryQuery = useDeliveryZones(Boolean(source));
+  const settingsQuery = useCheckoutSettings(Boolean(source));
+  useCheckoutRealtime(Boolean(source));
+  const [notice, setNotice] = useState("");
+  const [domainIssues, setDomainIssues] = useState([]);
+  const [mockResult, setMockResult] = useState(null);
+  const [submissionLocked, setSubmissionLocked] = useState(false);
+  const { register, control, handleSubmit, setValue, setError, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(checkoutFormSchema), defaultValues });
+  const selectedZoneId = useWatch({ control, name: "deliveryZoneId" });
+  const selectedPaymentMethod = useWatch({ control, name: "paymentMethod" });
+
+  const products = menuQuery.data || emptyList;
+  const hydratedCart = useMemo(() => hydrateCartItems(cart.items, products), [cart.items, products]);
+  const cartSubtotal = useMemo(() => calculateCartSubtotal(hydratedCart), [hydratedCart]);
+  const cartNutrition = useMemo(() => calculateHydratedCartNutrition(hydratedCart), [hydratedCart]);
+  const plannerSummary = useMemo(() => calculatePlannerSummary(planner.plan, products), [planner.plan, products]);
+  const zones = deliveryQuery.data || emptyList;
+  const enabledMethods = useMemo(() => getEnabledPaymentMethods(settingsQuery.data), [settingsQuery.data]);
+  const selectedZone = zones.find((zone) => zone.id === selectedZoneId) || null;
+  const sourceIssues = source === CHECKOUT_SOURCE.cart
+    ? hydratedCart.filter((item) => !item.orderable || !item.price.complete).map((item) => ({ code: item.status, message: `${item.product?.name || "A basket item"}: ${item.message}` }))
+    : plannerSummary.issues;
+  const sourceEmpty = source === CHECKOUT_SOURCE.cart ? cart.items.length === 0 : plannerSummary.selectedMealCount === 0;
+  const subtotalKobo = source === CHECKOUT_SOURCE.cart ? cartSubtotal.subtotalKobo : plannerSummary.estimatedFoodTotalKobo;
+  const nutrition = source === CHECKOUT_SOURCE.cart ? cartNutrition : plannerSummary.nutrition.total;
+  const totalKobo = selectedZone ? calculateEstimatedTotal(subtotalKobo, selectedZone.feeKobo) : null;
+  const readiness = getCheckoutReadiness({ source, sourcePending: menuQuery.isPending, sourceError: menuQuery.isError, sourceEmpty, sourceIssues, zonesPending: deliveryQuery.isPending, zonesError: deliveryQuery.isError, zone: selectedZone, settingsPending: settingsQuery.isPending, settingsError: settingsQuery.isError, enabledMethods, paymentMethod: selectedPaymentMethod });
+
+  useEffect(() => {
+    if (!deliveryQuery.isSuccess || !selectedZoneId || zones.some((zone) => zone.id === selectedZoneId)) return;
+    const timeout = window.setTimeout(() => {
+      setValue("deliveryZoneId", "", { shouldValidate: true });
+      setNotice("Your selected delivery area is no longer available. Please choose another active area.");
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [deliveryQuery.isSuccess, selectedZoneId, setValue, zones]);
+
+  useEffect(() => {
+    if (!settingsQuery.isSuccess) return;
+    const timeout = window.setTimeout(() => {
+      if (selectedPaymentMethod && !enabledMethods.some((method) => method.id === selectedPaymentMethod)) {
+        setValue("paymentMethod", "", { shouldValidate: true });
+        setNotice("Your selected payment method is no longer available. Please choose another option.");
+      } else if (!selectedPaymentMethod && enabledMethods.length === 1) {
+        setValue("paymentMethod", enabledMethods[0].id, { shouldValidate: true });
+      }
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [enabledMethods, selectedPaymentMethod, setValue, settingsQuery.isSuccess]);
+
+  async function submit(values) {
+    if (submissionLocked) return;
+    setSubmissionLocked(true);
+    setDomainIssues([]);
+    setNotice("");
+    setMockResult(null);
+    try {
+      const [menuResult, zoneResult, settingsResult] = await Promise.all([menuQuery.refetch(), deliveryQuery.refetch(), settingsQuery.refetch()]);
+      if (menuResult.isError || zoneResult.isError || settingsResult.isError) throw new Error("Checkout data could not be refreshed.");
+      const liveZone = (zoneResult.data || []).find((zone) => zone.id === values.deliveryZoneId) || null;
+      const liveMethods = getEnabledPaymentMethods(settingsResult.data);
+      if (!liveZone) {
+        setValue("deliveryZoneId", "", { shouldValidate: true });
+        setError("deliveryZoneId", { type: "manual", message: "That delivery area is no longer active. Choose another area." }, { shouldFocus: true });
+        setNotice("Delivery availability changed while you were reviewing checkout.");
+        return;
+      }
+      if (!liveMethods.some((method) => method.id === values.paymentMethod)) {
+        setValue("paymentMethod", "", { shouldValidate: true });
+        setError("paymentMethod", { type: "manual", message: "That payment method is no longer available." }, { shouldFocus: true });
+        setNotice("Payment availability changed while you were reviewing checkout.");
+        return;
+      }
+      const liveProducts = menuResult.data || [];
+      const liveCart = hydrateCartItems(cart.items, liveProducts);
+      const livePlanner = calculatePlannerSummary(planner.plan, liveProducts);
+      const liveSourceIssues = source === CHECKOUT_SOURCE.cart
+        ? liveCart.filter((item) => !item.orderable || !item.price.complete).map((item) => ({ code: item.status, message: `${item.product?.name || "A basket item"}: ${item.message}` }))
+        : livePlanner.issues;
+      const liveEmpty = source === CHECKOUT_SOURCE.cart ? cart.items.length === 0 : livePlanner.selectedMealCount === 0;
+      if (liveEmpty || liveSourceIssues.length) {
+        setDomainIssues(liveEmpty ? [{ code: "empty_source", message: "This checkout source is now empty." }] : liveSourceIssues);
+        return;
+      }
+      const contract = buildCheckoutSubmission({ source, customer: values, deliveryZoneId: liveZone.id, paymentMethod: values.paymentMethod, cartItems: cart.items, plan: planner.plan });
+      setMockResult(await submitCheckoutMock(contract));
+      requestAnimationFrame(() => document.getElementById("checkout-mock-result")?.focus());
+    } catch {
+      setDomainIssues([{ code: "mock_failure", message: "The checkout contract could not be validated. Your details and selections are unchanged; please try again." }]);
+    } finally {
+      setSubmissionLocked(false);
+    }
+  }
+
+  if (!source) return <Container className="py-12 sm:py-16"><EmptyState title="Choose what to check out" message="This page needs an explicit basket or meal-plan source so your saved selections are never mixed." action={<SourceActions source={null} />} /></Container>;
+  if (menuQuery.isPending) return <Container className="py-12 sm:py-16"><LoadingState title="Checking your order" message="Loading current meal details, availability, prices, and nutrition." /></Container>;
+  if (menuQuery.isError) return <Container className="py-12 sm:py-16"><ErrorState title="We couldn't review your order" message="Your saved selections are unchanged. Reconnect to the live menu before checkout." action={<Button onClick={() => menuQuery.refetch()}>Try again</Button>} /></Container>;
+  const emptyProblem = sourceProblem(source, cart.items.length, plannerSummary.selectedMealCount);
+  if (emptyProblem) return <Container className="py-12 sm:py-16"><EmptyState {...emptyProblem} action={<SourceActions source={source} />} /></Container>;
+
   return (
-    <Container className="py-12 sm:py-16 lg:py-20">
-      <PageHeader eyebrow="Checkout" title="One last step." description="Delivery form, payment selection, and order-summary styling only. No values are calculated or submitted." />
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
+    <Container className="py-10 pb-44 sm:py-14 sm:pb-36 lg:pb-20 lg:py-18">
+      <PageHeader eyebrow="Checkout" title="Review it. Then choose how to continue." description={`You are checking out ${source === CHECKOUT_SOURCE.cart ? "your basket" : "your meal plan"}. Delivery and payment availability stay live while you review.`} />
+      {notice ? <p className="mt-6 flex gap-2 rounded-control border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-warning" role="alert"><AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />{notice}</p> : null}
+      {domainIssues.length ? <section className="mt-6 rounded-control border border-red-200 bg-red-50 p-4" role="alert" aria-labelledby="checkout-issues-title"><h2 id="checkout-issues-title" className="font-semibold text-danger">Checkout needs attention</h2><ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-danger">{domainIssues.map((issue, index) => <li key={`${issue.code}-${index}`}>{issue.message}</li>)}</ul></section> : null}
+      {mockResult ? <section id="checkout-mock-result" tabIndex="-1" className="mt-6 rounded-control border border-brand-300 bg-brand-100/60 p-4 outline-none focus:ring-2 focus:ring-brand-700" role="status"><p className="flex items-center gap-2 font-semibold text-brand-950"><CheckCircle2 className="size-5 text-success" aria-hidden="true" />Checkout details passed frontend validation.</p><p className="mt-2 text-sm leading-6 text-muted">This stopped at the mocked integration boundary. No order, payment, or WhatsApp message was created, and your {source === CHECKOUT_SOURCE.cart ? "basket" : "meal plan"} remains intact.</p></section> : null}
+      <form className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_26rem]" noValidate onSubmit={handleSubmit(submit)}>
         <div className="grid gap-6">
-          <Card className="p-5 sm:p-7"><div className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">01 · Delivery details</p><h2 className="mt-2 font-display text-3xl text-brand-950">Where should it go?</h2><p className="mt-2 text-sm text-muted">Form fields are intentionally unconnected in Cycle 1.</p></div><form className="grid gap-5 sm:grid-cols-2" onSubmit={(event) => event.preventDefault()}><TextInput label="Full name" autoComplete="name" placeholder="Your name" required /><TextInput label="Phone number" type="tel" autoComplete="tel" placeholder="0800 000 0000" required /><TextInput label="Email" type="email" autoComplete="email" placeholder="name@example.com" error="Example error styling: enter a valid email before continuing." /><SelectInput label="Delivery area" defaultValue="" required><option value="" disabled>Select a demo area</option><option>Wuse · demo</option><option>Other · demo</option></SelectInput><TextArea fieldClassName="sm:col-span-2" label="Street address" autoComplete="street-address" placeholder="Complete address" required /><TextInput fieldClassName="sm:col-span-2" label="Landmark" help="Optional fixture field" placeholder="Near a well-known location" /></form></Card>
-          <Card className="p-5 sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">02 · Payment method</p><h2 className="mt-2 font-display text-3xl text-brand-950">Choose a future checkout route.</h2><div className="mt-6 grid gap-3"><div className="rounded-control border-2 border-brand-700 bg-brand-100/40 p-4"><p className="font-semibold text-brand-950">Pay with Paystack · visual example</p><p className="mt-1 text-sm text-muted">No Paystack code, secret, or initialization exists.</p></div><div className="rounded-control border border-line p-4"><p className="font-semibold text-brand-950">Continue on WhatsApp · visual example</p><p className="mt-1 text-sm text-muted">No order or message is created.</p></div></div></Card>
+          {deliveryQuery.isPending ? <LoadingState title="Loading delivery areas" message="Checking the active areas and current delivery fees." /> : null}
+          {deliveryQuery.isError ? <ErrorState title="Delivery areas are unavailable" message="Checkout cannot continue until active delivery areas can be loaded." action={<Button onClick={() => deliveryQuery.refetch()}>Retry delivery areas</Button>} /> : null}
+          {deliveryQuery.isSuccess && zones.length === 0 ? <EmptyState title="Delivery is temporarily unavailable" message="There are no active delivery areas. Nuede will not assume a free or generic delivery option." /> : null}
+          {deliveryQuery.isSuccess && zones.length > 0 ? <DeliveryDetailsSection register={register} errors={errors} zones={zones} disabled={isSubmitting} /> : null}
+          {settingsQuery.isPending ? <LoadingState title="Loading payment options" message="Checking which checkout routes are currently available." /> : null}
+          {settingsQuery.isError ? <ErrorState title="Payment options are unavailable" message="Nuede will not guess which checkout route is enabled." action={<Button onClick={() => settingsQuery.refetch()}>Retry payment options</Button>} /> : null}
+          {settingsQuery.isSuccess && enabledMethods.length === 0 ? <EmptyState title="Checkout is temporarily unavailable" message="No payment method is currently enabled. Your selections remain saved." /> : null}
+          {settingsQuery.isSuccess && enabledMethods.length > 0 ? <PaymentMethodsSection methods={enabledMethods} register={register} error={errors.paymentMethod?.message} disabled={isSubmitting} /> : null}
         </div>
-        <aside className="lg:sticky lg:top-24 lg:self-start" aria-label="Demonstration order summary"><Card className="p-5 sm:p-6"><p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">Your demo order</p><div className="mt-5 divide-y divide-line">{demoOrderItems.map((item) => <div key={item.name} className="grid grid-cols-[1fr_auto] gap-4 py-4 first:pt-0"><div><p className="text-sm font-semibold text-brand-950">{item.name}</p><p className="mt-1 text-xs text-muted">{item.detail}</p></div><span className="text-sm font-semibold">{item.price}</span></div>)}</div><dl className="border-t border-line pt-4 text-sm"><div className="flex justify-between"><dt className="text-muted">Illustrative subtotal</dt><dd>₦18,000</dd></div><div className="mt-3 flex justify-between"><dt className="text-muted">Delivery</dt><dd>Not calculated</dd></div><div className="mt-4 flex justify-between border-t border-line pt-4 text-base font-semibold"><dt>Displayed total</dt><dd>Fixture only</dd></div></dl><Button className="mt-6 w-full" disabled><LockKeyhole className="size-4" />Checkout begins in Cycle 11</Button><p className="mt-3 text-center text-xs leading-5 text-muted">This control cannot create an order or payment.</p></Card></aside>
-      </div>
+        <aside className="grid gap-4 lg:sticky lg:top-24 lg:self-start" aria-label="Order summary and checkout action">
+          <CheckoutReview source={source} cartItems={hydratedCart} plannerSummary={plannerSummary} nutrition={nutrition} subtotalKobo={subtotalKobo} selectedZone={selectedZone} totalKobo={totalKobo} />
+          {sourceIssues.length ? <p className="rounded-control bg-red-50 p-4 text-sm leading-6 text-danger" role="alert">Return to your {source === CHECKOUT_SOURCE.cart ? "basket" : "meal planner"} to resolve {sourceIssues.length} unavailable {sourceIssues.length === 1 ? "selection" : "selections"}.</p> : null}
+          <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0"><div className="mx-auto grid max-w-7xl gap-2 sm:flex sm:items-center sm:gap-3 lg:block"><p className="min-w-0 text-sm sm:flex-1 lg:mb-3"><span className="block text-xs text-muted">Estimated total</span><span className="font-semibold text-brand-950">{totalKobo === null ? "Choose delivery" : formatKobo(totalKobo)}</span></p><Button type="submit" size="large" busy={isSubmitting || submissionLocked} disabled={!readiness.ready || isSubmitting || submissionLocked} className="w-full sm:w-auto lg:w-full"><LockKeyhole className="size-4" aria-hidden="true" />{selectedPaymentMethod === "whatsapp" ? "Continue on WhatsApp" : selectedPaymentMethod === "paystack" ? "Pay with Paystack" : "Choose a payment method"}</Button></div><p className="mt-2 text-center text-xs text-muted">Mock validation only — no order or payment.</p></div>
+        </aside>
+      </form>
     </Container>
   );
 }

@@ -106,7 +106,7 @@ function AddonSelector({ addons, selectedIds, onToggle }) {
   );
 }
 
-export function ProductDetailDialog({ product, open, onClose, onConfigured, initialConfiguration = null, submitLabel = "Add to basket" }) {
+export function ProductDetailDialog({ product, open, onClose, onConfigured, initialConfiguration = null, submitLabel = "Add to basket", allowQuantity = true }) {
   const customization = useProductCustomization(product, (configuration) => {
     onConfigured?.(configuration);
     onClose();
@@ -167,7 +167,7 @@ export function ProductDetailDialog({ product, open, onClose, onConfigured, init
             <div className="mt-3"><ConfiguredNutrition nutrition={nutrition} quantity={customization.quantity} /></div>
           </section>
 
-          <section className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-line p-4" aria-labelledby={`quantity-${product.id}`}>
+          {allowQuantity ? <section className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-line p-4" aria-labelledby={`quantity-${product.id}`}>
             <div>
               <h3 id={`quantity-${product.id}`} className="font-semibold text-brand-950">Quantity</h3>
               <p className="mt-1 text-sm text-muted">Whole prepared meals, minimum one.</p>
@@ -177,7 +177,7 @@ export function ProductDetailDialog({ product, open, onClose, onConfigured, init
               <output className="min-w-8 text-center text-lg font-semibold text-brand-950" aria-live="polite" aria-label={`Quantity ${customization.quantity}`}>{customization.quantity}</output>
               <IconButton label="Increase quantity" onClick={customization.incrementQuantity}><Plus className="size-4" aria-hidden="true" /></IconButton>
             </div>
-          </section>
+          </section> : <p className="rounded-control bg-brand-100 p-3 text-sm text-brand-950">A planner slot represents one meal serving.</p>}
 
           {customization.catalogNotice ? <p className="rounded-control bg-amber-50 p-3 text-sm text-warning" role="status">{customization.catalogNotice}</p> : null}
           {firstIssue ? <p className="rounded-control bg-canvas p-3 text-sm text-muted" role="status">{firstIssue.message}</p> : null}
