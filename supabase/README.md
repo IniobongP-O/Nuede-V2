@@ -35,4 +35,10 @@ catalog, delivery, and checkout settings, calculates authoritative integer-kobo
 totals and nutrition, snapshots the purchase, then invokes a service-role-only RPC
 that writes the complete order graph in one PostgreSQL transaction.
 
+Cycle 14 adds `20260903000300_integrate_paystack_payments.sql` plus
+`initialize-paystack`, `paystack-webhook`, and `verify-paystack-payment`. The first
+atomically stores an order and pending Paystack attempt before hosted-checkout
+initialization; the latter two share amount/currency-checked, idempotent, atomic
+payment reconciliation. Webhooks authenticate the raw body before mutation.
+
 Backend code must never be imported into a Vite application.

@@ -26,6 +26,10 @@ export const customerDeliverySchema = z.object({
 export const checkoutFormSchema = customerDeliverySchema.extend({
   deliveryZoneId: stableIdSchema,
   paymentMethod: paymentMethodSchema,
+}).superRefine((value, context) => {
+  if (value.paymentMethod === "paystack" && !value.email) {
+    context.addIssue({ code: "custom", path: ["email"], message: "Enter an email address to pay securely with Paystack." });
+  }
 });
 
 export const deliveryZoneAdminFormSchema = z.object({
@@ -77,4 +81,8 @@ const mealPlanContractSchema = z.object({
   });
 });
 
-export const checkoutSubmissionSchema = z.discriminatedUnion("orderType", [cartContractSchema, mealPlanContractSchema]);
+export const checkoutSubmissionSchema = z.discriminatedUnion("orderType", [cartContractSchema, mealPlanContractSchema]).superRefine((value, context) => {
+  if (value.paymentMethod === "paystack" && !value.customer.email) {
+    context.addIssue({ code: "custom", path: ["customer", "email"], message: "An email address is required for Paystack." });
+  }
+});

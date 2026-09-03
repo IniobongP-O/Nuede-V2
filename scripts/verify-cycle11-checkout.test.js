@@ -47,17 +47,19 @@ test("Cycle 11 performs estimated arithmetic in integer kobo", () => {
   assert.equal(calculateEstimatedTotal(Number.MAX_SAFE_INTEGER, 1), null);
 });
 
-test("Cycle 11 customer validation trims fields, keeps landmark/email optional, and reports malformed values", () => {
-  const valid = checkoutFormSchema.parse({ ...customer, deliveryZoneId: zoneId, paymentMethod: "paystack" });
+test("Cycle 11 customer validation trims fields, keeps WhatsApp email optional, and applies the Cycle 14 Paystack email boundary", () => {
+  const valid = checkoutFormSchema.parse({ ...customer, deliveryZoneId: zoneId, paymentMethod: "whatsapp" });
   assert.equal(valid.fullName, "Ada Okafor");
   assert.equal(valid.email, "");
   assert.equal(valid.landmark, "Gate two");
   assert.equal(checkoutFormSchema.safeParse({ ...customer, email: "bad@", deliveryZoneId: zoneId, paymentMethod: "paystack" }).success, false);
+  assert.equal(checkoutFormSchema.safeParse({ ...customer, deliveryZoneId: zoneId, paymentMethod: "paystack" }).success, false);
+  assert.equal(checkoutFormSchema.safeParse({ ...customer, email: "ada@example.com", deliveryZoneId: zoneId, paymentMethod: "paystack" }).success, true);
   assert.equal(checkoutFormSchema.safeParse({ ...customer, fullName: "", deliveryZoneId: zoneId, paymentMethod: "paystack" }).success, false);
 });
 
 test("Cycle 11 builds selection-only cart and scheduled meal-plan contracts", () => {
-  const cart = buildCheckoutSubmission({ source: "cart", customer, deliveryZoneId: zoneId, paymentMethod: "paystack", cartItems: [cartItem] });
+  const cart = buildCheckoutSubmission({ source: "cart", customer: { ...customer, email: "ada@example.com" }, deliveryZoneId: zoneId, paymentMethod: "paystack", cartItems: [cartItem] });
   assert.equal(cart.orderType, "cart");
   assert.deepEqual(cart.items, [cartItem]);
   assert.doesNotMatch(JSON.stringify(cart), /subtotal|totalKobo|deliveryFee|priceKobo|nutrition/i);
@@ -80,8 +82,8 @@ test("Cycle 11 readiness blocks empty, invalid, stale-zone, disabled-method, and
   assert.match(changed.issues.map(({ code }) => code).join(","), /disabled_payment_method/);
 });
 
-test("Cycle 11 mock boundary remains isolated for the still-deferred Paystack branch", async () => {
-  const contract = buildCheckoutSubmission({ source: "cart", customer, deliveryZoneId: zoneId, paymentMethod: "paystack", cartItems: [cartItem] });
+test("Cycle 11 historical mock adapter remains isolated after the Cycle 14 Paystack branch replaces it", async () => {
+  const contract = buildCheckoutSubmission({ source: "cart", customer: { ...customer, email: "ada@example.com" }, deliveryZoneId: zoneId, paymentMethod: "paystack", cartItems: [cartItem] });
   const result = await submitCheckoutMock(contract);
   assert.equal(result.accepted, true);
   assert.deepEqual(result.contract, contract);
@@ -95,7 +97,7 @@ test("Cycle 11 mock boundary remains isolated for the still-deferred Paystack br
   assert.match(page, /isSubmitting/);
   assert.match(page, /submissionLocked/);
   assert.doesNotMatch(api, /\.from\(["']orders|order_items|payments|wa\.me|paystack\.co|clearCart|clearMeals/i);
-  assert.match(page, /if \(values\.paymentMethod === "paystack"\)[\s\S]*submitCheckoutMock/);
+  assert.match(page, /if \(values\.paymentMethod === "paystack"\)[\s\S]*initializePaystackCheckout/);
   assert.doesNotMatch(page, /paystack\.co|PAYSTACK_SECRET_KEY|\.from\(["'](?:orders|order_items|payments)/i);
 });
 

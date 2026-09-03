@@ -271,13 +271,13 @@ test("Cycle 13 external opening accepts only safe WhatsApp handoffs and retry on
   assert.equal(openWhatsappHandoff(url, () => null), false);
 });
 
-test("Cycle 13 storefront uses the dedicated function only for WhatsApp and retains Paystack boundary", async () => {
+test("Cycle 13 storefront still uses the dedicated WhatsApp function after Cycle 14 connects Paystack", async () => {
   const page = await read("apps/storefront/src/pages/CheckoutPage.jsx");
   const api = await read("apps/storefront/src/features/checkout/api/checkoutApi.js");
   const handoff = await read("apps/storefront/src/features/checkout/components/WhatsappOrderCreated.jsx");
   const index = await read("supabase/functions/create-whatsapp-order/index.js");
   const config = await read("supabase/config.toml");
-  assert.match(page, /if \(values\.paymentMethod === "paystack"\)[\s\S]*submitCheckoutMock/);
+  assert.match(page, /if \(values\.paymentMethod === "paystack"\)[\s\S]*initializePaystackCheckout/);
   assert.match(page, /const order = await createWhatsappOrder\(contract\);[\s\S]*clearCart|const order = await createWhatsappOrder\(contract\);[\s\S]*clearMeals/);
   assert.match(page, /dataset\.orderSubmissionLocked === "true"[\s\S]*dataset\.orderSubmissionLocked = "true"/);
   assert.match(api, /functions\.invoke\("create-whatsapp-order"/);

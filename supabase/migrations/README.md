@@ -18,5 +18,6 @@ Ordered follow-up migrations:
 - `20260901000200_enable_storefront_catalog_realtime.sql` and `20260901000300_enable_customization_catalog_realtime.sql` publish the approved live catalog tables.
 - `20260903000100_enable_admin_checkout_settings.sql` permits narrowly scoped active-admin checkout-setting updates.
 - `20260903000200_create_secure_order_persistence.sql` adds a private collision-safe order-reference sequence and service-role-only atomic order persistence RPC.
+- `20260903000300_integrate_paystack_payments.sql` adds provider diagnostics plus service-role-only atomic Paystack order/attempt creation, initialization-failure recording, and idempotent payment/order reconciliation. Existing fulfilment state is never changed.
 
 Later RLS policies, Storage setup, analytics views, and commerce functions do not belong in the immutable Cycle 2 migration.

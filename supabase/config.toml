@@ -389,6 +389,18 @@ entrypoint = "./functions/create-order/index.js"
 verify_jwt = false
 entrypoint = "./functions/create-whatsapp-order/index.js"
 
+[functions.initialize-paystack]
+verify_jwt = false
+entrypoint = "./functions/initialize-paystack/index.js"
+
+[functions.paystack-webhook]
+verify_jwt = false
+entrypoint = "./functions/paystack-webhook/index.js"
+
+[functions.verify-paystack-payment]
+verify_jwt = false
+entrypoint = "./functions/verify-paystack-payment/index.js"
+
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 

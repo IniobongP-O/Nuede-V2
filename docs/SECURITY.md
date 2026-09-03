@@ -99,3 +99,13 @@ Image replacement follows upload -> database reference -> old-object cleanup. A 
 Only `service_role` can execute `create_order_atomic(jsonb, jsonb)`. `anon` and `authenticated` retain no direct insert permission on `orders`, `order_items`, `order_item_addons`, or `payments`, and cannot execute the RPC. The `SECURITY DEFINER` function has an empty `search_path`, hard-codes safe initial `unpaid`/`pending` statuses, generates the reference from a private sequence, and inserts the full snapshot graph within one PostgreSQL transaction.
 
 Failures log only an error code and validation stage. Customer PII, request bodies, database errors, stack traces, and secrets are not returned or deliberately logged. The broad public function entrypoint means abuse/rate limiting remains a deployment-hardening concern; it does not weaken database authorization.
+
+## Cycle 14 Paystack boundary
+
+- `PAYSTACK_SECRET_KEY` exists only in Edge Function runtime configuration and authenticates both Paystack API calls and webhook HMAC SHA-512 signatures. There is no `VITE_PAYSTACK_SECRET_KEY` or separate client secret.
+- The browser sends only the strict selection contract. Current catalog rows, relationships, availability, checkout enablement, delivery fee, nutrition, and integer-kobo totals are recalculated by the Cycle 12 engine.
+- Paystack initialization is allowed only after current Paystack enablement passes and the permanent order/pending attempt commit atomically. Disabling Paystack later does not block reconciliation of a previously valid attempt.
+- Redirect query parameters never transition payment state. The verification function first looks up a known internal reference, then uses the backend secret to query Paystack.
+- The webhook signs the untouched raw body and rejects an invalid signature before JSON parsing or database access. Valid relevant events are matched by the stored unique provider reference, not trusted metadata.
+- Amount and NGN currency must equal the stored attempt. Mismatches become a verified integrity failure and cannot enter paid revenue. Row locks, unique provider identities, and terminal-paid no-op behavior protect duplicate delivery.
+- Payment/order payment status changes occur in one RPC transaction. No Cycle 14 function changes fulfilment status or broadens public table/RPC access.

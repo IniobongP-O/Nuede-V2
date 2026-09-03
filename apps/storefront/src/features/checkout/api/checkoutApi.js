@@ -57,3 +57,34 @@ export async function createWhatsappOrder(contract) {
   }
   return data.order;
 }
+
+export async function initializePaystackCheckout(contract) {
+  const { data, error } = await requireSupabase().functions.invoke("initialize-paystack", { body: contract });
+  if (error) {
+    const body = await functionErrorBody(error);
+    throw new CheckoutApiError(
+      body?.error?.message || "Paystack could not be initialized. Your payment has not been confirmed.",
+      { code: body?.error?.code || "PAYSTACK_INITIALIZATION_FAILED", order: body?.order || null, cause: error },
+    );
+  }
+  const payment = data?.payment;
+  if (!payment?.orderReference || !payment.paymentReference || !payment.authorizationUrl || !Number.isSafeInteger(payment.amountKobo)) {
+    throw new CheckoutApiError("The Paystack response was incomplete. Your payment has not been confirmed.");
+  }
+  return payment;
+}
+
+export async function verifyPaystackPayment(reference) {
+  const { data, error } = await requireSupabase().functions.invoke("verify-paystack-payment", { body: { reference } });
+  if (error) {
+    const body = await functionErrorBody(error);
+    throw new CheckoutApiError(body?.error?.message || "The payment status could not be checked.", {
+      code: body?.error?.code || "PAYMENT_VERIFICATION_FAILED",
+      cause: error,
+    });
+  }
+  if (!data?.payment?.status || !data.payment.orderReference || !data.payment.paymentReference) {
+    throw new CheckoutApiError("The payment status response was incomplete.");
+  }
+  return data.payment;
+}

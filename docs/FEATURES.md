@@ -325,3 +325,18 @@ Deliberately not implemented in Cycle 13:
 - admin order management or fulfilment transitions (Cycle 15);
 - paid-revenue analytics (Cycle 16), feedback/testimonial expansion (Cycle 17), or later deployment work;
 - a broad idempotency or public order-lookup subsystem. The UI prevents trivial duplicates and never automatically retries an ambiguous permanent-order request, but response-loss retry ambiguity remains documented.
+
+## Cycle 14 implementation status
+
+Implemented in Cycle 14:
+
+- backend-only Paystack initialization using the existing strict checkout contract and Cycle 12 authoritative repricing engine;
+- atomic permanent order plus pending payment-attempt creation with unique provider references;
+- Paystack-hosted checkout redirect with a configured storefront callback and no raw card handling;
+- raw-body HMAC SHA-512 webhook authentication, validated provider payloads, known-reference lookup, amount/currency integrity checks, and idempotent atomic reconciliation;
+- server-to-server verification for known pending attempts, with safe confirming/paid/pending/failed responses;
+- a real payment-result page with bounded TanStack Query refresh, trusted order/amount/reference display, and fake-redirect resistance;
+- a verified post-payment WhatsApp handoff that does not depend on manual WhatsApp checkout enablement;
+- deterministic Node coverage plus pgTAP coverage for privileges, atomic creation, success, duplicates, fulfilment separation, and amount mismatch.
+
+Not implemented: admin order management (Cycle 15), analytics/revenue UI (Cycle 16), later content or launch work, refunds, or fulfilment transitions.

@@ -1,6 +1,6 @@
 import { OrderError } from "./errors.js";
 
-function persistenceItems(items) {
+export function persistenceItems(items) {
   return items.map((item) => ({
     product_id: item.product_id,
     variant_id: item.variant_id,

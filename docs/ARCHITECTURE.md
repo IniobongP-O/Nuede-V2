@@ -176,6 +176,21 @@ selection-only checkout contract -> WhatsApp method pin -> Cycle 12 authoritativ
 
 Cart or planner state is cleared only after the permanent response and never owns the retry URL. An unexpected formatter failure does not undo persistence; the server returns a minimal reference/status recovery payload. A network failure with no response remains intentionally ambiguous and is not automatically retried because no general idempotency key exists yet.
 
+## Cycle 14 secure Paystack payments
+
+`initialize-paystack` is the method-specific Paystack boundary. It pins `paymentMethod = 'paystack'`, reuses the Cycle 12 request validation/catalog/settings/pricing/nutrition/snapshot pipeline, and substitutes only a Paystack-specific atomic persistence function. The database creates the permanent order and pending payment attempt together before the backend calls Paystack with the trusted integer-kobo total and configured callback URL.
+
+```text
+selection-only checkout -> shared authoritative engine -> atomic order + payment attempt
+-> backend Paystack initialization -> hosted checkout -> /payment?reference=...
+-> trusted lookup -> Paystack verification and/or signed webhook
+-> atomic payment + order payment-status reconciliation
+```
+
+`paystack-webhook` authenticates the original request bytes with the official HMAC SHA-512 `x-paystack-signature` protocol before JSON parsing or any write. `verify-paystack-payment` treats a redirect reference only as a lookup key and calls Paystack server-to-server for known non-terminal attempts. Both paths converge on the same row-locking RPC, which verifies stored expected amount and NGN currency, records controlled integrity failures, is idempotent for an already verified payment, and never changes fulfilment status.
+
+The result page fetches through one feature API/hook, performs at most six automatic refreshes, and renders confirming, successful, pending, and failed states. Only a verified database result can render success or provide the post-payment WhatsApp message. That message is independent of whether manual WhatsApp checkout remains enabled.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.

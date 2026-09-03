@@ -94,6 +94,12 @@ The RPC accepts only already validated authoritative snapshots from the Edge Fun
 
 Cycle 13 reuses this exact persistence path for WhatsApp orders and requires no migration. The request's already validated method persists as `whatsapp`; the RPC still supplies `unpaid` and `pending`, and no WhatsApp URL/message column or synthetic payment record is added. Handoff text remains derivable from the permanent order response and purchase-time snapshots.
 
+## Cycle 14 Paystack persistence and reconciliation
+
+`20260903000300_integrate_paystack_payments.sql` extends `payments` only with provider reconciliation evidence: Paystack transaction ID, observed status/amount/currency, a controlled failure code, and last event time. Provider transaction IDs have a partial unique index; the original `(provider, provider_reference)` unique index remains the primary idempotency guard.
+
+`create_paystack_order_atomic` calls the accepted Cycle 12 order persistence RPC and inserts the pending Paystack payment in the same PostgreSQL statement transaction. `record_paystack_initialization_failure_atomic` records a provider-start failure without falsely making an ambiguous transaction terminal or touching fulfilment. `reconcile_paystack_payment_atomic` locks the payment and order, refuses amount/currency mismatches, makes repeated paid notifications a no-op, and updates payment status plus order payment status atomically. All three functions are executable only by `service_role`; RLS and direct client grants are unchanged.
+
 Existing snapshot columns are reused without duplicating the Cycle 2 model. `orders` retains customer/delivery/zone/fee/totals/nutrition and plan dates; `order_items` retains product/variant names, base price, quantity, configured line total/nutrition, and schedule address; `order_item_addons` retains each add-on's purchase-time name, price, and nutrition.
 
 ## Updated timestamps

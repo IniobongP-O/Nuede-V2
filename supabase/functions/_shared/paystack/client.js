@@ -1,0 +1,83 @@
+import { OrderError } from "../order/errors.js";
+import { paystackInitializeResponseSchema, paystackVerifyResponseSchema } from "./schema.js";
+
+const PAYSTACK_API_URL = "https://api.paystack.co";
+
+function providerError(message, cause) {
+  return new OrderError("PAYSTACK_PROVIDER_ERROR", message, { status: 502, stage: "paystack_provider", cause });
+}
+
+async function paystackRequest(path, { secretKey, fetchImpl = fetch, method = "GET", body, timeoutMs = 12_000 } = {}) {
+  if (!secretKey) throw new OrderError("PAYSTACK_CONFIGURATION_ERROR", "Paystack is temporarily unavailable.", { status: 503, stage: "paystack_configuration" });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  let response;
+  try {
+    response = await fetchImpl(`${PAYSTACK_API_URL}${path}`, {
+      method,
+      headers: { Authorization: `Bearer ${secretKey}`, "Content-Type": "application/json" },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    throw providerError("Paystack could not be reached. Please try again.", error);
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  let payload;
+  try {
+    payload = await response.json();
+  } catch (error) {
+    throw providerError("Paystack returned an invalid response.", error);
+  }
+  if (!response.ok || payload?.status !== true) throw providerError("Paystack could not process the payment request.");
+  return payload;
+}
+
+export function createPaystackReference(randomUUID = () => crypto.randomUUID()) {
+  return `NUE-${randomUUID().replaceAll("-", "")}`;
+}
+
+export function normalizeStorefrontUrl(value) {
+  try {
+    const url = new URL(value);
+    const localHttp = url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname);
+    if ((url.protocol !== "https:" && !localHttp) || url.username || url.password) throw new Error("Unsupported storefront URL");
+    return url;
+  } catch (error) {
+    throw new OrderError("PAYSTACK_CONFIGURATION_ERROR", "Paystack is temporarily unavailable.", { status: 503, stage: "paystack_configuration", cause: error });
+  }
+}
+
+export async function initializePaystackTransaction({ email, amountKobo, reference, orderReference, storefrontUrl }, dependencies = {}) {
+  const baseUrl = normalizeStorefrontUrl(storefrontUrl);
+  const callbackUrl = new URL("payment", baseUrl);
+  const cancelUrl = new URL("checkout", baseUrl);
+  const payload = await paystackRequest("/transaction/initialize", {
+    ...dependencies,
+    method: "POST",
+    body: {
+      email,
+      amount: String(amountKobo),
+      currency: "NGN",
+      reference,
+      callback_url: callbackUrl.toString(),
+      metadata: JSON.stringify({ order_reference: orderReference, cancel_action: cancelUrl.toString() }),
+    },
+  });
+  const parsed = paystackInitializeResponseSchema.safeParse(payload);
+  if (!parsed.success || parsed.data.data.reference !== reference) throw providerError("Paystack returned an invalid transaction response.");
+  const authorizationUrl = new URL(parsed.data.data.authorization_url);
+  if (authorizationUrl.protocol !== "https:" || authorizationUrl.hostname !== "checkout.paystack.com") {
+    throw providerError("Paystack returned an invalid checkout address.");
+  }
+  return parsed.data.data;
+}
+
+export async function verifyPaystackTransaction(reference, dependencies = {}) {
+  const payload = await paystackRequest(`/transaction/verify/${encodeURIComponent(reference)}`, dependencies);
+  const parsed = paystackVerifyResponseSchema.safeParse(payload);
+  if (!parsed.success || parsed.data.data.reference !== reference) throw providerError("Paystack returned an invalid verification response.");
+  return parsed.data.data;
+}

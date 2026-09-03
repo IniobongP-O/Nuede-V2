@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatKobo } from "@nuede/domain/currency";
 import { checkoutFormSchema } from "@nuede/validation/checkout";
-import { AlertTriangle, CheckCircle2, LockKeyhole } from "lucide-react";
+import { AlertTriangle, LockKeyhole } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
@@ -11,14 +11,15 @@ import { Container } from "../components/layout/Container.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { EmptyState, ErrorState, LoadingState } from "../components/ui/FeedbackStates.jsx";
 import { PageHeader } from "../components/ui/Surface.jsx";
-import { CheckoutApiError, createWhatsappOrder } from "../features/checkout/api/checkoutApi.js";
-import { submitCheckoutMock } from "../features/checkout/api/mockCheckout.js";
+import { CheckoutApiError, createWhatsappOrder, initializePaystackCheckout } from "../features/checkout/api/checkoutApi.js";
 import { CheckoutReview } from "../features/checkout/components/CheckoutReview.jsx";
 import { DeliveryDetailsSection } from "../features/checkout/components/DeliveryDetailsSection.jsx";
+import { PaystackCheckoutReady } from "../features/checkout/components/PaystackCheckoutReady.jsx";
 import { PaymentMethodsSection } from "../features/checkout/components/PaymentMethodsSection.jsx";
 import { WhatsappOrderCreated } from "../features/checkout/components/WhatsappOrderCreated.jsx";
 import { useCheckoutRealtime, useCheckoutSettings, useDeliveryZones } from "../features/checkout/hooks/useCheckoutQueries.js";
 import { buildCheckoutSubmission, calculateEstimatedTotal, CHECKOUT_SOURCE, getCheckoutReadiness, getEnabledPaymentMethods, parseCheckoutSource } from "../features/checkout/utils/checkoutModel.js";
+import { redirectToPaystackCheckout } from "../features/checkout/utils/paystackCheckout.js";
 import { openWhatsappHandoff } from "../features/checkout/utils/whatsappHandoff.js";
 import { useCart } from "../features/cart/context/cartContext.js";
 import { calculateCartSubtotal, calculateHydratedCartNutrition, hydrateCartItems } from "../features/cart/utils/cartModel.js";
@@ -50,7 +51,8 @@ export function CheckoutPage() {
   useCheckoutRealtime(Boolean(source));
   const [notice, setNotice] = useState("");
   const [domainIssues, setDomainIssues] = useState([]);
-  const [mockResult, setMockResult] = useState(null);
+  const [paystackReady, setPaystackReady] = useState(null);
+  const [paystackFailure, setPaystackFailure] = useState(null);
   const [handoff, setHandoff] = useState(null);
   const [submissionLocked, setSubmissionLocked] = useState(false);
   const { register, control, handleSubmit, setValue, setError, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(checkoutFormSchema), defaultValues });
@@ -103,7 +105,8 @@ export function CheckoutPage() {
     setSubmissionLocked(true);
     setDomainIssues([]);
     setNotice("");
-    setMockResult(null);
+    setPaystackReady(null);
+    setPaystackFailure(null);
     try {
       const [menuResult, zoneResult, settingsResult] = await Promise.all([menuQuery.refetch(), deliveryQuery.refetch(), settingsQuery.refetch()]);
       if (menuResult.isError || zoneResult.isError || settingsResult.isError) throw new Error("Checkout data could not be refreshed.");
@@ -134,8 +137,16 @@ export function CheckoutPage() {
       }
       const contract = buildCheckoutSubmission({ source, customer: values, deliveryZoneId: liveZone.id, paymentMethod: values.paymentMethod, cartItems: cart.items, plan: planner.plan });
       if (values.paymentMethod === "paystack") {
-        setMockResult(await submitCheckoutMock(contract));
-        requestAnimationFrame(() => document.getElementById("checkout-mock-result")?.focus());
+        const payment = await initializePaystackCheckout(contract);
+        const liveSubtotalKobo = source === CHECKOUT_SOURCE.cart ? calculateCartSubtotal(liveCart).subtotalKobo : livePlanner.estimatedFoodTotalKobo;
+        const liveTotalKobo = calculateEstimatedTotal(liveSubtotalKobo, liveZone.feeKobo);
+        const priceChanged = payment.amountKobo !== liveTotalKobo;
+        if (source === CHECKOUT_SOURCE.cart) cart.clearCart();
+        else planner.clearMeals();
+        if (priceChanged || !redirectToPaystackCheckout(payment.authorizationUrl)) {
+          setPaystackReady({ ...payment, priceChanged });
+          requestAnimationFrame(() => document.getElementById("paystack-checkout-ready")?.focus());
+        }
         return;
       }
 
@@ -148,6 +159,18 @@ export function CheckoutPage() {
       if (!opened) setHandoff({ ...completedHandoff, automaticOpenBlocked: true });
       requestAnimationFrame(() => document.getElementById("whatsapp-order-created")?.focus());
     } catch (error) {
+      if (error instanceof CheckoutApiError && ["PAYMENT_METHOD_DISABLED", "WHATSAPP_DISABLED"].includes(error.code)) {
+        setValue("paymentMethod", "", { shouldValidate: true });
+        setNotice("Payment availability changed while you were reviewing checkout. Choose another enabled option.");
+        void settingsQuery.refetch();
+      }
+      if (error instanceof CheckoutApiError && error.order?.paymentMethod === "paystack" && error.order.paymentReference) {
+        setPaystackFailure(error.order);
+        if (source === CHECKOUT_SOURCE.cart) cart.clearCart();
+        else planner.clearMeals();
+        requestAnimationFrame(() => document.getElementById("paystack-initialization-failed")?.focus());
+        return;
+      }
       if (error instanceof CheckoutApiError && error.order?.orderReference) {
         setHandoff({ ...error.order, whatsapp: null, handoffError: error.message, automaticOpenBlocked: true });
         if (source === CHECKOUT_SOURCE.cart) cart.clearCart();
@@ -166,6 +189,8 @@ export function CheckoutPage() {
     }
   }
 
+  if (paystackReady) return <Container className="py-10 sm:py-14 lg:py-18"><PaystackCheckoutReady payment={paystackReady} priceChanged={paystackReady.priceChanged} /></Container>;
+  if (paystackFailure) return <Container className="py-10 sm:py-14 lg:py-18"><section id="paystack-initialization-failed" tabIndex="-1" className="rounded-card border border-red-200 bg-red-50 p-6 outline-none sm:p-8" role="alert"><h1 className="font-display text-4xl text-brand-950">Paystack could not be opened.</h1><p className="mt-4 max-w-2xl leading-7 text-danger">Order <strong>{paystackFailure.orderReference}</strong> was recorded, but payment was not confirmed. Check the trusted status before taking another action.</p><Button className="mt-6" to={`${storefrontPaths.payment}?reference=${encodeURIComponent(paystackFailure.paymentReference)}`} variant="secondary">View payment status</Button></section></Container>;
   if (handoff) return <Container className="py-10 sm:py-14 lg:py-18"><WhatsappOrderCreated order={handoff} /></Container>;
   if (!source) return <Container className="py-12 sm:py-16"><EmptyState title="Choose what to check out" message="This page needs an explicit basket or meal-plan source so your saved selections are never mixed." action={<SourceActions source={null} />} /></Container>;
   if (menuQuery.isPending) return <Container className="py-12 sm:py-16"><LoadingState title="Checking your order" message="Loading current meal details, availability, prices, and nutrition." /></Container>;
@@ -178,7 +203,6 @@ export function CheckoutPage() {
       <PageHeader eyebrow="Checkout" title="Review it. Then choose how to continue." description={`You are checking out ${source === CHECKOUT_SOURCE.cart ? "your basket" : "your meal plan"}. Delivery and payment availability stay live while you review.`} />
       {notice ? <p className="mt-6 flex gap-2 rounded-control border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-warning" role="alert"><AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />{notice}</p> : null}
       {domainIssues.length ? <section className="mt-6 rounded-control border border-red-200 bg-red-50 p-4" role="alert" aria-labelledby="checkout-issues-title"><h2 id="checkout-issues-title" tabIndex="-1" className="font-semibold text-danger outline-none">Checkout needs attention</h2><ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-danger">{domainIssues.map((issue, index) => <li key={`${issue.code}-${index}`}>{issue.message}</li>)}</ul></section> : null}
-      {mockResult ? <section id="checkout-mock-result" tabIndex="-1" className="mt-6 rounded-control border border-brand-300 bg-brand-100/60 p-4 outline-none focus:ring-2 focus:ring-brand-700" role="status"><p className="flex items-center gap-2 font-semibold text-brand-950"><CheckCircle2 className="size-5 text-success" aria-hidden="true" />Paystack details passed frontend validation.</p><p className="mt-2 text-sm leading-6 text-muted">Paystack payment is not implemented yet. No order or payment was created, and your {source === CHECKOUT_SOURCE.cart ? "basket" : "meal plan"} remains intact.</p></section> : null}
       <form className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_26rem]" noValidate onSubmit={handleSubmit(submit)}>
         <div className="grid gap-6">
           {deliveryQuery.isPending ? <LoadingState title="Loading delivery areas" message="Checking the active areas and current delivery fees." /> : null}
@@ -193,7 +217,7 @@ export function CheckoutPage() {
         <aside className="grid gap-4 lg:sticky lg:top-24 lg:self-start" aria-label="Order summary and checkout action">
           <CheckoutReview source={source} cartItems={hydratedCart} plannerSummary={plannerSummary} nutrition={nutrition} subtotalKobo={subtotalKobo} selectedZone={selectedZone} totalKobo={totalKobo} />
           {sourceIssues.length ? <p className="rounded-control bg-red-50 p-4 text-sm leading-6 text-danger" role="alert">Return to your {source === CHECKOUT_SOURCE.cart ? "basket" : "meal planner"} to resolve {sourceIssues.length} unavailable {sourceIssues.length === 1 ? "selection" : "selections"}.</p> : null}
-          <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0"><div className="mx-auto grid max-w-7xl gap-2 sm:flex sm:items-center sm:gap-3 lg:block"><p className="min-w-0 text-sm sm:flex-1 lg:mb-3"><span className="block text-xs text-muted">Estimated total</span><span className="font-semibold text-brand-950">{totalKobo === null ? "Choose delivery" : formatKobo(totalKobo)}</span></p><Button type="submit" size="large" busy={isSubmitting || submissionLocked} disabled={!readiness.ready || isSubmitting || submissionLocked} className="w-full sm:w-auto lg:w-full"><LockKeyhole className="size-4" aria-hidden="true" />{isSubmitting && selectedPaymentMethod === "whatsapp" ? "Creating your order..." : selectedPaymentMethod === "whatsapp" ? "Continue on WhatsApp" : selectedPaymentMethod === "paystack" ? "Pay with Paystack" : "Choose a payment method"}</Button></div><p className="mt-2 text-center text-xs text-muted">{selectedPaymentMethod === "whatsapp" ? "Your order will be recorded before WhatsApp opens." : "Paystack payment is not implemented yet."}</p></div>
+          <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0"><div className="mx-auto grid max-w-7xl gap-2 sm:flex sm:items-center sm:gap-3 lg:block"><p className="min-w-0 text-sm sm:flex-1 lg:mb-3"><span className="block text-xs text-muted">Estimated total</span><span className="font-semibold text-brand-950">{totalKobo === null ? "Choose delivery" : formatKobo(totalKobo)}</span></p><Button type="submit" size="large" busy={isSubmitting || submissionLocked} disabled={!readiness.ready || isSubmitting || submissionLocked} className="w-full sm:w-auto lg:w-full"><LockKeyhole className="size-4" aria-hidden="true" />{isSubmitting ? selectedPaymentMethod === "paystack" ? "Initializing secure payment..." : "Creating your order..." : selectedPaymentMethod === "whatsapp" ? "Continue on WhatsApp" : selectedPaymentMethod === "paystack" ? "Pay with Paystack" : "Choose a payment method"}</Button></div><p className="mt-2 text-center text-xs text-muted">{selectedPaymentMethod === "whatsapp" ? "Your order will be recorded before WhatsApp opens." : "Nuede rechecks the amount, then Paystack securely handles payment."}</p></div>
         </aside>
       </form>
     </Container>

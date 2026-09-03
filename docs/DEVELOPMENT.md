@@ -138,6 +138,32 @@ supabase functions serve create-order
 
 The Edge runtime requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; use local or hosted function secrets and never a `VITE_` variable. Invoke `create-order` with the Cycle 11 cart or meal-plan selection contract. The storefront intentionally remains on its mock adapter until Cycle 13/14 connects method-specific completion flows.
 
+## Cycle 14 Paystack development
+
+Configure only Edge Function runtime values (for example through local `supabase/functions/.env` or hosted Supabase secrets):
+
+```text
+SUPABASE_URL=<Supabase project URL>
+SUPABASE_SERVICE_ROLE_KEY=<backend-only service role key>
+PAYSTACK_SECRET_KEY=<Paystack test secret key>
+NUEDE_STOREFRONT_URL=http://localhost:5173/
+NUEDE_WHATSAPP_NUMBER=<optional international digits for verified paid follow-up>
+```
+
+Deploy/serve `initialize-paystack`, `paystack-webhook`, and `verify-paystack-payment`. Configure Paystack's webhook URL to the deployed `paystack-webhook` function. The callback URL is derived from `NUEDE_STOREFRONT_URL`; do not hard-code a production domain and do not place any Paystack secret in a Vite environment.
+
+Deterministic verification uses mocked provider responses:
+
+```sh
+node --test scripts/verify-cycle14-paystack.test.js
+npm run lint
+npm test
+npm run build:storefront
+npm run build:admin
+```
+
+With Docker/local Supabase available, run `npm run db:reset` and `npm run db:test`, then serve all three functions and exercise Paystack test mode. Confirm success, failure/abandonment, duplicate webhook, invalid signature, wrong amount, disabled-before-init, disabled-after-init, fake redirect, unknown reference, provider outage, normal cart, and meal-plan paths. Never use production keys or real money for development acceptance.
+
 ## Development-cycle workflow
 
 Every cycle follows:
