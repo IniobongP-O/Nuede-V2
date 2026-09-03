@@ -12,6 +12,7 @@ import { FeedbackPage } from "../pages/FeedbackPage.jsx";
 import { LoginPage } from "../pages/LoginPage.jsx";
 import { NotFoundPage } from "../pages/NotFoundPage.jsx";
 import { OrdersPage } from "../pages/OrdersPage.jsx";
+import { OrderDetailPage } from "../pages/OrderDetailPage.jsx";
 import { SettingsPage } from "../pages/SettingsPage.jsx";
 import { TestimonialsPage } from "../pages/TestimonialsPage.jsx";
 
@@ -32,6 +33,7 @@ export const adminRouter = createBrowserRouter([
           { path: "/dashboard", element: <DashboardPage /> },
           { path: "/menu", element: <Suspense fallback={<LoadingState title="Loading menu management" message="Preparing the live catalog workspace." />}><MenuPage /></Suspense> },
           { path: "/orders", element: <OrdersPage /> },
+          { path: "/orders/:orderReference", element: <OrderDetailPage /> },
           { path: "/analytics", element: <AnalyticsPage /> },
           { path: "/delivery", element: <DeliveryPage /> },
           { path: "/testimonials", element: <TestimonialsPage /> },

@@ -340,3 +340,20 @@ Implemented in Cycle 14:
 - deterministic Node coverage plus pgTAP coverage for privileges, atomic creation, success, duplicates, fulfilment separation, and amount mismatch.
 
 Not implemented: admin order management (Cycle 15), analytics/revenue UI (Cycle 16), later content or launch work, refunds, or fulfilment transitions.
+
+## Cycle 15 implementation status
+
+Implemented in Cycle 15:
+
+- a protected operational Orders area backed by a newest-first, server-filtered, 20-row paginated Supabase RPC;
+- combined search across Nuede reference, customer name, phone, and Paystack reference;
+- fulfilment, payment-status, payment-method, order-type, and inclusive creation-date filters preserved in the URL;
+- responsive desktop table and mobile cards with distinct loading, unavailable, no-order, and no-match states;
+- deep-linked order detail containing customer, delivery, purchase totals, historical line/add-on snapshots, nutrition completeness, permanent meal-plan schedule, trusted payment attempts, and persisted timestamps;
+- separate payment and fulfilment badges/actions, with provider references and payment states remaining read-only;
+- the forward workflow `pending -> confirmed -> preparing -> ready -> out_for_delivery -> delivered`;
+- confirmed pre-dispatch cancellation from pending through ready, with a required confirmation and no automatic refund/payment change;
+- database-authoritative active-admin authorization, row lock, transition validation, minimal update payload, and existing `admin_audit_log` integration;
+- query invalidation, 30-second operational freshness, duplicate-action prevention, success/error feedback, and stale-transition recovery.
+
+Cycle 15 does not re-price orders, query current catalog rows for historical truth, expose private orders publicly, allow manual payment reconciliation, create refunds, or implement Cycle 16 analytics.

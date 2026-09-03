@@ -19,5 +19,6 @@ Ordered follow-up migrations:
 - `20260903000100_enable_admin_checkout_settings.sql` permits narrowly scoped active-admin checkout-setting updates.
 - `20260903000200_create_secure_order_persistence.sql` adds a private collision-safe order-reference sequence and service-role-only atomic order persistence RPC.
 - `20260903000300_integrate_paystack_payments.sql` adds provider diagnostics plus service-role-only atomic Paystack order/attempt creation, initialization-failure recording, and idempotent payment/order reconciliation. Existing fulfilment state is never changed.
+- `20260903000400_enable_admin_order_management.sql` adds an active-admin-only paginated order-list RPC plus a locked, forward-only fulfilment/cancellation RPC that writes the existing audit log without modifying payment state or historical snapshots.
 
 Later RLS policies, Storage setup, analytics views, and commerce functions do not belong in the immutable Cycle 2 migration.

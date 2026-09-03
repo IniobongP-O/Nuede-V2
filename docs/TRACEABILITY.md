@@ -308,3 +308,23 @@ Cycle 13 requires no database migration. Static verification covers the shared-e
 Cycle 14 post-implementation verification passed the focused 18-test Paystack suite, the complete 133-test Node suite, lint, storefront production build, admin regression build, and `git diff --check`. A local browser check of `/payment?status=success` rendered the invalid-reference failed state rather than trusting the fake success flag. The React quality review also corrected the result page to one document-level heading and wrapper-based loading animation.
 
 `npx supabase status` was attempted and reported that neither Docker nor Podman is installed, so migration replay, the 25-assertion Cycle 14 pgTAP file, database-backed Edge execution, and live disabled-method/concurrency checks were not run. No `supabase/functions/.env`, Deno runtime, or Paystack test credentials are present, so hosted checkout, signed live webhook delivery, cart/meal-plan test-mode payments, and real post-payment WhatsApp opening were not run and are not claimed as passed.
+
+## Cycle 15 admin order management
+
+| Requirement ID | Required | Implemented | Tested |
+|---|---|---|---|
+| C15-001 | Private scalable order browsing | `list_admin_orders` active-admin RPC, 20-row pagination, total count, newest-first deterministic ordering | Domain/static Node tests; pgTAP privileges added |
+| C15-002 | Reference/customer/phone/Paystack search | One server-side case-insensitive search predicate including payment existence | Static SQL coverage added; live database run pending |
+| C15-003 | Combined fulfilment/payment/method/type/date filters | RPC parameters plus resettable URL-backed admin filter bar | Source assertions and admin build |
+| C15-004 | Responsive operational list states | Desktop semantic table, mobile cards, loading/refresh/error/no-orders/no-matches states | Lint/build and source checks |
+| C15-005 | Complete deep-linked detail | One embedded order/items/add-ons/payments query; identity, customer, delivery, totals and timestamps | Source/architecture tests and admin build |
+| C15-006 | Immutable historical snapshots | Detail renders stored names, variant, add-ons, kobo values and nutrition; no catalog lookup/repricing | Source-boundary tests |
+| C15-007 | Permanent meal-plan schedule | Stored plan range plus item `scheduled_for`/`meal_slot` assignments | Source assertions; live record pending |
+| C15-008 | Trusted payment detail/separation | Read-only order/payment statuses, amounts, references, verification/provider timestamps | Source assertions; Cycle 14 regressions retained |
+| C15-009 | Forward-only fulfilment workflow | Shared domain helper and equivalent locked database validation | Domain transition suite plus pgTAP assertions added |
+| C15-010 | Safe cancellation | Pre-dispatch only, confirmation dialog, terminal state, no refund/payment mutation | Domain/static tests plus pgTAP assertions added |
+| C15-011 | Stale/error/mutation UX | Mutation lock, Query invalidation, 30-second refetch, success/error toasts | Source/build verification; multi-admin live test pending |
+| C15-012 | Authorization, RLS and audit | Active-admin RPC checks, direct table writes still denied, JWT-derived actor, existing audit table | Static security checks plus pgTAP privileges added |
+| C15-013 | Preserve Cycle 16+ boundary | No revenue metrics, charts, aggregates, or analytics work | Source and changed-file review |
+
+Cycle 15 post-implementation verification passed the focused 8-test order-management suite, the complete 141-test Node suite, repository lint, both production builds, and `git diff --check`. `npx supabase status` reported `docker: command not found (podman also not found)`, so migration replay, the 25-assertion Cycle 15 pgTAP file, database/RLS execution, crafted live transitions, and authenticated multi-admin/manual flows were not run. The deterministic tests validate transition parity and source boundaries; they do not substitute for applying the migration and exercising active, inactive, anonymous, and concurrent-admin personas against PostgreSQL.

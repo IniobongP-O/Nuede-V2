@@ -109,3 +109,9 @@ Failures log only an error code and validation stage. Customer PII, request bodi
 - The webhook signs the untouched raw body and rejects an invalid signature before JSON parsing or database access. Valid relevant events are matched by the stored unique provider reference, not trusted metadata.
 - Amount and NGN currency must equal the stored attempt. Mismatches become a verified integrity failure and cannot enter paid revenue. Row locks, unique provider identities, and terminal-paid no-op behavior protect duplicate delivery.
 - Payment/order payment status changes occur in one RPC transaction. No Cycle 14 function changes fulfilment status or broadens public table/RPC access.
+
+## Cycle 15 admin order boundary
+
+Anonymous callers have no execution privilege on either admin-orders RPC. Authenticated callers can reach the RPC entrypoints, but both independently require a current active `owner`, `admin`, or `editor` record, matching the existing undifferentiated role model. Direct authenticated `UPDATE` remains denied on both `orders` and `payments`.
+
+The fulfilment RPC locks and validates current state in PostgreSQL, obtains its audit actor from `auth.uid()`, and updates only `fulfilment_status`. A crafted browser request cannot skip workflow steps, reverse terminal states, forge the acting administrator, or overwrite payment state, provider references, totals, and purchase snapshots. Cancelling a paid order does not claim or initiate a refund.

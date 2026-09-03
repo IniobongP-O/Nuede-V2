@@ -134,6 +134,12 @@ Admin product writes continue through the browser-safe anon client under an auth
 
 The Cycle 4 audit trigger records active-admin product creation, general edits, price changes, status changes, archive, and restore operations. It snapshots the authenticated admin identity and relevant old/new values. The trigger is `SECURITY DEFINER` with an empty search path and is not executable as a public RPC. Authenticated clients retain read-only access to `admin_audit_log` and cannot forge audit rows.
 
+## Cycle 15 admin order operations
+
+`20260903000400_enable_admin_order_management.sql` keeps direct order/payment writes denied and adds two narrowly scoped RPCs. `list_admin_orders` authenticates through `private.is_active_admin()`, applies server-side combined filters/search, returns only list projection fields plus the latest provider reference, sorts newest first, caps page size at 100, and includes a windowed total count. Trigram indexes support substring searches on order reference, customer name, phone, and provider reference. Detail reads continue through the existing active-admin RLS policies and select the order graph in one request.
+
+`update_order_fulfilment_status(uuid,text)` derives the actor from `auth.uid()`, locks the order, validates the canonical next step with `private.can_transition_fulfilment_status`, and assigns only `orders.fulfilment_status`. Pending, confirmed, preparing, and ready orders may be cancelled; dispatched, delivered, and cancelled orders are terminal for cancellation. The RPC never accepts an actor ID, touches payment state/provider references, or writes snapshot/totals. Each successful change inserts `order_fulfilment_status_changed` or `order_cancelled` into the existing `admin_audit_log` with the order reference and old/new fulfilment state.
+
 Permanent product deletion remains outside the Cycle 4 field-guide scope. The database relationship behavior is preserved, and archive/restore is the implemented lifecycle path.
 
 ## Cycle 5 catalog completion

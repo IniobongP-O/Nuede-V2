@@ -89,6 +89,7 @@ test("mock content remains application-owned fixtures", async () => {
     "packages/domain/src/catalog.js",
     "packages/domain/src/currency.js",
     "packages/domain/src/nutrition.js",
+    "packages/domain/src/orders.js",
     "packages/validation/src/cart.js",
     "packages/validation/src/catalog.js",
     "packages/validation/src/checkout.js",
