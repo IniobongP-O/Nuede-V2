@@ -91,3 +91,11 @@ The `product-images` bucket is public only for image reads. Insert, update, and 
 Existing catalog RLS continues to authorize grouped-parent, variant, add-on, and assignment writes. Database triggers additionally reject impossible orderable groups, invalid or cross-group defaults, moving stable variants between groups, and invalidating the final orderable/default variant. Atomic reorder and assignment functions explicitly recheck active-admin authorization and validate exact relationship sets.
 
 Image replacement follows upload -> database reference -> old-object cleanup. A database failure removes the newly uploaded object, while a successful reference update occurs before any old object is removed. Supported type, five-megabyte size, image decoding, and optimization checks run before upload; bucket restrictions provide an independent persistence boundary.
+
+## Cycle 12 order-creation boundary
+
+`create-order` is intentionally invokable without a customer account, but it is not a public database-write grant. The Edge Function owns the backend-only service-role client, strictly parses the Cycle 11 selection contract, and rejects unexpected price, total, availability, and nutrition fields. It reloads every selected row and relationship plus the delivery zone and payment settings before calculating the order.
+
+Only `service_role` can execute `create_order_atomic(jsonb, jsonb)`. `anon` and `authenticated` retain no direct insert permission on `orders`, `order_items`, `order_item_addons`, or `payments`, and cannot execute the RPC. The `SECURITY DEFINER` function has an empty `search_path`, hard-codes safe initial `unpaid`/`pending` statuses, generates the reference from a private sequence, and inserts the full snapshot graph within one PostgreSQL transaction.
+
+Failures log only an error code and validation stage. Customer PII, request bodies, database errors, stack traces, and secrets are not returned or deliberately logged. The broad public function entrypoint means abuse/rate limiting remains a deployment-hardening concern; it does not weaken database authorization.

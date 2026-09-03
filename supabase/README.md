@@ -29,4 +29,10 @@ Cycle 7 adds `product_addons` and `product_addon_assignments` to the existing
 `20260901000300_enable_customization_catalog_realtime.sql`. It grants no new table
 privileges and leaves anonymous visibility controlled by the existing RLS policies.
 
+Cycle 12 adds the JavaScript `create-order` Edge Function and
+`20260903000200_create_secure_order_persistence.sql`. The function re-reads current
+catalog, delivery, and checkout settings, calculates authoritative integer-kobo
+totals and nutrition, snapshots the purchase, then invokes a service-role-only RPC
+that writes the complete order graph in one PostgreSQL transaction.
+
 Backend code must never be imported into a Vite application.

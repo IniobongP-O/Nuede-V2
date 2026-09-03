@@ -40,4 +40,13 @@ export default [
       "react-refresh/only-export-components": ["warn", { "allowConstantExport": true }],
     },
   },
+  {
+    files: ["supabase/functions/**/*.js"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        Deno: "readonly",
+      },
+    },
+  },
 ];

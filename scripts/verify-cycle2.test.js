@@ -58,17 +58,16 @@ test("Cycle 2 migration preserves core money, history, and status contracts", as
   assert.match(migration, /foreign key \(id\) references auth\.users\(id\)/);
 });
 
-test("Cycle 2 remains outside the RLS, Edge Function, and frontend integration cycles", async () => {
+test("Cycle 2 migration remains outside later RLS and Edge Function changes", async () => {
   const migration = (await read(migrationPath)).toLowerCase();
   const storefrontApp = await read("apps/storefront/src/App.jsx");
   const adminApp = await read("apps/admin/src/App.jsx");
-  const functionsReadme = await read("supabase/functions/README.md");
 
   assert.doesNotMatch(migration, /create\s+policy/);
   assert.doesNotMatch(migration, /enable\s+row\s+level\s+security/);
+  assert.doesNotMatch(migration, /create_order_atomic|order_reference_sequence/);
   assert.doesNotMatch(storefrontApp, /supabase/i);
   assert.doesNotMatch(adminApp, /supabase/i);
-  assert.match(functionsReadme, /No Edge Function is implemented/);
 });
 
 test("Cycle 2 local tooling is reproducible and project-scoped", async () => {

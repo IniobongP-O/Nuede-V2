@@ -1,10 +1,17 @@
 import { z } from "zod";
 
 import { productConfigurationSchema } from "./customization.js";
-import { plannerDateSchema, plannerDurationSchema } from "./planner.js";
+import { plannerConfigurationSchema, plannerDateSchema, plannerDurationSchema } from "./planner.js";
 
 const stableIdSchema = z.string().uuid("Choose a valid option.");
 const optionalTrimmed = (maximum) => z.string().trim().max(maximum);
+
+function addCalendarDays(calendarDate, amount) {
+  const [year, month, day] = calendarDate.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + amount));
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+}
 
 export const paymentMethodSchema = z.enum(["paystack", "whatsapp"]);
 
@@ -51,15 +58,23 @@ const mealPlanContractSchema = z.object({
   days: z.array(z.object({
     date: plannerDateSchema,
     slots: z.object({
-      breakfast: productConfigurationSchema.nullable(),
-      lunch: productConfigurationSchema.nullable(),
-      dinner: productConfigurationSchema.nullable(),
-      snack: productConfigurationSchema.nullable(),
+      breakfast: plannerConfigurationSchema.nullable(),
+      lunch: plannerConfigurationSchema.nullable(),
+      dinner: plannerConfigurationSchema.nullable(),
+      snack: plannerConfigurationSchema.nullable(),
     }).strict(),
   }).strict()).min(2).max(7),
 }).strict().superRefine((value, context) => {
   const occupied = value.days.some((day) => Object.values(day.slots).some(Boolean));
   if (!occupied) context.addIssue({ code: "custom", path: ["days"], message: "The meal plan must contain at least one meal." });
+  if (value.days.length !== value.durationDays) {
+    context.addIssue({ code: "custom", path: ["days"], message: "The meal-plan days must match its duration." });
+  }
+  value.days.forEach((day, index) => {
+    if (day.date !== addCalendarDays(value.startDate, index)) {
+      context.addIssue({ code: "custom", path: ["days", index, "date"], message: "Meal-plan dates must be consecutive from the start date." });
+    }
+  });
 });
 
 export const checkoutSubmissionSchema = z.discriminatedUnion("orderType", [cartContractSchema, mealPlanContractSchema]);

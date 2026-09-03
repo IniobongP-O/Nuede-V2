@@ -280,3 +280,25 @@ Deliberately not implemented in Cycle 11:
 - admin orders, fulfilment, analytics, content completion, or deployment work from later cycles.
 
 Frontend prices remain review estimates. The future server must independently load the selected catalog records, delivery zone, fee, and payment settings before creating an order.
+
+## Cycle 12 implementation status
+
+Implemented in Cycle 12:
+
+- a public guest-checkout `create-order` Supabase Edge Function written entirely in JavaScript;
+- the exact Cycle 11 cart/meal-plan selection contract as the strict authoritative Zod boundary, including consecutive schedule validation;
+- batched service-role reads of selected products, variants, add-ons, compatibility assignments, delivery zone, and checkout settings;
+- current product/variant/add-on availability and relationship validation, with standard/grouped variant rules and duplicate add-on rejection;
+- integer-kobo base, configured-unit, line, subtotal, one-per-order delivery, and final-total calculations that never consume browser prices or totals;
+- server-side complete/partial/unavailable nutrition using the runtime-neutral Cycle 8 domain engine;
+- purchase-time product, variant, add-on, quantity, nutrition, delivery, customer, payment-intent, and meal-slot/date snapshots;
+- private sequence-backed `NUE-######` references and one service-role-only PostgreSQL RPC for atomic order/item/add-on insertion;
+- safe structured HTTP errors, method/JSON/CORS handling, and PII-minimal failure logging;
+- a future-integration response containing persisted identity/status plus authoritative totals, items, nutrition, and schedule.
+
+Deliberately not implemented in Cycle 12:
+
+- customer-facing replacement of Cycle 11's mocked submission boundary;
+- WhatsApp message/URL/navigation or completion behavior (Cycle 13);
+- Paystack initialization, payment rows, authorization URLs, callbacks, verification, or webhooks (Cycle 14);
+- admin fulfilment/order management, analytics, or later-cycle workflows.

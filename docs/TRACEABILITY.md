@@ -239,3 +239,30 @@ Cycle 9 post-implementation verification passed lint, all 73 Node tests, storefr
 | C11-014 | Narrow active-admin checkout-settings permission | Migration grants only three singleton update columns to authenticated users plus active-admin RLS policy | Static migration tests passed; local reset failed while inspecting the legacy stack and pgTAP could not connect to local Postgres; hosted migration application not run |
 
 Cycle 11 post-implementation verification passed lint, all 89 Node tests (including the focused eight-test suite), both production builds, and connected browser checks. The local Supabase reset reported a legacy-stack inspection error and pgTAP could not connect to `127.0.0.1:54322`, so database execution remains pending. No permanent order, order item, payment, Paystack initialization, WhatsApp window, or source clearing was introduced.
+
+## Cycle 12 server-authoritative order engine
+
+| Requirement ID | Required | Implemented | Verification status |
+|---|---|---|---|
+| C12-001 | Public guest checkout through a secure backend, never direct inserts | JavaScript `create-order` Edge Function with backend-only service-role client | Focused handler/security source tests passed |
+| C12-002 | Exact Cycle 11 cart and meal-plan runtime contract | Canonical shared Zod discriminated union; strict nested selections and consecutive 2–7 day schedule | Cart/plan/empty/arbitrary-slot/date tests passed |
+| C12-003 | Reject browser price, totals, nutrition, and availability authority | Strict root/configuration objects accept stable selections only | Financial-field matrix and explicit ₦8,000→₦80 attack passed by rejection |
+| C12-004 | Validate positive whole database-safe quantities and unique add-ons | PostgreSQL-integer upper bound plus duplicate-ID refinement | 0, negative, decimal, NaN, string, overflow, and duplicate cases passed |
+| C12-005 | Re-read current products and enforce orderability | Batched service-role product query; exact `available` state and standard price required | Missing/sold-out/hidden/archived/unavailable/price-pending tests passed |
+| C12-006 | Enforce standard/grouped variant rules and relationships | Standard requires null; grouped requires current available priced child variant | Missing/cross-product/hidden/sold-out variant attacks passed |
+| C12-007 | Revalidate add-ons and compatibility | Batched add-on/assignment reads; current availability, price, and parent assignment required | Cross-product and unavailable add-on attacks passed |
+| C12-008 | Revalidate delivery zone and current fee | Exact stable-ID lookup plus active-state/current-kobo check | Inactive-zone and changed-fee tests passed |
+| C12-009 | Revalidate current payment settings | Private singleton read maps only known Zod payment methods to enabled flags | Disabled and unknown payment-method tests passed |
+| C12-010 | Calculate authoritative integer-kobo totals | Safe base + add-ons, quantity multiplication, subtotal, one delivery fee, total | Exact cart/group/meal-plan/overflow tests passed |
+| C12-011 | Calculate authoritative complete/partial/unavailable nutrition | Runtime-neutral Cycle 8 engine uses current base/variant/add-on rows and quantity | Three-state and quantity aggregation tests passed |
+| C12-012 | Persist customer, delivery, method, totals, and schedule | Existing Cycle 2 order/order-item/add-on snapshot columns fully populated | Snapshot construction tests passed; live database execution pending local runtime |
+| C12-013 | Atomic graph persistence | Service-role-only `create_order_atomic(jsonb,jsonb)` inserts order and all children in one function call | Static migration checks passed; pgTAP success/failure rollback tests added, runtime pending |
+| C12-014 | Unique friendly server-generated reference | Private sequence emits `NUE-######`; existing unique constraint remains collision guard | Static strategy check passed; database concurrency/runtime check pending |
+| C12-015 | Historical snapshot independence | Names, base/add-on prices, nutrition, quantity, zone fee/name, and schedule copied at purchase time | In-memory mutation immutability test passed; pgTAP snapshot read added, runtime pending |
+| C12-016 | Separate safe initial statuses and no payment row | RPC hard-codes `unpaid` payment and `pending` fulfilment; generic engine creates no payment | Unit/source review passed |
+| C12-017 | Preserve direct-write RLS protections | No grants changed; RPC execution revoked from public/anon/authenticated and granted only to service role | Static checks passed; pgTAP privilege assertions added, runtime pending |
+| C12-018 | Safe method/JSON/CORS/errors/logging | Thin handler returns structured errors and logs code/stage only | OPTIONS/GET/bad JSON/Zod/success handler tests passed |
+| C12-019 | Authoritative future-integration response | Persisted identity/status plus totals, zone, items, snapshots, nutrition, and full schedule | Engine response tests passed |
+| C12-020 | Preserve Cycle 13+ boundary | Storefront submission remains mocked; no Paystack call/payment row or WhatsApp URL/navigation | Source-boundary tests passed |
+
+Cycle 12 post-implementation static verification passed lint, all 102 Node tests (including the focused 13-test Cycle 12 suite), and both storefront/admin production builds. Local `db:reset` reached the previously recorded legacy-service inspection error, pgTAP could not connect to `127.0.0.1:54322`, and the Edge runtime could not start because Docker/Podman is unavailable. Consequently the migration, atomic rollback, direct credential attacks, live function calls, permanent database orders, and database-backed snapshot mutation/concurrency checks are implemented and covered by deterministic/static or pending pgTAP tests but are not claimed as runtime-verified. No historical cycle gate was reopened.

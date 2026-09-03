@@ -86,6 +86,14 @@ Catalog foreign keys use `SET NULL` where history must survive deletion. Snapsho
 
 Archiving or deactivation is preferred over destructive catalog/delivery deletion.
 
+## Cycle 12 atomic order creation
+
+`20260903000200_create_secure_order_persistence.sql` adds `private.order_reference_sequence`, initialized above any existing numeric `NUE-` reference, and `public.create_order_atomic(jsonb, jsonb)`. The sequence is private and concurrency-safe; the unique `orders.order_reference` constraint remains the final collision guard.
+
+The RPC accepts only already validated authoritative snapshots from the Edge Function. It is `SECURITY DEFINER`, uses an empty `search_path`, is executable only by `service_role`, and hard-codes initial `payment_status = 'unpaid'` and `fulfilment_status = 'pending'`. PostgreSQL treats the function call as one transaction, so an item or add-on failure rolls back the order and all earlier children. No payment row is created.
+
+Existing snapshot columns are reused without duplicating the Cycle 2 model. `orders` retains customer/delivery/zone/fee/totals/nutrition and plan dates; `order_items` retains product/variant names, base price, quantity, configured line total/nutrition, and schedule address; `order_item_addons` retains each add-on's purchase-time name, price, and nutrition.
+
 ## Updated timestamps
 
 One minimal migration-defined `set_updated_at()` helper is applied only to mutable lifecycle records. Immutable snapshots, feedback, assignments, and audit rows retain creation timestamps without a misleading update lifecycle.

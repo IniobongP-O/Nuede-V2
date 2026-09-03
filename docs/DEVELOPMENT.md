@@ -116,6 +116,28 @@ Manual acceptance must still exercise valid/corrupt/unsupported/oversized image 
 
 The storefront uses port 5173. The admin application uses port 5174. Ports are strict so a conflict is visible instead of silently changing the expected URL.
 
+## Cycle 12 order-engine development
+
+Cycle 12 deterministic verification does not require a browser:
+
+```sh
+node --test scripts/verify-cycle12-order-engine.test.js
+npm run lint
+npm test
+npm run build:storefront
+npm run build:admin
+```
+
+With Docker and the local Supabase stack available, apply the migration and exercise PostgreSQL security/atomicity:
+
+```sh
+npm run db:reset
+npm run db:test
+supabase functions serve create-order
+```
+
+The Edge runtime requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; use local or hosted function secrets and never a `VITE_` variable. Invoke `create-order` with the Cycle 11 cart or meal-plan selection contract. The storefront intentionally remains on its mock adapter until Cycle 13/14 connects method-specific completion flows.
+
 ## Development-cycle workflow
 
 Every cycle follows:

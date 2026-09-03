@@ -21,7 +21,7 @@ export const plannerConfigurationSchema = z.object({
   if (new Set(configuration.addonIds).size !== configuration.addonIds.length) {
     context.addIssue({ code: "custom", path: ["addonIds"], message: "Add-on IDs must be unique." });
   }
-});
+}).strict();
 
 export const plannerSlotsSchema = z.object({
   breakfast: plannerConfigurationSchema.nullable(),

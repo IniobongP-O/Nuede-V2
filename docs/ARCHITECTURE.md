@@ -146,6 +146,22 @@ Cycle 7's `customizationModel.js` remains the catalog-selection adapter but dele
 
 Missing public products render a generic removable line without exposing stale details. Current sold-out, price-pending, unavailable, invalid-variant, and invalid-add-on configurations remain visible and block checkout readiness. Display-only integer-kobo prices and subtotals are derived from current public catalog values, exclude invalid lines, and are explicitly non-authoritative. Delivery is not invented before checkout. Cart nutrition delegates to the Cycle 8 engine and preserves partial/unavailable completeness. The native dialog supplies Escape, focus containment/restoration, and responsive full-screen mobile behavior; the provider supplies same-tab updates and lightweight cross-tab `storage` synchronization.
 
+## Cycle 12 server-authoritative order engine
+
+`supabase/functions/create-order` is the guest-checkout HTTP adapter. It owns only Edge-runtime setup, POST/OPTIONS handling, JSON parsing, safe response formatting, and creation of the backend-only Supabase client. Reusable commerce work lives under `supabase/functions/_shared/order` as a linear pipeline:
+
+```text
+strict Cycle 11 request -> flatten selections -> batched current-state reads
+-> relationship/availability checks -> integer-kobo price + nutrition
+-> immutable snapshots -> one atomic PostgreSQL RPC -> authoritative response
+```
+
+The Zod request boundary is re-exported from the accepted shared validation package so browser and server shapes cannot drift. Financial, nutrition, display, and availability fields are not part of the contract. The data loader batches unique stable IDs and uses the service role only in the Edge runtime so hidden/unavailable rows can be distinguished safely without broadening public catalog reads.
+
+The pure pricing/snapshot layers select a standard product or grouped variant as the base exactly once, add each compatible available add-on once, multiply by validated quantity, and add one current delivery-zone fee per order. The runtime-neutral Cycle 8 nutrition engine applies the same base/add-on/quantity semantics and preserves missing values.
+
+`create_order_atomic` is deliberately persistence-only rather than a second pricing API. Its only caller is `service_role`; it generates a private-sequence reference, hard-codes safe initial statuses, and inserts the order, item, and add-on snapshots in one database transaction. Cycles 13 and 14 can call the same shared engine before their method-specific behavior without copying pricing logic.
+
 ## Frozen technology decisions
 
 - JavaScript and JSX only; no TypeScript.
