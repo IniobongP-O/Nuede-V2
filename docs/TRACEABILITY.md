@@ -1,5 +1,21 @@
 # Requirement traceability
 
+## Cycle 18 — final hardening, external launch blocked
+
+[Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.
+
+| Required | Implemented | Tested |
+|---|---|---|
+| 96 recent dashboard orders | `RecentOrders` reuses protected paginated order API with loading/error/empty states | Populated dashboard in Cycle 18 mocked browser matrix; hosted RPC unavailable |
+| 99 operational counts; 105 cart/meal-plan breakdown | Existing analytics RPC extended; separate created-date activity and verified-payment-date sales | Browser render and source review; five new pgTAP assertions NOT RUN |
+| 141 audit; 142 owner/admin settings permissions | Server actor attribution/audit and narrow RLS permission helper; read-only editor UI | Mocked editor check PASS; SQL role/actor/no-op tests NOT RUN |
+| 167, 194 backend method enforcement | Order-insert trigger locks enabled settings; bounded handlers and provider response timeout | Node rejection/timeout tests PASS; real database race test NOT RUN |
+| 168–177 responsive/accessibility/error states | Carousel containment, keyboard tables/charts, logout/toast semantics, no false zero revenue | Five-width content/full-commerce browser tests; physical devices/manual screen reader NOT RUN |
+| 185–188 deployment | Independent Vercel configs, safe public env guard, secrets scan and launch runbook | Both builds and scan PASS; actual V2 deployments NOT RUN |
+| 154–166 private boundaries | Existing RLS and safe public testimonial projection preserved | Public hosted probes identify six contract failures; full RLS/SQL execution NOT RUN |
+| Complete launch chain | Reproducible real-flow instructions and evidence gates | Five mocked UI journeys PASS; FINAL LAUNCH PROOF NOT RUN |
+
+
 This ledger maps requirements to implementation and evidence. It is updated during each cycle's inspection and implementation.
 
 ## Cycle 17 — implementation and available verification

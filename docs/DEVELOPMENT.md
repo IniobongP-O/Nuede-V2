@@ -1,5 +1,12 @@
 # Development guide
 
+## Cycle 18 — final hardening, external launch blocked
+
+[Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.
+
+Run `npm run lint`, `npm test`, `npm run build`, then `npm run test:secrets`. Run `npm run test:browser:cycle18` with installed Edge (default) or `NUEDE_BROWSER_CHANNEL=chrome`. Its Supabase/Paystack/WhatsApp are explicit mocks. `NUEDE_BROWSER_PHASE=layout` is a diagnostic subset, not full journey evidence. PostgreSQL acceptance still requires the local Supabase reset/pgTAP/security/catalog commands documented in the deployment runbook. Never redirect those fixture/reset scripts at a hosted production project.
+
+
 ## Cycle 17 development and verification
 
 Read [the Cycle 17 report](CYCLE17.md) for schema contracts, content configuration, tests and current infrastructure limits. Optional business contact values belong in the documented `VITE_CONTACT_*` storefront configuration; empty/invalid values do not render fake links. General WhatsApp contact is independent of checkout enablement.

@@ -168,13 +168,13 @@ try {
   const nonAdminClient = await signIn(url, anonKey, nonAdmin.email, password);
   assert.equal(expectSuccess(await nonAdminClient.from("admin_users").select("id"), "non-admin own authorization lookup").length, 0);
   assert.equal(expectSuccess(await nonAdminClient.from("orders").select("id"), "non-admin private order query").length, 0);
-  expectDatabaseDenial(await nonAdminClient.from("products").update({ price_kobo: 1 }).eq("id", "20000000-0000-4000-8000-000000000001"), "authenticated non-admin product mutation");
+  assert.equal(expectSuccess(await nonAdminClient.from("products").update({ price_kobo: 1 }).eq("id", "20000000-0000-4000-8000-000000000001").select("id"), "authenticated non-admin product mutation filtered by RLS").length, 0);
 
   const inactiveClient = await signIn(url, anonKey, inactiveAdmin.email, password);
   const inactiveProfile = expectSuccess(await inactiveClient.from("admin_users").select("id,is_active").single(), "inactive admin own profile");
   assert.equal(inactiveProfile.is_active, false);
   assert.equal(expectSuccess(await inactiveClient.from("orders").select("id"), "inactive admin order query").length, 0);
-  expectDatabaseDenial(await inactiveClient.from("products").update({ price_kobo: 1 }).eq("id", "20000000-0000-4000-8000-000000000001"), "inactive admin product mutation");
+  assert.equal(expectSuccess(await inactiveClient.from("products").update({ price_kobo: 1 }).eq("id", "20000000-0000-4000-8000-000000000001").select("id"), "inactive admin product mutation filtered by RLS").length, 0);
 
   const activeClients = new Map();
   for (const [role, identity] of [["owner", owner], ["admin", admin], ["editor", editor]]) {
@@ -201,7 +201,10 @@ try {
 
   expectDatabaseDenial(await ownerClient.from("orders").insert({}), "active-admin authoritative order insert");
   expectDatabaseDenial(await ownerClient.from("payments").update({ status: "paid" }).eq("order_id", testOrderId), "active-admin payment mutation");
-  expectDatabaseDenial(await ownerClient.from("checkout_settings").update({ whatsapp_enabled: false }).eq("id", true), "active-admin checkout-settings mutation");
+  const currentSettings = expectSuccess(await ownerClient.from("checkout_settings").select("paystack_enabled,whatsapp_enabled").single(), "owner settings read");
+  expectSuccess(await ownerClient.from("checkout_settings").update(currentSettings).eq("id", true).select("paystack_enabled").single(), "owner payment-setting permission");
+  const editorSettings = expectSuccess(await activeClients.get("editor").from("checkout_settings").update(currentSettings).eq("id", true).select("paystack_enabled"), "editor settings update is filtered by RLS");
+  assert.equal(editorSettings.length, 0, "editor cannot update payment settings");
 
   const storage = memoryStorage();
   const persistentOptions = clientOptions({ storage, persistSession: true });

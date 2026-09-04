@@ -22,9 +22,12 @@ export function AuthProvider({ children }) {
     ? { status: "error", user: null, admin: null, error: supabaseConfigurationError }
     : { status: "initializing", user: null, admin: null, error: null });
   const authorizationRun = useRef(0);
+  const authorizedIdentity = useRef(null);
 
   const authorizeUser = useCallback(async (user) => {
     const run = ++authorizationRun.current;
+    if (authorizedIdentity.current !== (user?.id || null)) queryClient.clear();
+    authorizedIdentity.current = user?.id || null;
 
     if (!user) {
       setAuthState(signedOutState());
@@ -41,6 +44,7 @@ export function AuthProvider({ children }) {
 
       // This client gate controls presentation only. RLS and database grants are
       // the security boundary when an authenticated caller bypasses the UI.
+      if (!admin || !admin.is_active || !recognizedRoles.has(admin.role)) queryClient.clear();
       if (!admin) {
         setAuthState({ status: "unauthorized", user, admin: null, error: null });
       } else if (!admin.is_active) {

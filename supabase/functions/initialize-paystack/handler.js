@@ -1,3 +1,4 @@
+import { readRequestJson } from "../_shared/requestBody.js";
 import { corsHeaders } from "../_shared/cors.js";
 import { createAuthoritativeOrder } from "../_shared/order/engine.js";
 import { OrderError, publicErrorBody } from "../_shared/order/errors.js";
@@ -89,8 +90,9 @@ export async function handleInitializePaystackRequest(request, {
   if (request.method !== "POST") return json({ error: { code: "METHOD_NOT_ALLOWED", message: "Use POST to initialize a payment." } }, 405);
   let candidate;
   try {
-    candidate = await request.json();
-  } catch {
+    candidate = await readRequestJson(request);
+  } catch (error) {
+    if (error instanceof OrderError) return json(publicErrorBody(error), error.status);
     return json({ error: { code: "INVALID_JSON", message: "Send a valid JSON request body." } }, 400);
   }
   try {

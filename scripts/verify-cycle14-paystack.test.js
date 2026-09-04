@@ -269,6 +269,6 @@ test("Cycle 14 source keeps secrets/backend mutations out of storefront and fulf
   assert.match(migration, /for update/i);
   assert.match(migration, /payments_provider_transaction_unique_idx/);
   assert.doesNotMatch(migration, /set fulfilment_status/);
-  assert.match(webhook, /request\.text\(\)/);
+  assert.match(webhook, /readRequestText\(request, 1024 \* 1024\)/);
   assert.doesNotMatch(webhook, /request\.json\(\)/);
 });

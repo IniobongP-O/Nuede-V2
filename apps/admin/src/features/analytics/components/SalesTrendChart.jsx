@@ -28,7 +28,7 @@ export function SalesTrendChart({ dailySales = [], metric = "revenue", compact =
   return <Panel className="min-w-0 p-5 sm:p-6" aria-labelledby={`${metric}-trend-title`}>
     <h2 id={`${metric}-trend-title`} className="text-lg font-semibold text-brand-950">{title}</h2>
     <p className="mt-1 text-sm text-muted">{description}</p>
-    <div className={compact ? "mt-5 h-56" : "mt-5 h-72"} aria-hidden="true">
+    <div className={compact ? "mt-5 h-56" : "mt-5 h-72"}>
       <ResponsiveContainer width="100%" height="100%">
         <Chart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="#e2e7e1" />
@@ -39,6 +39,6 @@ export function SalesTrendChart({ dailySales = [], metric = "revenue", compact =
         </Chart>
       </ResponsiveContainer>
     </div>
-    <table className="sr-only"><caption>{title} data</caption><thead><tr><th>Date</th><th>{isRevenue ? "Revenue" : "Paid orders"}</th></tr></thead><tbody>{data.map((row) => <tr key={row.date}><td>{formatAnalyticsDate(row.date)}</td><td>{isRevenue ? formatChartKobo(row.value) : row.value}</td></tr>)}</tbody></table>
+    <table className="sr-only"><caption>{title} data</caption><thead><tr><th>Date</th><th>{isRevenue ? "Revenue" : "Paid orders"}</th></tr></thead><tbody>{data.map((row) => <tr key={row.date}><td>{formatAnalyticsDate(row.date)}</td><td>{isRevenue ? formatKobo(row.exactValue) : row.value}</td></tr>)}</tbody></table>
   </Panel>;
 }

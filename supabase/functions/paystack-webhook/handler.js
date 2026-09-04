@@ -1,3 +1,4 @@
+import { readRequestText } from "../_shared/requestBody.js";
 import { OrderError, publicErrorBody } from "../_shared/order/errors.js";
 import { reconcilePaystackPayment } from "../_shared/paystack/persistence.js";
 import { paystackWebhookEnvelopeSchema, paystackWebhookSchema } from "../_shared/paystack/schema.js";
@@ -48,9 +49,9 @@ export async function handlePaystackWebhookRequest(request, {
   processWebhook = processPaystackWebhook,
 } = {}) {
   if (request.method !== "POST") return json({ error: { code: "METHOD_NOT_ALLOWED", message: "Use POST for Paystack webhooks." } }, 405);
-  const rawPayload = await request.text();
   const signature = request.headers.get("x-paystack-signature") || "";
   try {
+    const rawPayload = await readRequestText(request, 1024 * 1024);
     return json(await processWebhook(rawPayload, signature, client, { secretKey }), 200);
   } catch (error) {
     const safeError = error instanceof OrderError ? error : null;

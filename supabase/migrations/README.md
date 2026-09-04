@@ -23,3 +23,9 @@ Ordered follow-up migrations:
 - `20260903000500_add_first_party_sales_analytics.sql` adds the canonical eligible-sale relation, six private sales aggregates, a focused verified-payment index, and one active-admin date-range analytics RPC.
 
 Later RLS policies, Storage setup, analytics views, and commerce functions do not belong in the immutable Cycle 2 migration.
+
+- `20260904000100_complete_feedback_and_testimonials.sql` supplies the safe published view and trusted feedback/testimonial administration.
+- `20260904000200_harden_checkout_method_races.sql` enforces method availability at insertion, restricts payment settings to owner/admin, and attributes/audits changes.
+- `20260904000300_complete_launch_analytics.sql` adds order-created activity counts and verified cart/meal-plan sales to the existing guarded analytics RPC.
+
+The complete chain has 14 migrations. Cycle 18 additions still require execution against PostgreSQL; source review is not migration verification. Follow `docs/DEPLOYMENT.md` and do not include development seed data in a hosted push.

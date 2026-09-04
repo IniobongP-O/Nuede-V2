@@ -1,12 +1,14 @@
+import { lazy, Suspense } from "react";
+import { LoadingState } from "../components/ui/FeedbackStates.jsx";
 import { createBrowserRouter } from "react-router-dom";
 
 import { StorefrontLayout } from "../components/layout/StorefrontLayout.jsx";
-import { CheckoutPage } from "../pages/CheckoutPage.jsx";
+const CheckoutPage = lazy(() => import("../pages/CheckoutPage.jsx").then((module) => ({ default: module.CheckoutPage })));
 import { HomePage } from "../pages/HomePage.jsx";
 import { MenuPage } from "../pages/MenuPage.jsx";
 import { NotFoundPage } from "../pages/NotFoundPage.jsx";
-import { PaymentPage } from "../pages/PaymentPage.jsx";
-import { PlannerPage } from "../pages/PlannerPage.jsx";
+const PaymentPage = lazy(() => import("../pages/PaymentPage.jsx").then((module) => ({ default: module.PaymentPage })));
+const PlannerPage = lazy(() => import("../pages/PlannerPage.jsx").then((module) => ({ default: module.PlannerPage })));
 import { SavedPage } from "../pages/SavedPage.jsx";
 
 export const storefrontRouter = createBrowserRouter([
@@ -17,9 +19,9 @@ export const storefrontRouter = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "menu", element: <MenuPage /> },
       { path: "saved", element: <SavedPage /> },
-      { path: "planner", element: <PlannerPage /> },
-      { path: "checkout", element: <CheckoutPage /> },
-      { path: "payment", element: <PaymentPage /> },
+      { path: "planner", element: <Suspense fallback={<LoadingState title="Loading page" message="Preparing your meals." />}><PlannerPage /></Suspense> },
+      { path: "checkout", element: <Suspense fallback={<LoadingState title="Loading page" message="Preparing your meals." />}><CheckoutPage /></Suspense> },
+      { path: "payment", element: <Suspense fallback={<LoadingState title="Loading page" message="Preparing your meals." />}><PaymentPage /></Suspense> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

@@ -23,7 +23,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 grid w-[min(24rem,calc(100%-2rem))] gap-3" aria-live="polite" aria-label="Notifications">
+      <div className="fixed bottom-4 right-4 z-50 grid w-[min(24rem,calc(100%-2rem))] gap-3" role="region" aria-live="polite" aria-label="Notifications">
         {toasts.map((toast) => (
           <div key={toast.id} className="flex items-start gap-3 rounded-card border border-line bg-brand-950 p-4 text-white shadow-floating" role={toast.tone === "error" ? "alert" : "status"}>
             {toast.tone === "error" ? <CircleAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" /> : <CheckCircle2 className="mt-0.5 size-5 shrink-0" aria-hidden="true" />}

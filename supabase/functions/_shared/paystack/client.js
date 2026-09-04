@@ -14,6 +14,7 @@ async function paystackRequest(path, { secretKey, fetchImpl = fetch, method = "G
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   let response;
+  let payload;
   try {
     response = await fetchImpl(`${PAYSTACK_API_URL}${path}`, {
       method,
@@ -21,18 +22,13 @@ async function paystackRequest(path, { secretKey, fetchImpl = fetch, method = "G
       ...(body ? { body: JSON.stringify(body) } : {}),
       signal: controller.signal,
     });
+    payload = await response.json();
   } catch (error) {
     throw providerError("Paystack could not be reached. Please try again.", error);
   } finally {
     clearTimeout(timeout);
   }
 
-  let payload;
-  try {
-    payload = await response.json();
-  } catch (error) {
-    throw providerError("Paystack returned an invalid response.", error);
-  }
   if (!response.ok || payload?.status !== true) throw providerError("Paystack could not process the payment request.");
   return payload;
 }

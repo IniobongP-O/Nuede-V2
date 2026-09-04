@@ -28,6 +28,11 @@ export async function persistOrderAtomically(client, snapshot) {
     p_items: persistenceItems(snapshot.items),
   });
 
+  if (error?.message === "PAYMENT_METHOD_DISABLED") {
+    throw new OrderError("PAYMENT_METHOD_DISABLED", "That payment method is not currently available.", {
+      status: 422, stage: "business_validation", cause: error,
+    });
+  }
   if (error || !data?.order_id || !data?.order_reference) {
     throw new OrderError("ORDER_CREATION_FAILED", "The order could not be saved. Please try again.", {
       status: 500,

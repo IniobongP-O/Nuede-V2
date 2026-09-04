@@ -1,5 +1,12 @@
 # Security rules
 
+## Cycle 18 — final hardening, external launch blocked
+
+[Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.
+
+Cycle 18 serializes enabled-method validation with order insertion; restricts payment settings to active owner/admin; replaces client-supplied audit attribution; and records real flag changes in the existing audit log. Request streams are bounded before commerce work. Provider timeout protection covers JSON body reading. Admin caches clear across identity/authorization changes. Public build variables are allowlisted and scanned for backend secret patterns, and deployed configurations include CSP/privacy headers. These controls preserve backend order/payment authority. SQL execution and hosted rollout remain outstanding; consult the attack matrix before treating them as deployed controls.
+
+
 ## Cycle 17 privacy boundary
 
 Public testimonial reads use the four-field, published-only `published_testimonials` security-barrier projection. Anonymous users cannot select the base table; authenticated non-admins cannot read its rows through RLS. Private source links, dates and audit metadata never cross the public projection. Feedback accepts anonymous INSERT only on `customer_name,email,subject,rating,message`, with meaningful database constraints and no returning read. Public feedback SELECT/UPDATE/DELETE remain unavailable, and feedback is excluded from Realtime publication.

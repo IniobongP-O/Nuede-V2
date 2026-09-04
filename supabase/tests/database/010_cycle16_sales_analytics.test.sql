@@ -1,6 +1,6 @@
 begin;
 
-select plan(39);
+select plan(44);
 
 select has_index('public', 'payments', 'payments_verified_sales_idx', 'eligible payment lookup is indexed');
 select has_function('public', 'get_admin_sales_analytics', array['date', 'date'], 'range-aware admin analytics RPC exists');
@@ -112,5 +112,11 @@ select throws_ok(
 );
 reset role;
 
+-- Cycle 18 extends this known dataset without changing verified revenue eligibility.
+select is((public.get_admin_sales_analytics('2026-09-01','2026-09-03')->'order_activity'->>'total_orders')::integer,3,'activity uses order creation dates rather than payment dates');
+select is((public.get_admin_sales_analytics('2026-09-01','2026-09-03')->'order_activity'->>'failed_payments')::integer,1,'failed order counted operationally without revenue');
+select is((public.get_admin_sales_analytics('2026-09-01','2026-09-03')->'order_activity'->>'cancelled_orders')::integer,0,'no fabricated cancellations');
+select is((select (x->>'revenue_kobo')::bigint from jsonb_array_elements(public.get_admin_sales_analytics('2026-09-01','2026-09-03')->'order_type_sales') x where x->>'order_type'='meal_plan'),2000000::bigint,'meal-plan verified revenue is distinguished');
+select is((select (x->>'paid_orders')::integer from jsonb_array_elements(public.get_admin_sales_analytics('2026-09-01','2026-09-03')->'order_type_sales') x where x->>'order_type'='cart'),1,'cart paid count remains distinct despite duplicate evidence');
 select * from finish();
 rollback;

@@ -17,7 +17,7 @@ export async function persistPaystackOrderAtomically(client, snapshot, reference
     p_items: persistenceItems(snapshot.items),
     p_provider_reference: reference,
   });
-  if (error?.message?.includes("PAYSTACK_DISABLED")) {
+  if (["PAYSTACK_DISABLED", "PAYMENT_METHOD_DISABLED"].includes(error?.message)) {
     throw new OrderError("PAYMENT_METHOD_DISABLED", "Paystack is not currently available.", { status: 422, stage: "business_validation", cause: error });
   }
   if (error || !data?.order_id || !data?.order_reference || !data?.payment_id || data?.provider_reference !== reference) {

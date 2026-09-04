@@ -5,8 +5,8 @@ import { AdminLayout } from "../components/layout/AdminLayout.jsx";
 import { LoadingState } from "../components/ui/FeedbackStates.jsx";
 import { ProtectedRoute } from "../features/auth/components/ProtectedRoute.jsx";
 import { PublicOnlyRoute } from "../features/auth/components/PublicOnlyRoute.jsx";
-import { AnalyticsPage } from "../pages/AnalyticsPage.jsx";
-import { DashboardPage } from "../pages/DashboardPage.jsx";
+const AnalyticsPage = lazy(() => import("../pages/AnalyticsPage.jsx").then((module) => ({ default: module.AnalyticsPage })));
+const DashboardPage = lazy(() => import("../pages/DashboardPage.jsx").then((module) => ({ default: module.DashboardPage })));
 import { DeliveryPage } from "../pages/DeliveryPage.jsx";
 import { FeedbackPage } from "../pages/FeedbackPage.jsx";
 import { LoginPage } from "../pages/LoginPage.jsx";
@@ -30,11 +30,11 @@ export const adminRouter = createBrowserRouter([
       {
         element: <AdminLayout />,
         children: [
-          { path: "/dashboard", element: <DashboardPage /> },
+          { path: "/dashboard", element: <Suspense fallback={<LoadingState title="Loading reporting" message="Preparing sales reporting." />}><DashboardPage /></Suspense> },
           { path: "/menu", element: <Suspense fallback={<LoadingState title="Loading menu management" message="Preparing the live catalog workspace." />}><MenuPage /></Suspense> },
           { path: "/orders", element: <OrdersPage /> },
           { path: "/orders/:orderReference", element: <OrderDetailPage /> },
-          { path: "/analytics", element: <AnalyticsPage /> },
+          { path: "/analytics", element: <Suspense fallback={<LoadingState title="Loading reporting" message="Preparing sales reporting." />}><AnalyticsPage /></Suspense> },
           { path: "/delivery", element: <DeliveryPage /> },
           { path: "/testimonials", element: <TestimonialsPage /> },
           { path: "/feedback", element: <FeedbackPage /> },

@@ -12,7 +12,7 @@ export function DeliveryDetailsSection({ register, errors, zones, disabled }) {
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <TextInput label="Full name" autoComplete="name" required disabled={disabled} error={errors.fullName?.message} {...register("fullName")} />
         <TextInput label="Phone number" type="tel" inputMode="tel" autoComplete="tel" required disabled={disabled} error={errors.phone?.message} {...register("phone")} />
-        <TextInput label="Email" type="email" inputMode="email" autoComplete="email" disabled={disabled} help="Optional for this checkout stage; validated when supplied." error={errors.email?.message} {...register("email")} />
+        <TextInput label="Email" type="email" inputMode="email" autoComplete="email" disabled={disabled} help="Required for Paystack; optional for WhatsApp." error={errors.email?.message} {...register("email")} />
         <SelectInput label="Delivery area" required disabled={disabled} error={errors.deliveryZoneId?.message} {...register("deliveryZoneId")}>
           <option value="">Select a delivery area</option>
           {zones.map((zone) => <option key={zone.id} value={zone.id}>{zone.name} · {formatKobo(zone.feeKobo)}</option>)}

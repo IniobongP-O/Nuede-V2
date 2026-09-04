@@ -1,5 +1,12 @@
 # Database rules
 
+## Cycle 18 — final hardening, external launch blocked
+
+[Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.
+
+The chain now has 14 migrations through `20260904000300`. Cycle 18 adds an order-insert method check/lock, owner/admin settings policy, server attribution/audit, and two fields on the existing analytics RPC: `order_activity` (created-date total/cancelled/failed counts) and `order_type_sales` (canonical verified sales by cart/meal plan). Money remains integer kobo; business dates remain Africa/Lagos. Existing payment evidence and snapshot tables retain authority. New pgTAP coverage is prepared but has not executed in this environment. `supabase/verification/launch-readiness.sql` provides read-only deployment checks; no development seed belongs in production.
+
+
 ## Cycle 17 content contract
 
 Migration `20260904000100_complete_feedback_and_testimonials.sql` reuses `feedback`, `testimonials`, the existing unique `source_feedback_id` relationship and `admin_audit_log`. It adds content constraints and feedback browsing indexes, narrow anonymous feedback column grants, the `published_testimonials` projection, draft-only creation/publication timestamp enforcement and trusted testimonial auditing. It preserves all existing active owner/admin/editor content permissions.

@@ -4,6 +4,7 @@ node_modules/
 # Application builds and test output
 dist/
 coverage/
+.vercel/
 
 # Local environment files
 .env

@@ -1,5 +1,12 @@
 # Nuede V2 architecture
 
+## Cycle 18 — final hardening, external launch blocked
+
+[Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.
+
+The architecture is unchanged. Cycle 18 completes recent orders and operational/type analytics inside existing modules, loads chart/planner/checkout routes lazily, validates frontend environment boundaries at build time, and adds independent app-root Vercel configurations. Supabase remains the order/price/payment authority; no public browser gains trusted mutation privileges. See the deployment runbook for separate app roots and shared backend requirements.
+
+
 ## Cycle 17 content extension
 
 Each application owns a `features/content` boundary for its APIs, Query hooks and components. Shared input validation lives in `@nuede/validation/content`. Storefront static editorial/contact configuration remains local configuration, not a new CMS. Public testimonials use a narrow database projection; private feedback stays in the existing table under RLS. Homepage featured meals consume the established menu cache, cards, customization validation and cart provider. [Cycle 17 details](CYCLE17.md) document publication, privacy, auditing and verification limits.

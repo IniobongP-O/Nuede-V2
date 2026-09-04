@@ -1,5 +1,12 @@
 # Feature authority and roadmap
 
+## Cycle 18 — final hardening, external launch blocked
+
+[Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.
+
+Completed the documented dashboard recent-orders list, total/cancelled/failed operational counts, and direct-order versus meal-plan verified-sales breakdown. Operational counts follow order-created dates and are not revenue. Payment settings are editable by owner/admin and read-only for editors, with server attribution/audit. These are completions of existing modules, not new product scope. The all-212 feature ledger records implementation locations and actual test limits.
+
+
 ## Current Cycle 17 implementation
 
 Public published-only testimonial carousel; protected testimonial creation/editing/rating/publication/deletion; guest feedback with six subjects; private paged admin feedback with search and subject/rating filters; editable feedback-to-unpublished-testimonial copying; completed rotating hero, About, live featured meals, FAQ, nutrition note, configurable contact/footer/social content are implemented. Loading, empty, failure, validation, responsive and accessibility states are included.
