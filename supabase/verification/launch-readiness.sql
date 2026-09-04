@@ -2,6 +2,8 @@
 -- Counts/configuration only; deliberately no customer rows or credential values.
 begin read only;
 select version from supabase_migrations.schema_migrations order by version;
+select relname,reloptions from pg_class
+where oid in ('public.checkout_payment_options'::regclass,'public.published_testimonials'::regclass);
 select c.relname as business_table, c.relrowsecurity as rls_enabled
 from pg_class c join pg_namespace n on n.oid=c.relnamespace
 where n.nspname='public' and c.relkind='r' order by c.relname;
@@ -17,6 +19,8 @@ select count(*) as active_delivery_zones from public.delivery_zones where is_act
 select paystack_enabled,whatsapp_enabled from public.checkout_settings where id;
 select count(*) as published_stories from public.published_testimonials;
 select has_table_privilege('anon','public.feedback','SELECT') as public_feedback_read,
+  has_column_privilege('anon','public.testimonials','source_feedback_id','SELECT') as public_feedback_link_read,
+  has_column_privilege('anon','public.checkout_settings','updated_by','SELECT') as public_settings_actor_read,
   has_table_privilege('anon','public.testimonials','SELECT') as public_testimonial_metadata_read,
   has_function_privilege('anon','public.reconcile_paystack_payment_atomic(text,text,bigint,text,text,timestamp with time zone)','EXECUTE') as public_payment_mutation;
 select count(*) as eligible_paid_orders,coalesce(sum(revenue_kobo),0) as verified_revenue_kobo

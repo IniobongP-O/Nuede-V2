@@ -52,11 +52,12 @@ reset command at production. Run the entire SQL suite, including Cycle 18's new 
 5. Apply `npx supabase db push` without `--include-seed`. Never run a linked reset.
 6. Run `npx supabase migration list --linked` again and the read-only
    `supabase/verification/launch-readiness.sql` using a privileged SQL session.
-7. Confirm the complete 14-migration chain through `20260904000300`.
+7. Confirm the complete 15-migration chain through `20260904000400`.
 
 The Cycle 18 hardening migration serializes new-order creation with payment-setting changes and
-restricts settings writes to active owner/admin roles. The final migration completes order-activity
-and cart/meal-plan analytics. Hardening does not block reconciliation
+restricts settings writes to active owner/admin roles. The analytics migration completes order-activity
+and cart/meal-plan reporting; the final migration changes public views to invoker security with
+narrow guest grants/RLS (see `PUBLIC-VIEW-SECURITY.md`). Hardening does not block reconciliation
 of existing Paystack attempts after a method is disabled. Missing hosted tables/RPCs
 must be fixed by applying their original migrations, not recreating them manually.
 

@@ -1,5 +1,9 @@
 # Requirement traceability
 
+## Public-view advisor follow-up
+
+Required: public checkout options/published stories without private metadata or privileged view execution → implemented in migration `20260904000400_use_invoker_public_views.sql` with invoker views, column grants and guest-only policies → seven embedded PostgreSQL checks PASS; full Node suite 179 PASS; hosted application/advisor rescan NOT RUN. See [evidence](PUBLIC-VIEW-SECURITY.md).
+
 ## Cycle 18 — final hardening, external launch blocked
 
 [Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.

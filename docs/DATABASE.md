@@ -1,5 +1,9 @@
 # Database rules
 
+## Public-view advisor follow-up
+
+The current chain contains 15 migrations through `20260904000400`. The newest migration uses invoker-security public views with column-scoped guest SELECT grants and guest-only RLS. The focused embedded PostgreSQL tests pass; the full Supabase pgTAP suite remains unrun. See [public-view fix](PUBLIC-VIEW-SECURITY.md). The earlier 14-migration record below describes the initial Cycle 18 run.
+
 ## Cycle 18 — final hardening, external launch blocked
 
 [Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.

@@ -1,5 +1,7 @@
 # Cycle 18 — security, QA, deployment and launch evidence
 
+**Subsequent advisor follow-up:** [Public-view security fix](PUBLIC-VIEW-SECURITY.md) adds migration `20260904000400` (15 migrations total) and seven executable PostgreSQL checks; the current Node suite has 179 passing tests. New hosted status-only probes return 200 for both public views and 401 for both base-table wildcard reads, superseding those initial audit findings below. The new invoker migration has not been applied through this session, and the advisor rescan/full launch proof remain unverified. The original Cycle 18 run below is retained as dated evidence, not a fresh hosted-state assertion.
+
 Recorded 2026-09-04. **BLOCKED.** Implementation and local QA progressed without a pre-flight approval gate. The configured hosted backend has known schema/function mismatches and the required complete deployed payment proof has not run. Cycles 0–17 remain the accepted foundation. There is no Cycle 19.
 
 ## 1. Cycle 18 summary

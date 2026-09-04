@@ -18,7 +18,7 @@ select is(
 
 select is(
   (select count(*)::integer from pg_policies where schemaname = 'public'),
-  43,
+  45,
   'the approved operation-specific RLS policy set exists'
 );
 

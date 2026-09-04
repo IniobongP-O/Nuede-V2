@@ -1,5 +1,9 @@
 # Security rules
 
+## Public-view advisor follow-up
+
+`20260904000400_use_invoker_public_views.sql` replaces owner-privileged view execution with invoker security, narrow anonymous column grants and anonymous-only published/singleton SELECT policies. Private metadata and existing authenticated admin policies remain protected. Direct guest reads of approved public columns are permitted; wildcard/private-column reads are denied. Guest-view contracts and privilege boundaries pass embedded PostgreSQL tests. Hosted application/advisor rescan remains outstanding. See [exact fix and evidence](PUBLIC-VIEW-SECURITY.md); this supersedes the historical definer-view design below.
+
 ## Cycle 18 — final hardening, external launch blocked
 
 [Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.
