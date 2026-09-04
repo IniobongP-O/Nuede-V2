@@ -1,4 +1,5 @@
-import { Menu, ShoppingBasket, Sprout } from "lucide-react";
+import nuedeLogo from "@nuede/config/nuede-logo.svg";
+import { Menu, ShoppingBasket } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 
@@ -12,8 +13,7 @@ import { Container } from "./Container.jsx";
 function Brand() {
   return (
     <Link className="inline-flex min-h-11 items-center gap-2 rounded text-brand-950" to={storefrontPaths.home} aria-label="Nuede home">
-      <Sprout className="size-5 text-brand-700" aria-hidden="true" />
-      <span className="font-display text-2xl font-bold tracking-tight">nuede</span>
+      <img src={nuedeLogo} alt="Nuede" width="374" height="112" className="h-auto w-32 shrink-0" />
     </Link>
   );
 }

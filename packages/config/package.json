@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./brand.css": "./src/brand.css"
+    "./brand.css": "./src/brand.css",
+    "./nuede-logo.svg": "./src/nuede-logo.svg"
   }
 }

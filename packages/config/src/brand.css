@@ -1,8 +1,45 @@
+/* Self-hosted Poppins: copyright and SIL Open Font License in fonts/OFL.txt. */
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/Poppins-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./fonts/Poppins-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./fonts/Poppins-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./fonts/Poppins-Bold.ttf") format("truetype");
+}
+
 @theme {
+  /* Retain existing dark surfaces, interaction states and semantic tints. */
   --color-brand-950: #102318;
   --color-brand-900: #173323;
-  --color-brand-700: #096e21;
+  --color-brand-700: var(--nuede-green);
   --color-brand-100: #e9f3e9;
+  --color-brand-pale-yellow: var(--nuede-pale-yellow);
+  --color-brand-orange: var(--nuede-orange);
+  --color-brand-gold: var(--nuede-gold);
   --color-canvas: #fafbf8;
   --color-surface: #ffffff;
   --color-ink: #1c1f1d;
@@ -11,8 +48,8 @@
   --color-success: #16733e;
   --color-warning: #956515;
   --color-danger: #a33a2e;
-  --font-display: Georgia, Cambria, "Times New Roman", serif;
-  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Poppins", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Poppins", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --radius-control: 0.625rem;
   --radius-card: 1.125rem;
   --radius-dialog: 1.5rem;
@@ -20,6 +57,10 @@
 }
 
 :root {
+  --nuede-green: #096E21;
+  --nuede-pale-yellow: #FDF2A3;
+  --nuede-orange: #FF7B16;
+  --nuede-gold: #FFBD59;
   color: #1c1f1d;
   background: #fafbf8;
   font-family: var(--font-sans);

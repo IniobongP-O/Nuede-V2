@@ -17,10 +17,10 @@ export function PlannerSummary({ plan, summary, onClear }) {
     <section className="rounded-card bg-brand-950 p-5 text-white shadow-card" aria-labelledby="planner-summary-title">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 id="planner-summary-title" className="text-xs font-bold uppercase tracking-[0.18em] text-green-300">Plan summary</h2>
+          <h2 id="planner-summary-title" className="text-xs font-bold uppercase tracking-[0.18em] text-brand-pale-yellow">Plan summary</h2>
           <p className="mt-3 font-display text-3xl">{summary.selectedMealCount} / {summary.slotCapacity} slots filled</p>
         </div>
-        <button type="button" disabled={!hasMeals} onClick={onClear} className="text-xs font-semibold text-green-300 hover:text-white disabled:cursor-not-allowed disabled:text-white/35">Clear plan</button>
+        <button type="button" disabled={!hasMeals} onClick={onClear} className="text-xs font-semibold text-brand-pale-yellow hover:text-white disabled:cursor-not-allowed disabled:text-white/35">Clear plan</button>
       </div>
       <dl className="mt-5 grid grid-cols-2 gap-4 border-y border-white/15 py-4 text-sm">
         <div><dt className="text-white/60">Duration</dt><dd className="mt-1 font-semibold">{plan.durationDays} days</dd></div>
