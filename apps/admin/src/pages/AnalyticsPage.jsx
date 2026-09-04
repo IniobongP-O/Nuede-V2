@@ -25,7 +25,7 @@ export function AnalyticsPage() {
     <div className="mt-6"><AnalyticsRangeControls controller={rangeController} /></div>
     <p className="mt-3 text-xs text-muted">All dates use Africa/Lagos business days. Active range: {analyticsRangeLabel(rangeController.range)}.</p>
     {!query.isError ? <div className="mt-6"><AnalyticsSummaryCards data={data} range={rangeController.range} loading={query.isPending} /></div> : null}
-    {!query.isError && (query.isPending || hasSales) ? <div className="mt-6"><MostOrderedMealCard productSales={data?.product_sales} loading={query.isPending} /></div> : null}
+    {!query.isError ? <div className="mt-6"><MostOrderedMealCard productSales={data?.product_sales} loading={query.isPending} /></div> : null}
 
     {query.isError ? <div className="mt-6"><ErrorState title="Unable to load sales analytics" message={analyticsErrorMessage(query.error)} action={<Button variant="secondary" onClick={() => query.refetch()}><RefreshCw className="size-4" aria-hidden="true" />Retry analytics</Button>} /></div> : null}
     {!query.isPending && !query.isError && !hasSales ? <div className="mt-6"><EmptyState title="No verified paid sales in this period" message="The zero values are real. Pending, failed, unpaid, refunded, and unverified orders do not contribute." /></div> : null}

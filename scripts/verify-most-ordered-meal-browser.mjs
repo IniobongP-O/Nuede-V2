@@ -102,10 +102,11 @@ try {
   await expect(card).toContainText("No meal sales in this period");
   await range.selectOption("today");
   await expect(page.getByRole("heading", { name: "No verified paid sales in this period" })).toBeVisible();
-  await expect(card).toHaveCount(0);
+  await expect(card).toBeVisible();
+  await expect(card).toContainText("No meal sales in this period");
   await range.selectOption("30d");
   await expect(card).toContainText(chicken.product_name);
-  checks.push("90-day paid summary with empty product_sales; Today overall empty state; return to populated 30-day period");
+  checks.push("90-day paid summary with empty product_sales; Today keeps the meal card visible alongside the overall empty state; return to populated 30-day period");
 
   await range.selectOption("custom");
   await page.getByLabel("Start date", { exact: true }).fill("2000-01-01");
