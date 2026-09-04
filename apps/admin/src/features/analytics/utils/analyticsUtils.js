@@ -91,6 +91,21 @@ export function analyticsMetricCards(data, range) {
   ];
 }
 
+export function getMostOrderedMeal(productSales) {
+  if (!Array.isArray(productSales)) return null;
+  const meals = productSales.filter((product) => Number.isFinite(Number(product?.quantity_sold)) && Number(product.quantity_sold) > 0);
+  const rankedMeal = meals.find((product) => Number(product.quantity_rank) === 1);
+  if (rankedMeal) return rankedMeal;
+
+  return meals.reduce((best, product) => {
+    if (!best) return product;
+    const difference = Number(product.quantity_sold) - Number(best.quantity_sold)
+      || chartMoneyValue(product.revenue_kobo) - chartMoneyValue(best.revenue_kobo)
+      || String(best.product_name || "").localeCompare(String(product.product_name || ""), "en-NG");
+    return difference > 0 ? product : best;
+  }, null);
+}
+
 export function paymentMethodLabel(value) {
   return value === "paystack" ? "Paystack" : humanizeOrderValue(value);
 }

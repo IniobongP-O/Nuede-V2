@@ -6,12 +6,46 @@ import {
   analyticsMetricCards,
   analyticsRangeLabel,
   businessDate,
+  getMostOrderedMeal,
   rangeForPreset,
   shiftDate,
   validateCustomRange,
 } from "../apps/admin/src/features/analytics/utils/analyticsUtils.js";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+
+test("Most ordered meal uses quantity rather than revenue without mutating the ranking", () => {
+  const mealA = Object.freeze({ product_name: "Meal A", quantity_sold: 10, revenue_kobo: "10000000" });
+  const mealB = Object.freeze({ product_name: "Meal B", quantity_sold: 7, revenue_kobo: "14000000" });
+  const rows = Object.freeze([mealB, mealA]);
+  assert.equal(getMostOrderedMeal(rows), mealA);
+  assert.deepEqual(rows, [mealB, mealA]);
+});
+
+test("Most ordered meal prefers the backend quantity rank, including numeric strings", () => {
+  const revenueLeader = { product_name: "Salmon", quantity_sold: 7, revenue_rank: 1, quantity_rank: 2 };
+  const quantityLeader = { product_name: "Chicken", quantity_sold: "12", revenue_rank: "2", quantity_rank: "1" };
+  assert.equal(getMostOrderedMeal([revenueLeader, quantityLeader]), quantityLeader);
+  const ranked = { product_name: "Backend winner", quantity_sold: 1, quantity_rank: 1 };
+  const unranked = { product_name: "Unranked row", quantity_sold: 20 };
+  assert.equal(getMostOrderedMeal([unranked, ranked]), ranked);
+});
+
+test("Most ordered meal safely handles missing, empty, and invalid quantities", () => {
+  for (const rows of [undefined, null, [], {}, [null, {}, { quantity_sold: 0 }, { quantity_sold: "0" }, { quantity_sold: -1 }, { quantity_sold: "invalid" }, { quantity_sold: Infinity }]]) {
+    assert.equal(getMostOrderedMeal(rows), null);
+  }
+});
+
+test("Most ordered meal fallback breaks quantity ties by revenue then product name", () => {
+  const alpha = { product_name: "Alpha", quantity_sold: "12", revenue_kobo: "200000" };
+  const beta = { product_name: "Beta", quantity_sold: 12, revenue_kobo: 200000 };
+  const lowerRevenue = { product_name: "Aardvark", quantity_sold: 12, revenue_kobo: "100000" };
+  assert.equal(getMostOrderedMeal([lowerRevenue, beta, alpha]), alpha);
+  assert.equal(getMostOrderedMeal([alpha, beta, lowerRevenue]), alpha);
+  assert.equal(getMostOrderedMeal([lowerRevenue, beta]), beta);
+  assert.equal(getMostOrderedMeal([{ quantity_sold: 9, revenue_kobo: "999999999" }, alpha]), alpha);
+});
 
 test("Cycle 16 date presets use inclusive Africa/Lagos business dates", () => {
   const now = new Date("2026-09-03T00:15:00+01:00");
