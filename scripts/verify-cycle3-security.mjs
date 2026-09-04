@@ -145,7 +145,7 @@ try {
   assert.equal(expectSuccess(await anonClient.from("products").select("id").eq("id", "20000000-0000-4000-8000-000000000004"), "anonymous hidden-product query").length, 0);
   assert.equal(expectSuccess(await anonClient.from("product_variants").select("id"), "anonymous visible-variant read").length, 2);
   assert.equal(expectSuccess(await anonClient.from("delivery_zones").select("id"), "anonymous active-zone read").length, 6);
-  assert.equal(expectSuccess(await anonClient.from("testimonials").select("id"), "anonymous published-testimonial read").length, 2);
+  assert.equal(expectSuccess(await anonClient.from("published_testimonials").select("id"), "anonymous published-testimonial read").length, 2);
 
   const publicCheckout = expectSuccess(await anonClient.from("checkout_payment_options").select("*").single(), "public checkout contract");
   assert.deepEqual(Object.keys(publicCheckout).sort(), ["paystack_enabled", "whatsapp_enabled"]);
@@ -154,7 +154,7 @@ try {
   expectSuccess(await anonClient.from("feedback").insert({
     customer_name: "Security Test",
     email: feedbackEmail,
-    subject: "Cycle 3 RLS",
+    subject: "general_inquiry",
     rating: 5,
     message: "Anonymous insert should succeed while reads remain private.",
   }), "anonymous feedback insert");

@@ -18,7 +18,7 @@ select is(
 
 select is(
   (select count(*)::integer from pg_policies where schemaname = 'public'),
-  44,
+  43,
   'the approved operation-specific RLS policy set exists'
 );
 
@@ -64,7 +64,7 @@ select is(
 );
 select ok(has_table_privilege('anon', 'public.checkout_payment_options', 'SELECT'), 'anon can read the safe checkout view');
 select ok(not has_table_privilege('anon', 'public.checkout_settings', 'SELECT'), 'anon cannot read checkout metadata from the base table');
-select ok(has_table_privilege('anon', 'public.feedback', 'INSERT'), 'anon can submit feedback');
+select ok(has_column_privilege('anon', 'public.feedback', 'message', 'INSERT'), 'anon can submit feedback through allowed columns');
 select ok(not has_table_privilege('anon', 'public.feedback', 'SELECT'), 'anon cannot read private feedback');
 select ok(has_table_privilege('anon', 'public.products', 'SELECT'), 'anon can request public products');
 select ok(not has_table_privilege('anon', 'public.products', 'UPDATE'), 'anon cannot mutate product prices');
@@ -82,7 +82,7 @@ select is((select count(*)::integer from public.product_variants), 2, 'anon sees
 select is((select count(*)::integer from public.product_addons), 3, 'anon sees only available add-ons');
 select is((select count(*)::integer from public.product_addon_assignments), 3, 'anon sees only public add-on assignments');
 select is((select count(*)::integer from public.delivery_zones), 6, 'anon sees only active delivery zones');
-select is((select count(*)::integer from public.testimonials), 2, 'anon sees only published testimonials');
+select is((select count(*)::integer from public.published_testimonials), 2, 'anon sees only published testimonials');
 select ok(
   (select paystack_enabled and whatsapp_enabled from public.checkout_payment_options),
   'anon can read safe checkout payment availability'
@@ -90,7 +90,7 @@ select ok(
 select lives_ok(
   $$
     insert into public.feedback (customer_name, email, subject, rating, message)
-    values ('RLS Test', 'rls-test@example.com', 'Security test', 5, 'Anonymous feedback insert is permitted.')
+    values ('RLS Test', 'rls-test@example.com', 'general_inquiry', 5, 'Anonymous feedback insert is permitted.')
   $$,
   'anonymous feedback submission succeeds'
 );

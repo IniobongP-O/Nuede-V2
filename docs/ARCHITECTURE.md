@@ -1,5 +1,9 @@
 # Nuede V2 architecture
 
+## Cycle 17 content extension
+
+Each application owns a `features/content` boundary for its APIs, Query hooks and components. Shared input validation lives in `@nuede/validation/content`. Storefront static editorial/contact configuration remains local configuration, not a new CMS. Public testimonials use a narrow database projection; private feedback stays in the existing table under RLS. Homepage featured meals consume the established menu cache, cards, customization validation and cart provider. [Cycle 17 details](CYCLE17.md) document publication, privacy, auditing and verification limits.
+
 ## Status
 
 This document records the architecture established in Cycle 0. Changes to frozen decisions require explicit approval before implementation.

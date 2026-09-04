@@ -289,16 +289,16 @@ values
     'Development Customer A',
     'A representative local testimonial used to verify published storefront data.',
     5,
-    true,
-    now()
+    false,
+    null
   ),
   (
     '60000000-0000-4000-8000-000000000002',
     'Development Customer B',
     'A second representative record for rating and publication tests.',
     4,
-    true,
-    now()
+    false,
+    null
   ),
   (
     '60000000-0000-4000-8000-000000000003',
@@ -308,6 +308,10 @@ values
     false,
     null
   );
+
+-- Publication remains separate even for development seed stories.
+update public.testimonials set is_published = true
+where id in ('60000000-0000-4000-8000-000000000001', '60000000-0000-4000-8000-000000000002');
 
 insert into public.checkout_settings (id, paystack_enabled, whatsapp_enabled, updated_by)
 values (true, true, true, null);

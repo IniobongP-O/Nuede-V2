@@ -1,5 +1,11 @@
 # Feature authority and roadmap
 
+## Current Cycle 17 implementation
+
+Public published-only testimonial carousel; protected testimonial creation/editing/rating/publication/deletion; guest feedback with six subjects; private paged admin feedback with search and subject/rating filters; editable feedback-to-unpublished-testimonial copying; completed rotating hero, About, live featured meals, FAQ, nutrition note, configurable contact/footer/social content are implemented. Loading, empty, failure, validation, responsive and accessibility states are included.
+
+[Cycle 17 report](CYCLE17.md) distinguishes passing available verification from unavailable live database/Auth/RLS checks and lists missing real business contact values. Cycles 0–16 were accepted as the foundation for this work. Cycle 18 is not implemented; the historical cycle notes below remain historical records.
+
 ## Source precedence
 
 Development decisions use this authority order:

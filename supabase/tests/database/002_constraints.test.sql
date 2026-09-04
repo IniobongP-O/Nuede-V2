@@ -81,7 +81,7 @@ select throws_ok(
 select throws_ok(
   $$
     insert into public.feedback (customer_name, email, subject, rating, message)
-    values ('Constraint Test', 'test@example.invalid', 'Other', 6, 'Invalid rating')
+    values ('Constraint Test', 'test@example.invalid', 'other', 6, 'Invalid rating')
   $$,
   '23514',
   null,

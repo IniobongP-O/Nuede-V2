@@ -93,6 +93,7 @@ test("mock content remains application-owned fixtures", async () => {
     "packages/validation/src/cart.js",
     "packages/validation/src/catalog.js",
     "packages/validation/src/checkout.js",
+    "packages/validation/src/content.js",
     "packages/validation/src/customization.js",
     "packages/validation/src/planner.js",
     "packages/validation/src/savedMeals.js",

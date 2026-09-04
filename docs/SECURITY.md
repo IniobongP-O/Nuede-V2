@@ -1,5 +1,13 @@
 # Security rules
 
+## Cycle 17 privacy boundary
+
+Public testimonial reads use the four-field, published-only `published_testimonials` security-barrier projection. Anonymous users cannot select the base table; authenticated non-admins cannot read its rows through RLS. Private source links, dates and audit metadata never cross the public projection. Feedback accepts anonymous INSERT only on `customer_name,email,subject,rating,message`, with meaningful database constraints and no returning read. Public feedback SELECT/UPDATE/DELETE remain unavailable, and feedback is excluded from Realtime publication.
+
+Existing active owner/admin/editor content permissions are retained. Conversion copies editable public fields to an unpublished distinct testimonial; the source remains private and intact. A database trigger rejects published creation, while a separate update explicitly publishes. Admin writes are audited by the database, and browser audit writes remain denied. New frontend text is rendered without unsafe HTML. No service-role secrets or commerce/payment authority were introduced.
+
+These controls have code/contract and mocked-browser coverage; actual role/grant/trigger execution remains NOT RUN without local Supabase. Existing validation and payload limits are present; no CAPTCHA or rate-limiting infrastructure existed to integrate. See [Cycle 17 verification and limitations](CYCLE17.md), including the added database test matrix. Cycle 18 production security work was not started.
+
 ## Trust model
 
 The browser is an untrusted client. It may display estimates and send normalized selections, but it cannot decide authoritative prices, totals, order validity, payment status, fulfilment status, or enabled checkout methods.

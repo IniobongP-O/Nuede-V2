@@ -1,5 +1,11 @@
 # Nuede visual foundation
 
+## Cycle 17 content completion
+
+The homepage now has a dark promotional hero with controllable slides, live featured cards, a brand section, published testimonial carousel, native FAQ disclosures, a visible nutrition note, private feedback form and configurable contact/footer links. Live catalog images use the existing image component; a deliberate typographic hero remains usable when photography is missing. Historical fixture references below describe earlier cycles, not the current homepage.
+
+The testimonial and feedback admin screens use responsive cards, existing labeled controls and native dialogs. Publication is a textual state and a separate confirmed action; conversion is an editable unpublished draft. Focus restoration includes nested conversion. Carousels support keyboard and native touch scrolling, ratings include numbers, reduced-motion preferences are honored, and multiple storefront feedback states use unique heading IDs. Focused browser checks cover five viewport widths, including mobile admin editing. See [Cycle 17 evidence](CYCLE17.md).
+
 ## Purpose
 
 Cycle 1 establishes a small reusable visual and interaction language for two independent applications. This document prevents later feature cycles from inventing new colors, spacing, controls, modal behavior, or responsive conventions.

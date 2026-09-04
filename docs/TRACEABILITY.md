@@ -2,6 +2,31 @@
 
 This ledger maps requirements to implementation and evidence. It is updated during each cycle's inspection and implementation.
 
+## Cycle 17 — implementation and available verification
+
+Cycles 0–16 are the accepted foundation for this work. Cycle 17 proceeded without a pre-flight approval gate. [Full implementation, contracts and verification record](CYCLE17.md).
+
+| Requirement | Required → implemented | Tested |
+|---|---|---|
+| 2 | Hero slides, rotation, indicators, controls, animation, responsive imagery and menu/planner CTAs → `Hero.jsx`, existing `ProductImage` | Browser rendering, navigation target, reduced motion, five viewport widths; lint/build |
+| 3 | About / food philosophy → completed homepage brand and ordering copy | Browser and source checks |
+| 4 | Live featured carousel, prices, nutrition, variants, availability, quick add → `FeaturedMeals.jsx`, existing menu cache/cards/configuration validator/cart/detail dialog | Unit availability/variant regressions; browser quick add, sold-out guard, grouped dialog, responsive checks |
+| 143 | Published-only stories with ratings → narrow `published_testimonials` projection and public carousel | Node contract tests; browser empty/error/public states, numeric ratings and keyboard scroll; live SQL NOT RUN |
+| 144 | Authorized testimonial CRUD and explicit publication → protected Testimonials page, editor, confirmation dialogs, existing RLS roles | Browser create via conversion, edit/rating, publication failure/retry, publish/unpublish/delete; SQL authorization matrix NOT RUN |
+| 145 / 154 | Reflect public changes → 30-second foreground Query refetch and window-focus/remount refresh | Source assertions and browser publication/refetch on reload; no private Realtime subscription |
+| 146–147 | Five-field guest feedback and six canonical subjects → RHF/Zod form and write-only API | Unit subjects/limits/rating/email; browser inline errors, pending guard, retained failure values and success |
+| 148 / 160–161 | Private feedback and restricted content management → column INSERT grants, active-admin RLS, narrow public projection | Static contract assertions; real role/grant/row tests in `011_cycle17_content.test.sql` NOT RUN without local Supabase |
+| 149 | Private admin inbox, full detail, search and combined subject/rating filters → bounded server queries and native dialog | Browser filter/no-results/reset/private detail; source pagination contract; live DB NOT RUN |
+| 150 | Deliberate editable copy without publishing or deleting source → existing unique source FK, unpublished insert, DB published-insert rejection | Unit allowlist/source preservation; browser redaction/draft/publication sequence and source preservation; SQL trigger matrix NOT RUN |
+| 151 | Accessible FAQ → seven native disclosures | Browser keyboard expand/collapse |
+| 152 | Nutrition variation disclaimer → visible homepage note and footer reference | Unit copy checks and browser rendering |
+| 153 | Contact/footer/social → centralized optional approved values and valid destinations; Abuja context and feedback fallback | Unit missing/unsafe/configured destination checks; browser missing-config rendering |
+| Cycle 17 cross-cutting | Responsive states, unique state IDs, labeled forms, numeric ratings, focus restoration, reduced motion, text rendering | Browser desktop/mobile and 320/390/768/1024/1440 widths, nested dialog focus and untrusted-text check; lint/build |
+| Cycle 17 audit | Database-owned create/edit/publish/unpublish/delete/conversion events in existing log | Static checks; actual audit trigger assertions NOT RUN |
+| Regression | Preserve commerce, admin authorization and Cycle 16 analytics | Complete 162-test Node suite PASS; both builds PASS; live auth/database NOT RUN |
+
+No known Cycle 17 implementation defect remains after review. Migration replay and database/Auth/RLS integration are unverified because local Supabase is unavailable. Production contact destinations/hours must still be supplied by the business; no fake values were published. Abuse throttling and production launch verification remain outside this cycle. Cycle 18 has not begun.
+
 ## Cycle 0 foundation
 
 | Requirement ID | Requirement | Implementation location | Status | Automated verification | Manual acceptance |

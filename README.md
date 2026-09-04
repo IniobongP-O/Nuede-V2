@@ -2,7 +2,7 @@
 
 Nuede V2 is a fresh food-commerce and nutrition platform with two independent React applications and one trusted Supabase backend.
 
-The accepted Cycle 0–15 foundation and Cycle 16 first-party sales analytics implementation are present. The storefront supports the live catalog, local saved meals/cart/planner, guest checkout, permanent server-authoritative orders, WhatsApp handoff, and verified Paystack payments. The protected admin application manages catalog, delivery/payment settings, operational order fulfilment, and reconciliable sales reporting. Later-cycle content and deployment work remain outside this checkpoint.
+The accepted Cycles 0–16 foundation and Cycle 17 content implementation are present. The storefront supports the live catalog, local saved meals/cart/planner, guest checkout, permanent server-authoritative orders, WhatsApp handoff, verified Paystack payments, published testimonials and private guest feedback. The protected admin application manages catalog, delivery/payment settings, order fulfilment, sales reporting, testimonials and the private feedback inbox. See [Cycle 17 implementation and verification](docs/CYCLE17.md) for the content contracts and remaining local database verification. Cycle 18 deployment work has not begun.
 
 ## Applications
 

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./content": "./src/content.js",
     "./catalog": "./src/catalog.js",
     "./cart": "./src/cart.js",
     "./checkout": "./src/checkout.js",

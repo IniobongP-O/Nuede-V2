@@ -1,5 +1,11 @@
 # Database rules
 
+## Cycle 17 content contract
+
+Migration `20260904000100_complete_feedback_and_testimonials.sql` reuses `feedback`, `testimonials`, the existing unique `source_feedback_id` relationship and `admin_audit_log`. It adds content constraints and feedback browsing indexes, narrow anonymous feedback column grants, the `published_testimonials` projection, draft-only creation/publication timestamp enforcement and trusted testimonial auditing. It preserves all existing active owner/admin/editor content permissions.
+
+The public view intentionally uses reviewed postgres ownership and a security barrier to expose exactly four public columns from published rows. Public base-table access is removed; admin access stays under RLS. New length/subject/email checks use `NOT VALID` to preserve historical rows while protecting new writes. No historical feedback is rewritten. See [Cycle 17 contracts and migration notes](CYCLE17.md). Migration replay and the new pgTAP matrix were not run locally because Supabase is unavailable.
+
 ## Source of truth
 
 Nuede V2 uses Supabase PostgreSQL as the source of truth for business data. Browser storage is permitted only for explicitly local customer conveniences such as future favorites, carts, and meal plans; it is not a trusted commerce database.

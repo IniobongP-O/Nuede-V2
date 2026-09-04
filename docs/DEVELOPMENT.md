@@ -1,5 +1,13 @@
 # Development guide
 
+## Cycle 17 development and verification
+
+Read [the Cycle 17 report](CYCLE17.md) for schema contracts, content configuration, tests and current infrastructure limits. Optional business contact values belong in the documented `VITE_CONTACT_*` storefront configuration; empty/invalid values do not render fake links. General WhatsApp contact is independent of checkout enablement.
+
+Use `node --test scripts/verify-cycle17-content.test.js` for focused checks and `npm run verify` for lint, the repository suite, and both builds. `node scripts/verify-cycle17-browser.mjs` runs HTTP-mocked UI checks with Playwright, starts/cleans up isolated localhost Vite servers, and writes ignored evidence under `coverage/cycle17/`; runtime/channel overrides are documented in the report. It does not prove RLS.
+
+When local Supabase is available, replay migrations/seed and run `npm run db:test` plus `npm run test:security:cycle3`. The new `011_cycle17_content.test.sql` checks public/private reads, allowed/forged writes, validation, active/inactive roles, conversion, publication and auditing. Those live checks were unavailable in this environment, and no hosted infrastructure or Cycle 18 deployment was provisioned.
+
 ## Local requirements
 
 - Node.js 24
