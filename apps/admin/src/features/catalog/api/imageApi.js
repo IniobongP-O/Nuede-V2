@@ -71,7 +71,9 @@ export async function uploadCatalogImage({ file, entityType, entityId }) {
   const path = `${directory}/${entityId}/${crypto.randomUUID()}.webp`;
   const { error } = await requireSupabase().storage
     .from(catalogImageBucket)
-    .upload(path, optimized, { contentType: "image/webp", cacheControl: "3600", upsert: false });
+    // Only public catalog images: replacement always creates a new UUID URL.
+    // Old URLs may remain browser-cached; private objects never use this adapter.
+    .upload(path, optimized, { contentType: "image/webp", cacheControl: "31536000", upsert: false });
   if (error) throw error;
   return path;
 }

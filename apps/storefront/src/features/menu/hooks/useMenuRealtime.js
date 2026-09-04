@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import { supabase } from "../../../lib/supabaseClient.js";
 import { menuQueryKeys } from "./useMenu.js";
+import { createCatalogInvalidator } from "../utils/catalogInvalidation.js";
 
 export function useMenuRealtime() {
   const queryClient = useQueryClient();
@@ -10,11 +11,9 @@ export function useMenuRealtime() {
   useEffect(() => {
     if (!supabase) return undefined;
 
-    const invalidateProducts = () => queryClient.invalidateQueries({ queryKey: menuQueryKeys.products });
-    const invalidateCategories = () => Promise.all([
-      queryClient.invalidateQueries({ queryKey: menuQueryKeys.categories }),
-      queryClient.invalidateQueries({ queryKey: menuQueryKeys.products }),
-    ]);
+    const invalidator = createCatalogInvalidator(queryClient, menuQueryKeys);
+    const invalidateProducts = invalidator.products;
+    const invalidateCategories = invalidator.categories;
     // Realtime is only an invalidation signal; refetching through the normal query
     // preserves normalization and RLS filtering when row visibility changes.
     const channel = supabase
@@ -26,6 +25,6 @@ export function useMenuRealtime() {
       .on("postgres_changes", { event: "*", schema: "public", table: "categories" }, invalidateCategories)
       .subscribe();
 
-    return () => { void supabase.removeChannel(channel); };
+    return () => { invalidator.cancel(); void supabase.removeChannel(channel); };
   }, [queryClient]);
 }

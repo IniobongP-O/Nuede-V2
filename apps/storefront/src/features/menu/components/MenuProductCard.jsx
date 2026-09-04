@@ -1,6 +1,7 @@
 import { formatKobo } from "@nuede/domain/currency";
 import { formatNutritionValue } from "@nuede/domain/nutrition";
 import { Layers3 } from "lucide-react";
+import { memo } from "react";
 
 import { Button } from "../../../components/ui/Button.jsx";
 import { Badge, Card } from "../../../components/ui/Surface.jsx";
@@ -31,7 +32,9 @@ function NutritionPreview({ nutrition, complete }) {
   );
 }
 
-export function MenuProductCard({ product, onOpenDetails }) {
+// Catalog objects and the menu's state setter are stable across dialog updates.
+// Keep unchanged card work out of opening, closing and basket context commits.
+export const MenuProductCard = memo(function MenuProductCard({ product, onOpenDetails }) {
   const status = statusPresentation[product.menuStatus] || statusPresentation.unavailable;
   const price = product.priceKobo === null
     ? product.menuStatus === "price_pending" ? "Price pending" : "Price unavailable"
@@ -64,4 +67,4 @@ export function MenuProductCard({ product, onOpenDetails }) {
       </div>
     </Card>
   );
-}
+});

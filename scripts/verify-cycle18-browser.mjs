@@ -17,18 +17,7 @@ const output = path.resolve("coverage/cycle18");
 await mkdir(output, { recursive: true });
 process.env.VITE_SUPABASE_URL = "http://127.0.0.1:54321";
 process.env.VITE_SUPABASE_ANON_KEY = "cycle18-browser-public-fixture";
-const id = (n) => `18000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
-const category = { id: id(1), name: "QA kitchen", slug: "qa-kitchen", is_enabled: true, sort_order: 1 };
-const nutrition = { calories: 500, protein_g: 30, carbohydrates_g: 45, fat_g: 12 };
-const meal = { ...nutrition, id: id(2), name: "QA standard meal", slug: "qa-standard", category_id: category.id, category, product_type: "standard", description: "Browser fixture meal", price_kobo: 800000, image_path: null, status: "available", sort_order: 1, product_variants: [], product_addon_assignments: [] };
-const addons = [3, 4].map((n) => ({ ...nutrition, id: id(n), name: `QA extra ${n}`, price_kobo: 100000, is_available: true }));
-const variant = { ...nutrition, id: id(6), product_id: id(5), name: "QA rice option", description: "Selected rice description", price_kobo: 900000, status: "available", sort_order: 1 };
-const grouped = { ...meal, id: id(5), name: "QA grouped bowl", slug: "qa-bowl", product_type: "grouped", price_kobo: null, requires_variant_selection: true, product_variants: [variant], product_addon_assignments: addons.map((addon) => ({ addon_id: addon.id, addon, sort_order: 1 })) };
-const products = [meal, grouped, { ...meal, id: id(7), name: "QA sold out", status: "sold_out" }];
-const zone = { id: id(8), name: "QA central", fee_kobo: 200000, is_active: true, sort_order: 1 };
-const settings = { paystack_enabled: true, whatsapp_enabled: true };
-const user = { id: id(99), email: "qa-admin@example.com", aud: "authenticated", role: "authenticated", app_metadata: {}, user_metadata: {}, created_at: new Date().toISOString() };
-const token = `${Buffer.from('{"alg":"HS256"}').toString("base64url")}.${Buffer.from(JSON.stringify({ sub: user.id, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 })).toString("base64url")}.qa`;
+import { id, category, meal, addons, variant, grouped, products, zone, settings, user, token } from "./cycle18-browser-fixtures.mjs";
 let persona = "admin";
 let analyticsFailure = false;
 const orders = [];
@@ -38,6 +27,7 @@ const layoutViolations = [];
 const exceptions = [];
 const servers = [];
 const payloads = [];
+const imageUploads = [];
 let browser;
 
 function orderContext() { return { products, variants: [variant], addons, assignments: addons.map((addon) => ({ product_id: grouped.id, addon_id: addon.id })), deliveryZone: zone, checkoutSettings: settings }; }
@@ -56,6 +46,13 @@ async function mock(route) {
   const request = route.request(); const url = new URL(request.url()); const table = url.pathname.split("/").at(-1);
   const respond = (data, status = 200) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(data), headers: { "access-control-allow-origin": "*", "content-range": "0-0/0" } });
   if (request.method() === "OPTIONS") return respond({});
+  if (url.pathname.startsWith("/storage/v1/object/product-images/") && request.method() === "POST") {
+    console.log("NUEDE image: intercepted upload");
+    assert.match(request.postDataBuffer().toString(), /31536000/);
+    assert.equal(request.headers()["x-upsert"], "false");
+    imageUploads.push(url.pathname);
+    return respond({ Key: url.pathname.split("/object/")[1] });
+  }
   if (table === "token") return respond({ access_token: token, refresh_token: "qa-refresh", token_type: "bearer", expires_in: 3600, user });
   if (table === "user") return persona === "expired" ? respond({ message: "Expired", code: "bad_jwt" }, 401) : respond(user);
   if (table === "logout") return respond({});
@@ -152,6 +149,84 @@ try {
   await adminPage.getByLabel("Password", { exact: false }).fill("QA-browser-only-123!");
   await adminPage.getByRole("button", { name: "Sign in", exact: true }).click();
   await adminPage.getByRole("heading", { name: "Settings", exact: true }).waitFor();
+
+  if (!layoutOnly) {
+    adminPage.on("console", (message) => { if (message.text().startsWith("NUEDE image:")) console.log(message.text()); });
+    let imageTimeout;
+    const imageResult = await Promise.race([adminPage.evaluate(async (entityId) => {
+      console.log("NUEDE image: importing adapter");
+      const { prepareCatalogImage, uploadCatalogImage } = await import("/src/features/catalog/api/imageApi.js");
+      console.log("NUEDE image: creating source");
+      const canvas = document.createElement("canvas"); canvas.width = 2400; canvas.height = 1200;
+      const context = canvas.getContext("2d"); context.fillStyle = "#245c3e"; context.fillRect(0, 0, 2400, 1200);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg"));
+      const file = new window.File([blob], "fixture.jpg", { type: "image/jpeg" });
+      console.log("NUEDE image: optimizing");
+      const optimized = await prepareCatalogImage(file); const decoded = await window.createImageBitmap(optimized);
+      const result = { type: optimized.type, width: decoded.width, height: decoded.height, rejected: [] }; decoded.close();
+      for (const candidate of [new window.File(["text"], "bad.txt", { type: "text/plain" }), new window.File([new Uint8Array(5 * 1024 * 1024 + 1)], "big.png", { type: "image/png" }), new window.File(["corrupt"], "bad.png", { type: "image/png" })]) {
+        console.log(`NUEDE image: rejecting ${candidate.name}`);
+        try { await prepareCatalogImage(candidate); result.rejected.push(false); } catch { result.rejected.push(true); }
+      }
+      console.log("NUEDE image: uploading");
+      result.paths = [];
+      result.paths.push(await uploadCatalogImage({ file, entityType: "product", entityId }));
+      result.paths.push(await uploadCatalogImage({ file, entityType: "product", entityId }));
+      return result;
+    }, grouped.id), new Promise((_, reject) => { imageTimeout = setTimeout(() => reject(new Error("Image processing/upload fixture exceeded 30 seconds")), 30000); })]).finally(() => clearTimeout(imageTimeout));
+    assert.equal(imageResult.type, "image/webp"); assert.equal(imageResult.width, 1600); assert.equal(imageResult.height, 800);
+    assert.deepEqual(imageResult.rejected, [true, true, true]); assert.notEqual(imageResult.paths[0], imageResult.paths[1]); assert.equal(imageUploads.length, 2);
+    reports.push("catalog image WebP/downscale/rejection and unique long-cache upload contract (mocked Storage)");
+
+    await page.goto(`${storefront}/menu`);
+    await page.getByLabel("Search the menu", { exact: true }).fill("grouped");
+    await page.getByRole("button", { name: "Choose QA grouped bowl", exact: true }).waitFor();
+    assert.equal(await page.getByRole("button", { name: "Customize QA standard meal", exact: true }).count(), 0);
+    await page.getByLabel("Search the menu", { exact: true }).fill("");
+    await page.getByRole("button", { name: "Grouped meals", exact: true }).click();
+    assert.equal(await page.getByRole("button", { name: "Customize QA standard meal", exact: true }).count(), 0);
+    await page.getByRole("button", { name: "Grouped meals", exact: true }).click();
+    await page.getByRole("button", { name: "QA kitchen", exact: true }).click();
+    await page.getByRole("button", { name: "Customize QA standard meal", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Available only", exact: true }).click();
+    assert.equal(await page.getByRole("button", { name: "View details for QA sold out", exact: true }).count(), 0);
+    await page.getByRole("button", { name: "Save QA grouped bowl", exact: true }).click();
+    await page.goto(`${storefront}/saved`); await page.getByRole("button", { name: "Choose QA grouped bowl", exact: true }).waitFor();
+    await page.reload(); await page.getByRole("button", { name: "Remove QA grouped bowl from saved meals", exact: true }).click();
+    await check(page, "performance saved meal persistence and removal");
+    reports.push("menu search, category and composed filters after memoization");
+    await page.goto(`${storefront}/menu`);
+    for (let i = 0; i < 2; i++) {
+      await page.getByRole("button", { name: "Customize QA standard meal", exact: true }).click();
+      await page.getByRole("button", { name: "Add to basket", exact: true }).click();
+    }
+    await page.getByRole("button", { name: /Open basket, 2 items/ }).click();
+    assert.equal(await page.locator("dialog[open] li").count(), 1, "identical configurations merge");
+    await page.getByRole("button", { name: "Increase QA standard meal quantity", exact: true }).click();
+    await page.getByRole("button", { name: "Decrease QA standard meal quantity", exact: true }).click();
+    await page.getByRole("button", { name: "Edit", exact: true }).click();
+    await page.getByRole("button", { name: "Increase quantity", exact: true }).click();
+    await page.getByRole("button", { name: "Update basket", exact: true }).click();
+    await page.keyboard.press("Escape"); await page.reload();
+    await page.getByRole("button", { name: /Open basket, 3 items/ }).click();
+    await check(page, "performance basket merge, quantity, edit and persisted result");
+    await page.getByRole("button", { name: "Remove", exact: true }).click();
+    await page.getByRole("heading", { name: "Your basket is empty", exact: true }).waitFor();
+    await page.keyboard.press("Escape");
+    await page.goto(`${storefront}/planner`);
+    for (const days of [2, 3, 4, 5, 6, 7]) {
+      await page.getByRole("button", { name: `${days} days`, exact: true }).click();
+      assert.equal(await page.getByRole("button", { name: `${days} days`, exact: true }).getAttribute("aria-pressed"), "true");
+    }
+    await page.getByRole("button", { name: "2 days", exact: true }).click();
+    await page.locator(`[data-planner-product="${meal.id}"]`).getByRole("button", { name: "Quick add", exact: true }).click();
+    await page.getByRole("button", { name: "Replace", exact: true }).click();
+    await page.locator(`[data-planner-product="${grouped.id}"]`).getByRole("button", { name: "Choose for slot", exact: true }).click();
+    await page.getByRole("radio", { name: /QA rice option/ }).check();
+    await page.locator("dialog[open]").getByRole("button", { name: /Place in/ }).click();
+    await page.getByRole("button", { name: "Remove", exact: true }).click();
+    reports.push("planner 2–7 day selection, replace and remove");
+  }
 
   for (const scenario of (layoutOnly ? [] : ["standard-whatsapp", "standard-paystack", "grouped-paystack", "plan-whatsapp", "plan-paystack"])) {
     const plan = scenario.startsWith("plan"); const groupedFlow = scenario.startsWith("grouped"); const method = scenario.endsWith("paystack") ? "paystack" : "whatsapp";

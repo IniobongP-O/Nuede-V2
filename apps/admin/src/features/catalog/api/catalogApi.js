@@ -65,7 +65,7 @@ async function replaceAssignments(productId, addonIds) {
   throwIfError(error);
 }
 
-async function saveProduct({ id, record, addonIds = [], imageFile, previousImagePath }) {
+async function saveProduct({ id, record, addonIds = [], imageFile, previousImagePath, removeImage = false }) {
   const client = requireSupabase();
   const entityId = id || crypto.randomUUID();
   const slug = await uniqueSlug("products", record.name, id);
@@ -75,7 +75,7 @@ async function saveProduct({ id, record, addonIds = [], imageFile, previousImage
   let uploadedPath;
   let productPersisted = false;
   if (imageFile) uploadedPath = await uploadCatalogImage({ file: imageFile, entityType: "product", entityId });
-  const imagePath = uploadedPath || existingImagePath || null;
+  const imagePath = uploadedPath || (removeImage ? null : existingImagePath || null);
 
   // Storage and PostgreSQL do not share a transaction. Track which side committed
   // so failure compensation never removes the only image of a persisted product.
@@ -95,13 +95,14 @@ async function saveProduct({ id, record, addonIds = [], imageFile, previousImage
     if (uploadedPath && !productPersisted) {
       await removeCatalogImage(uploadedPath).catch(() => undefined);
     }
-    if (uploadedPath && productPersisted && existingImagePath && existingImagePath !== uploadedPath) {
+    if (productPersisted && existingImagePath && existingImagePath !== imagePath) {
       await removeCatalogImage(existingImagePath).catch(() => undefined);
     }
     throw error;
   }
 
-  if (uploadedPath && existingImagePath && existingImagePath !== uploadedPath) {
+  // Remove the old object only after its database reference has changed.
+  if (existingImagePath && existingImagePath !== imagePath) {
     await removeCatalogImage(existingImagePath).catch(() => undefined);
   }
   return readProduct(entityId);
@@ -197,12 +198,12 @@ export async function deleteAddon(id) {
   return data;
 }
 
-export async function saveVariant({ productId, id, record, imageFile, previousImagePath }) {
+export async function saveVariant({ productId, id, record, imageFile, previousImagePath, removeImage = false }) {
   const client = requireSupabase();
   const variantId = id || crypto.randomUUID();
   let uploadedPath;
   if (imageFile) uploadedPath = await uploadCatalogImage({ file: imageFile, entityType: "variant", entityId: variantId });
-  const imagePath = uploadedPath || previousImagePath || null;
+  const imagePath = uploadedPath || (removeImage ? null : previousImagePath || null);
   try {
     const query = id
       ? client.from("product_variants").update({ ...record, image_path: imagePath }).eq("id", id).eq("product_id", productId)
@@ -210,7 +211,7 @@ export async function saveVariant({ productId, id, record, imageFile, previousIm
     const { data, error } = await query
       .select("id,product_id,name,description,price_kobo,calories,protein_g,carbohydrates_g,fat_g,image_path,status,sort_order,updated_at").single();
     throwIfError(error);
-    if (uploadedPath && previousImagePath && uploadedPath !== previousImagePath) {
+    if (previousImagePath && imagePath !== previousImagePath) {
       await removeCatalogImage(previousImagePath).catch(() => undefined);
     }
     return data;

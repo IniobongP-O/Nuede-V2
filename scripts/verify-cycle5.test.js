@@ -141,7 +141,7 @@ test("Cycle 5 centralizes Storage writes and uses safe replacement ordering", as
   assert.ok(api.indexOf("await uploadCatalogImage") < api.indexOf("image_path: imagePath"));
   assert.ok(api.indexOf("image_path: imagePath") < api.lastIndexOf("removeCatalogImage(existingImagePath)"));
   assert.match(api, /uploadedPath && !productPersisted/);
-  assert.match(api, /uploadedPath && productPersisted && existingImagePath/);
+  assert.match(api, /productPersisted && existingImagePath && existingImagePath !== imagePath/);
   assert.match(standardEditor, /setError\("root"/);
   assert.match(variantEditor, /setError\("root"/);
   assert.doesNotMatch(page, /\.storage|supabase\.from|\.from\("products"\)/);

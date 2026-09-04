@@ -1,0 +1,3428 @@
+{
+  "before": {
+    "scope": "Instrumented production React builds; synthetic 120-product catalog, 12 variants, 8 add-ons. Mocked HTTP; no database/provider timing claim.",
+    "browser": "152.0.4191.62",
+    "payloadBytes": 68228,
+    "normalizationMedianMs": 0.2977000000000203,
+    "scenarios": [
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "original",
+        "menuScroll": {
+          "p95FrameMs": 16.40000009536743,
+          "framesOver34Ms": 2
+        },
+        "summary": {
+          "openMs": 30.8,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 17.1,
+          "framesOver34Ms": 0,
+          "scriptMs": 18.56,
+          "layoutMs": 2.03,
+          "taskMs": 256.87
+        },
+        "runs": [
+          {
+            "openMs": 38.299999952316284,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.100000143051147,
+            "framesOver34Ms": 1,
+            "scriptMs": 26.803999999999995,
+            "layoutMs": 5.663000000000001,
+            "taskMs": 189.71500000000003,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 46.299999952316284,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 16.799999952316284,
+            "framesOver34Ms": 0,
+            "scriptMs": 21.669000000000008,
+            "layoutMs": 2.0269999999999975,
+            "taskMs": 256.86800000000005,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 30.199999809265137,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 16.699999809265137,
+            "framesOver34Ms": 0,
+            "scriptMs": 17.462000000000007,
+            "layoutMs": 2.2370000000000028,
+            "taskMs": 233.59399999999997,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 2.6,
+              "RasterTask": 0.26
+            }
+          },
+          {
+            "openMs": 30.799999952316284,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.100000143051147,
+            "framesOver34Ms": 0,
+            "scriptMs": 17.751000000000015,
+            "layoutMs": 1.977999999999997,
+            "taskMs": 276.7919999999999,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 29.5,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.09999990463257,
+            "framesOver34Ms": 0,
+            "scriptMs": 18.557999999999993,
+            "layoutMs": 1.9250000000000032,
+            "taskMs": 268.7729999999999,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "no-backdrop",
+        "menuScroll": {
+          "p95FrameMs": 16.40000009536743,
+          "framesOver34Ms": 2
+        },
+        "summary": {
+          "openMs": 30.2,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 17.4,
+          "framesOver34Ms": 1,
+          "scriptMs": 17.41,
+          "layoutMs": 1.85,
+          "taskMs": 270.11
+        },
+        "runs": [
+          {
+            "openMs": 29.899999856948853,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.200000047683716,
+            "framesOver34Ms": 0,
+            "scriptMs": 17.086999999999993,
+            "layoutMs": 1.8209999999999962,
+            "taskMs": 260.9919999999999,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 30.5,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.399999856948853,
+            "framesOver34Ms": 2,
+            "scriptMs": 17.061999999999994,
+            "layoutMs": 1.8700000000000037,
+            "taskMs": 270.11300000000006,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 44.299999952316284,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 1,
+            "scriptMs": 17.43900000000001,
+            "layoutMs": 2.022999999999997,
+            "taskMs": 281.2109999999999,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 4.02,
+              "RasterTask": 0.35
+            }
+          },
+          {
+            "openMs": 30.200000047683716,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.5,
+            "framesOver34Ms": 0,
+            "scriptMs": 17.452000000000023,
+            "layoutMs": 1.8270000000000022,
+            "taskMs": 417.589,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 29.700000047683716,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17,
+            "framesOver34Ms": 1,
+            "scriptMs": 17.409000000000006,
+            "layoutMs": 1.8509999999999984,
+            "taskMs": 262.4930000000001,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "no-footer",
+        "menuScroll": {
+          "p95FrameMs": 16.40000009536743,
+          "framesOver34Ms": 2
+        },
+        "summary": {
+          "openMs": 29.9,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 17.7,
+          "framesOver34Ms": 2,
+          "scriptMs": 15.69,
+          "layoutMs": 1.92,
+          "taskMs": 236.46
+        },
+        "runs": [
+          {
+            "openMs": 29.90000009536743,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 28.09999990463257,
+            "framesOver34Ms": 3,
+            "scriptMs": 15.689000000000009,
+            "layoutMs": 1.9009999999999998,
+            "taskMs": 228.05399999999975,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 29.799999952316284,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 16.90000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 15.499999999999957,
+            "layoutMs": 1.8540000000000014,
+            "taskMs": 236.46399999999977,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 29.399999856948853,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18,
+            "framesOver34Ms": 2,
+            "scriptMs": 17.542,
+            "layoutMs": 2.0560000000000023,
+            "taskMs": 262.15600000000006,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 3.79,
+              "RasterTask": 0.39
+            }
+          },
+          {
+            "openMs": 30.200000047683716,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.700000047683716,
+            "framesOver34Ms": 3,
+            "scriptMs": 15.616999999999992,
+            "layoutMs": 1.923999999999995,
+            "taskMs": 229.59899999999988,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 30.100000143051147,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 1,
+            "scriptMs": 16.90799999999998,
+            "layoutMs": 2.031000000000005,
+            "taskMs": 265.7290000000003,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "no-blurs",
+        "menuScroll": {
+          "p95FrameMs": 16.40000009536743,
+          "framesOver34Ms": 2
+        },
+        "summary": {
+          "openMs": 30.3,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 17.4,
+          "framesOver34Ms": 0,
+          "scriptMs": 16.5,
+          "layoutMs": 1.81,
+          "taskMs": 240.42
+        },
+        "runs": [
+          {
+            "openMs": 30.40000009536743,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.200000047683716,
+            "framesOver34Ms": 0,
+            "scriptMs": 16.28299999999999,
+            "layoutMs": 1.8509999999999984,
+            "taskMs": 243.43000000000004,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 31.100000143051147,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17,
+            "framesOver34Ms": 0,
+            "scriptMs": 16.57799999999998,
+            "layoutMs": 1.8069999999999962,
+            "taskMs": 232.04899999999995,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 30.300000190734863,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.5,
+            "framesOver34Ms": 0,
+            "scriptMs": 16.504999999999992,
+            "layoutMs": 1.8120000000000012,
+            "taskMs": 240.418,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 3.61,
+              "RasterTask": 0.32
+            }
+          },
+          {
+            "openMs": 30,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 16.191999999999986,
+            "layoutMs": 1.780999999999998,
+            "taskMs": 229.21799999999948,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 30.09999990463257,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.5,
+            "framesOver34Ms": 2,
+            "scriptMs": 16.68499999999995,
+            "layoutMs": 1.8150000000000042,
+            "taskMs": 250.3919999999997,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "heapBeforeBytes": 8134536,
+        "heapAfterBytes": 26673968,
+        "note": "unforced GC; not a retained-memory/leak claim"
+      },
+      {
+        "width": 1440,
+        "burstProductRequests": 11
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "original",
+        "menuScroll": {
+          "p95FrameMs": 18.200000047683716,
+          "framesOver34Ms": 3
+        },
+        "summary": {
+          "openMs": 138.7,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 18.2,
+          "framesOver34Ms": 1,
+          "scriptMs": 130.66,
+          "layoutMs": 11.5,
+          "taskMs": 1365.42
+        },
+        "runs": [
+          {
+            "openMs": 239.80000019073486,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 34.89999985694885,
+            "framesOver34Ms": 5,
+            "scriptMs": 158.57399999999998,
+            "layoutMs": 24.172,
+            "taskMs": 1077.8339999999998,
+            "longTasks": [
+              160,
+              117
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 189,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.90000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 132.05800000000002,
+            "layoutMs": 12.53399999999999,
+            "taskMs": 1365.415,
+            "longTasks": [
+              124,
+              101
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 134.5,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.5,
+            "framesOver34Ms": 1,
+            "scriptMs": 130.65699999999993,
+            "layoutMs": 11.49900000000001,
+            "taskMs": 1504.2310000000002,
+            "longTasks": [
+              112,
+              97
+            ],
+            "paint": {
+              "PrePaint": 18.79,
+              "RasterTask": 3.06,
+              "UpdateLayoutTree": 29.18,
+              "Paint": 162.97
+            }
+          },
+          {
+            "openMs": 138.29999995231628,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.200000047683716,
+            "framesOver34Ms": 3,
+            "scriptMs": 122.84499999999998,
+            "layoutMs": 10.055999999999981,
+            "taskMs": 1378.8679999999997,
+            "longTasks": [
+              102
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 138.70000004768372,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.90000009536743,
+            "framesOver34Ms": 1,
+            "scriptMs": 111.61100000000002,
+            "layoutMs": 11.34300000000002,
+            "taskMs": 1318.6210000000003,
+            "longTasks": [
+              114,
+              106
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "no-backdrop",
+        "menuScroll": {
+          "p95FrameMs": 18.200000047683716,
+          "framesOver34Ms": 3
+        },
+        "summary": {
+          "openMs": 140.3,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 18.5,
+          "framesOver34Ms": 1,
+          "scriptMs": 114.58,
+          "layoutMs": 11.75,
+          "taskMs": 1375.63
+        },
+        "runs": [
+          {
+            "openMs": 140.70000004768372,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.299999952316284,
+            "framesOver34Ms": 1,
+            "scriptMs": 111.9389999999999,
+            "layoutMs": 11.860999999999983,
+            "taskMs": 1402.3510000000003,
+            "longTasks": [
+              118,
+              94
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 159.29999995231628,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.100000143051147,
+            "framesOver34Ms": 1,
+            "scriptMs": 114.58499999999994,
+            "layoutMs": 11.745000000000005,
+            "taskMs": 1357.8639999999994,
+            "longTasks": [
+              124,
+              97
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 140.29999995231628,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 20.100000143051147,
+            "framesOver34Ms": 3,
+            "scriptMs": 116.46899999999994,
+            "layoutMs": 12.633999999999979,
+            "taskMs": 1811.6369999999993,
+            "longTasks": [
+              101,
+              343,
+              93,
+              52
+            ],
+            "paint": {
+              "PrePaint": 18.49,
+              "RasterTask": 3.04,
+              "UpdateLayoutTree": 28.78,
+              "Paint": 170.37
+            }
+          },
+          {
+            "openMs": 139.40000009536743,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.700000047683716,
+            "framesOver34Ms": 1,
+            "scriptMs": 117.39100000000002,
+            "layoutMs": 9.50200000000001,
+            "taskMs": 1375.630000000001,
+            "longTasks": [
+              115,
+              91
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 139.5,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.5,
+            "framesOver34Ms": 4,
+            "scriptMs": 111.18699999999993,
+            "layoutMs": 9.788000000000018,
+            "taskMs": 1306.3829999999984,
+            "longTasks": [
+              110,
+              89
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "no-footer",
+        "menuScroll": {
+          "p95FrameMs": 18.200000047683716,
+          "framesOver34Ms": 3
+        },
+        "summary": {
+          "openMs": 144.9,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 18.3,
+          "framesOver34Ms": 2,
+          "scriptMs": 127.21,
+          "layoutMs": 10.68,
+          "taskMs": 1388.77
+        },
+        "runs": [
+          {
+            "openMs": 156.39999985694885,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 19.699999809265137,
+            "framesOver34Ms": 3,
+            "scriptMs": 114.70500000000006,
+            "layoutMs": 11.899999999999967,
+            "taskMs": 1372.9250000000022,
+            "longTasks": [
+              122,
+              98
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 123,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.299999952316284,
+            "framesOver34Ms": 1,
+            "scriptMs": 120.41500000000016,
+            "layoutMs": 10.68100000000005,
+            "taskMs": 1348.2160000000008,
+            "longTasks": [
+              102,
+              77
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 144.90000009536743,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.699999809265137,
+            "framesOver34Ms": 2,
+            "scriptMs": 127.36400000000003,
+            "layoutMs": 9.923999999999989,
+            "taskMs": 1441.8229999999994,
+            "longTasks": [
+              107,
+              100
+            ],
+            "paint": {
+              "PrePaint": 17.3,
+              "RasterTask": 3.04,
+              "UpdateLayoutTree": 30.81,
+              "Paint": 169.73
+            }
+          },
+          {
+            "openMs": 137.59999990463257,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.09999990463257,
+            "framesOver34Ms": 2,
+            "scriptMs": 127.20799999999998,
+            "layoutMs": 10.087000000000012,
+            "taskMs": 1388.767999999999,
+            "longTasks": [
+              113,
+              55,
+              112
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 156.5,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.299999952316284,
+            "framesOver34Ms": 1,
+            "scriptMs": 127.83799999999968,
+            "layoutMs": 11.151999999999996,
+            "taskMs": 1479.2179999999994,
+            "longTasks": [
+              126,
+              99
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "no-blurs",
+        "menuScroll": {
+          "p95FrameMs": 18.200000047683716,
+          "framesOver34Ms": 3
+        },
+        "summary": {
+          "openMs": 139.7,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 18.3,
+          "framesOver34Ms": 2,
+          "scriptMs": 112.79,
+          "layoutMs": 11.11,
+          "taskMs": 1347.3
+        },
+        "runs": [
+          {
+            "openMs": 123.79999995231628,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.300000190734863,
+            "framesOver34Ms": 3,
+            "scriptMs": 109.69600000000001,
+            "layoutMs": 9.706999999999965,
+            "taskMs": 1318.9460000000004,
+            "longTasks": [
+              102,
+              95
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 139.70000004768372,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18,
+            "framesOver34Ms": 1,
+            "scriptMs": 110.86699999999982,
+            "layoutMs": 11.108000000000008,
+            "taskMs": 1321.2919999999997,
+            "longTasks": [
+              112,
+              100
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 151.39999985694885,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.100000143051147,
+            "framesOver34Ms": 1,
+            "scriptMs": 134.582,
+            "layoutMs": 11.720999999999982,
+            "taskMs": 1407.2639999999978,
+            "longTasks": [
+              116,
+              78
+            ],
+            "paint": {
+              "PrePaint": 12.17,
+              "RasterTask": 2.76,
+              "UpdateLayoutTree": 27.97,
+              "Paint": 155.17
+            }
+          },
+          {
+            "openMs": 121.5,
+            "cardsOnOpen": 120,
+            "menuRequests": 1,
+            "p95FrameMs": 38.39999985694885,
+            "framesOver34Ms": 5,
+            "scriptMs": 128.0269999999999,
+            "layoutMs": 9.694000000000036,
+            "taskMs": 1361.3950000000018,
+            "longTasks": [
+              96,
+              94
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 139.79999995231628,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.399999856948853,
+            "framesOver34Ms": 2,
+            "scriptMs": 112.79100000000008,
+            "layoutMs": 11.121999999999964,
+            "taskMs": 1347.3040000000012,
+            "longTasks": [
+              112,
+              103
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "heapBeforeBytes": 8161680,
+        "heapAfterBytes": 12626712,
+        "note": "unforced GC; not a retained-memory/leak claim"
+      },
+      {
+        "width": 390,
+        "burstProductRequests": 11
+      }
+    ],
+    "admin": [
+      {
+        "width": 1440,
+        "mode": "original",
+        "summary": {
+          "openMs": 46.700000047683716,
+          "listRenders": 1,
+          "requests": 0,
+          "scrollTaskMs": 128.02,
+          "p95FrameMs": 17.200000047683716
+        },
+        "runs": [
+          {
+            "openMs": 47.60000014305115,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 138.49499999999998,
+            "p95FrameMs": 17.200000047683716
+          },
+          {
+            "openMs": 46.39999985694885,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 116.599,
+            "p95FrameMs": 17
+          },
+          {
+            "openMs": 46.700000047683716,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 124.20700000000006,
+            "p95FrameMs": 17
+          },
+          {
+            "openMs": 46.700000047683716,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 133.22499999999994,
+            "p95FrameMs": 17.700000047683716
+          },
+          {
+            "openMs": 46.700000047683716,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 128.02,
+            "p95FrameMs": 17.59999990463257
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "mode": "no-backdrop",
+        "summary": {
+          "openMs": 47.10000014305115,
+          "listRenders": 1,
+          "requests": 0,
+          "scrollTaskMs": 147.58000000000004,
+          "p95FrameMs": 17.5
+        },
+        "runs": [
+          {
+            "openMs": 45.40000009536743,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 147.13200000000003,
+            "p95FrameMs": 17.5
+          },
+          {
+            "openMs": 47.60000014305115,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 123.98800000000021,
+            "p95FrameMs": 17.299999952316284
+          },
+          {
+            "openMs": 47.10000014305115,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 151.3819999999999,
+            "p95FrameMs": 17.59999990463257
+          },
+          {
+            "openMs": 46.799999952316284,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 147.58000000000004,
+            "p95FrameMs": 17.600000143051147
+          },
+          {
+            "openMs": 47.200000047683716,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 147.82200000000012,
+            "p95FrameMs": 17.40000009536743
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "route": "dashboard",
+        "settleMs": 886.9687999999987,
+        "requests": 4
+      },
+      {
+        "width": 1440,
+        "route": "orders",
+        "settleMs": 584.4147000000012,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "analytics",
+        "settleMs": 883.4237999999968,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "delivery",
+        "settleMs": 565.7734999999993,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "testimonials",
+        "settleMs": 565.4184999999998,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "feedback",
+        "settleMs": 584.5488000000005,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "settings",
+        "settleMs": 565.5787999999993,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "mode": "original",
+        "summary": {
+          "openMs": 238.5,
+          "listRenders": 1,
+          "requests": 0,
+          "scrollTaskMs": 669.7290000000003,
+          "p95FrameMs": 17.90000009536743
+        },
+        "runs": [
+          {
+            "openMs": 267.59999990463257,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 639.0650000000002,
+            "p95FrameMs": 17.90000009536743
+          },
+          {
+            "openMs": 261.2999999523163,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 693.549,
+            "p95FrameMs": 18.09999990463257
+          },
+          {
+            "openMs": 238.5,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 749.2799999999997,
+            "p95FrameMs": 17.90000009536743
+          },
+          {
+            "openMs": 222.09999990463257,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 622.3169999999998,
+            "p95FrameMs": 17.90000009536743
+          },
+          {
+            "openMs": 220.29999995231628,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 669.7290000000003,
+            "p95FrameMs": 17.700000047683716
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "mode": "no-backdrop",
+        "summary": {
+          "openMs": 238.19999980926514,
+          "listRenders": 1,
+          "requests": 0,
+          "scrollTaskMs": 707.1899999999989,
+          "p95FrameMs": 18.700000047683716
+        },
+        "runs": [
+          {
+            "openMs": 427.19999980926514,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 707.1899999999989,
+            "p95FrameMs": 18
+          },
+          {
+            "openMs": 238.19999980926514,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 711.1269999999994,
+            "p95FrameMs": 18.799999952316284
+          },
+          {
+            "openMs": 228.39999985694885,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 705.7299999999991,
+            "p95FrameMs": 18.700000047683716
+          },
+          {
+            "openMs": 258.7000000476837,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 693.1539999999998,
+            "p95FrameMs": 19.700000047683716
+          },
+          {
+            "openMs": 220.40000009536743,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 713.3710000000004,
+            "p95FrameMs": 18.200000047683716
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "route": "dashboard",
+        "settleMs": 1006.5705000000016,
+        "requests": 4
+      },
+      {
+        "width": 390,
+        "route": "orders",
+        "settleMs": 677.4798999999985,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "analytics",
+        "settleMs": 973.7987999999968,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "delivery",
+        "settleMs": 660.3773000000001,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "testimonials",
+        "settleMs": 673.0200999999943,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "feedback",
+        "settleMs": 692.3994000000021,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "settings",
+        "settleMs": 673.6990000000005,
+        "requests": 3
+      }
+    ]
+  },
+  "after": {
+    "scope": "Instrumented production React builds; synthetic 120-product catalog, 12 variants, 8 add-ons. Mocked HTTP; no database/provider timing claim.",
+    "browser": "152.0.4191.62",
+    "payloadBytes": 68228,
+    "normalizationMedianMs": 0.2999999999999545,
+    "scenarios": [
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "original",
+        "menuScroll": {
+          "p95FrameMs": 4.299999952316284,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 38.3,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 16.8,
+          "framesOver34Ms": 0,
+          "scriptMs": 12.16,
+          "layoutMs": 1.95,
+          "taskMs": 219.97
+        },
+        "runs": [
+          {
+            "openMs": 36.40000009536743,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17,
+            "framesOver34Ms": 1,
+            "scriptMs": 17.118999999999996,
+            "layoutMs": 4.431999999999999,
+            "taskMs": 175.522,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 30.09999990463257,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 12.491999999999988,
+            "layoutMs": 1.9520000000000024,
+            "taskMs": 234.56199999999998,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 38.799999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 16.799999952316284,
+            "framesOver34Ms": 0,
+            "scriptMs": 11.034000000000002,
+            "layoutMs": 2.0589999999999984,
+            "taskMs": 225.4219999999999,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 2.84,
+              "RasterTask": 0.24
+            }
+          },
+          {
+            "openMs": 38.799999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 4.3999998569488525,
+            "framesOver34Ms": 0,
+            "scriptMs": 11.168999999999999,
+            "layoutMs": 1.9540000000000044,
+            "taskMs": 219.4949999999999,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 38.299999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 4.300000190734863,
+            "framesOver34Ms": 0,
+            "scriptMs": 12.15899999999999,
+            "layoutMs": 1.9549999999999983,
+            "taskMs": 219.96900000000008,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "no-backdrop",
+        "menuScroll": {
+          "p95FrameMs": 4.299999952316284,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 38.3,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 16.6,
+          "framesOver34Ms": 0,
+          "scriptMs": 10.96,
+          "layoutMs": 1.86,
+          "taskMs": 218.54
+        },
+        "runs": [
+          {
+            "openMs": 38.299999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 4.299999952316284,
+            "framesOver34Ms": 0,
+            "scriptMs": 10.53499999999999,
+            "layoutMs": 1.8569999999999975,
+            "taskMs": 199.35999999999999,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 38.40000009536743,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 11.543999999999999,
+            "layoutMs": 1.8320000000000003,
+            "taskMs": 231.3019999999999,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 38.799999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 16.600000143051147,
+            "framesOver34Ms": 0,
+            "scriptMs": 10.964000000000002,
+            "layoutMs": 2.019,
+            "taskMs": 216.83300000000006,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 2.58,
+              "RasterTask": 0.26
+            }
+          },
+          {
+            "openMs": 37.700000047683716,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 16.5,
+            "framesOver34Ms": 0,
+            "scriptMs": 10.643999999999988,
+            "layoutMs": 1.8869999999999998,
+            "taskMs": 218.54099999999988,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 31.700000047683716,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 11.624999999999996,
+            "layoutMs": 1.8379999999999994,
+            "taskMs": 229.77099999999996,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "no-footer",
+        "menuScroll": {
+          "p95FrameMs": 4.299999952316284,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 38.3,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 17.4,
+          "framesOver34Ms": 0,
+          "scriptMs": 12.1,
+          "layoutMs": 2.04,
+          "taskMs": 227.56
+        },
+        "runs": [
+          {
+            "openMs": 38.5,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 12.096999999999996,
+            "layoutMs": 2.0410000000000013,
+            "taskMs": 215.36500000000024,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 30.799999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.399999856948853,
+            "framesOver34Ms": 0,
+            "scriptMs": 10.480999999999991,
+            "layoutMs": 1.8509999999999984,
+            "taskMs": 205.12500000000023,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 30.40000009536743,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.59999990463257,
+            "framesOver34Ms": 0,
+            "scriptMs": 10.497000000000007,
+            "layoutMs": 1.9580000000000015,
+            "taskMs": 227.5609999999997,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 3.42,
+              "RasterTask": 0.34
+            }
+          },
+          {
+            "openMs": 38.299999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 17.200999999999993,
+            "layoutMs": 2.6390000000000025,
+            "taskMs": 361.8959999999998,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 66,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 9.5,
+            "framesOver34Ms": 0,
+            "scriptMs": 39.77900000000001,
+            "layoutMs": 4.220999999999996,
+            "taskMs": 665.8920000000004,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "no-blurs",
+        "menuScroll": {
+          "p95FrameMs": 4.299999952316284,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 61.7,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 17.1,
+          "framesOver34Ms": 0,
+          "scriptMs": 38.67,
+          "layoutMs": 5.12,
+          "taskMs": 751.89
+        },
+        "runs": [
+          {
+            "openMs": 61.700000047683716,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.59999990463257,
+            "framesOver34Ms": 0,
+            "scriptMs": 38.66900000000001,
+            "layoutMs": 4.7800000000000065,
+            "taskMs": 899.1520000000008,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 43.799999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.09999990463257,
+            "framesOver34Ms": 0,
+            "scriptMs": 39.629000000000026,
+            "layoutMs": 5.119999999999999,
+            "taskMs": 664.5749999999992,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 63.299999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17,
+            "framesOver34Ms": 0,
+            "scriptMs": 44.20099999999999,
+            "layoutMs": 11.510999999999994,
+            "taskMs": 751.8880000000001,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 9.57,
+              "RasterTask": 0.32
+            }
+          },
+          {
+            "openMs": 71.90000009536743,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.600000143051147,
+            "framesOver34Ms": 0,
+            "scriptMs": 33.77800000000003,
+            "layoutMs": 4.6680000000000055,
+            "taskMs": 843.0910000000002,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 45.60000014305115,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 16.700000047683716,
+            "framesOver34Ms": 0,
+            "scriptMs": 34.748999999999974,
+            "layoutMs": 5.692000000000003,
+            "taskMs": 702.7270000000003,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "heapBeforeBytes": 8119312,
+        "heapAfterBytes": 14887048,
+        "note": "unforced GC; not a retained-memory/leak claim"
+      },
+      {
+        "width": 1440,
+        "burstProductRequests": 2
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "original",
+        "menuScroll": {
+          "p95FrameMs": 17,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 161.9,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 21.6,
+          "framesOver34Ms": 0,
+          "scriptMs": 170.03,
+          "layoutMs": 13.99,
+          "taskMs": 2314.83
+        },
+        "runs": [
+          {
+            "openMs": 159.79999995231628,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 16.799999952316284,
+            "framesOver34Ms": 0,
+            "scriptMs": 165.41699999999997,
+            "layoutMs": 27.79100000000001,
+            "taskMs": 1486.5059999999999,
+            "longTasks": [
+              145,
+              172
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 161.90000009536743,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 25.5,
+            "framesOver34Ms": 3,
+            "scriptMs": 184.61400000000006,
+            "layoutMs": 13.951999999999993,
+            "taskMs": 2383.7729999999997,
+            "longTasks": [
+              152,
+              50,
+              66,
+              135
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 161.79999995231628,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 45.60000014305115,
+            "framesOver34Ms": 5,
+            "scriptMs": 182.635,
+            "layoutMs": 15.053000000000011,
+            "taskMs": 2777.63,
+            "longTasks": [
+              142,
+              81,
+              78,
+              107,
+              104,
+              60,
+              112
+            ],
+            "paint": {
+              "PrePaint": 21.54,
+              "RasterTask": 4.43,
+              "UpdateLayoutTree": 53.44,
+              "Paint": 226.08
+            }
+          },
+          {
+            "openMs": 258.2999999523163,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 21.59999990463257,
+            "framesOver34Ms": 0,
+            "scriptMs": 170.03100000000003,
+            "layoutMs": 13.985999999999999,
+            "taskMs": 2314.8310000000006,
+            "longTasks": [
+              207,
+              53,
+              70,
+              87
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 164,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 18.09999990463257,
+            "framesOver34Ms": 0,
+            "scriptMs": 114.68499999999993,
+            "layoutMs": 12.093999999999994,
+            "taskMs": 1753.9789999999994,
+            "longTasks": [
+              135,
+              151
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "no-backdrop",
+        "menuScroll": {
+          "p95FrameMs": 17,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 231.5,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 42.1,
+          "framesOver34Ms": 7,
+          "scriptMs": 194.01,
+          "layoutMs": 19.24,
+          "taskMs": 2982.51
+        },
+        "runs": [
+          {
+            "openMs": 155,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.699999809265137,
+            "framesOver34Ms": 0,
+            "scriptMs": 130.60500000000008,
+            "layoutMs": 14.841999999999993,
+            "taskMs": 1939.2319999999988,
+            "longTasks": [
+              127,
+              164,
+              52,
+              187
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 231.5,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 42.10000014305115,
+            "framesOver34Ms": 7,
+            "scriptMs": 194.01000000000002,
+            "layoutMs": 20.50100000000002,
+            "taskMs": 2982.5110000000004,
+            "longTasks": [
+              173,
+              82,
+              94,
+              105,
+              53,
+              86,
+              166,
+              174
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 260.69999980926514,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 88.59999990463257,
+            "framesOver34Ms": 15,
+            "scriptMs": 279.0689999999998,
+            "layoutMs": 13.864999999999961,
+            "taskMs": 3609.3430000000026,
+            "longTasks": [
+              263,
+              97,
+              95,
+              52,
+              222,
+              87,
+              82,
+              119,
+              84,
+              102,
+              50,
+              268
+            ],
+            "paint": {
+              "PrePaint": 40.12,
+              "RasterTask": 5.25,
+              "UpdateLayoutTree": 84.36,
+              "Paint": 467.05
+            }
+          },
+          {
+            "openMs": 705,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 131.59999990463257,
+            "framesOver34Ms": 21,
+            "scriptMs": 317.4939999999999,
+            "layoutMs": 19.237000000000005,
+            "taskMs": 4934.504000000001,
+            "longTasks": [
+              662,
+              95,
+              74,
+              115,
+              51,
+              161,
+              57,
+              156,
+              52,
+              221,
+              144,
+              72,
+              77,
+              163,
+              596
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 141.79999995231628,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 20.899999856948853,
+            "framesOver34Ms": 0,
+            "scriptMs": 178.0809999999997,
+            "layoutMs": 39.221000000000004,
+            "taskMs": 2212.3209999999995,
+            "longTasks": [
+              115,
+              52,
+              112,
+              446
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "no-footer",
+        "menuScroll": {
+          "p95FrameMs": 17,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 196.7,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 20.8,
+          "framesOver34Ms": 3,
+          "scriptMs": 143.67,
+          "layoutMs": 14.47,
+          "taskMs": 2593.61
+        },
+        "runs": [
+          {
+            "openMs": 214.5,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 63,
+            "framesOver34Ms": 12,
+            "scriptMs": 248.46100000000027,
+            "layoutMs": 17.950999999999993,
+            "taskMs": 2921.2919999999976,
+            "longTasks": [
+              179,
+              62,
+              56,
+              167,
+              68,
+              116,
+              82,
+              50,
+              99,
+              74
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 196.69999980926514,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 18,
+            "framesOver34Ms": 1,
+            "scriptMs": 130.96299999999994,
+            "layoutMs": 11.366000000000042,
+            "taskMs": 1611.0240000000003,
+            "longTasks": [
+              164,
+              85
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 127.5,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 16.399999856948853,
+            "framesOver34Ms": 0,
+            "scriptMs": 92.29500000000002,
+            "layoutMs": 11.102999999999973,
+            "taskMs": 1494.6780000000003,
+            "longTasks": [
+              104,
+              102
+            ],
+            "paint": {
+              "PrePaint": 15.47,
+              "RasterTask": 3.13,
+              "UpdateLayoutTree": 24.81,
+              "Paint": 161.57
+            }
+          },
+          {
+            "openMs": 194.40000009536743,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 20.799999952316284,
+            "framesOver34Ms": 3,
+            "scriptMs": 143.6689999999996,
+            "layoutMs": 16.93100000000003,
+            "taskMs": 2593.6069999999986,
+            "longTasks": [
+              159,
+              127,
+              54,
+              156,
+              307
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 214.39999985694885,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 84.5,
+            "framesOver34Ms": 13,
+            "scriptMs": 187.97100000000012,
+            "layoutMs": 14.470999999999956,
+            "taskMs": 2903.4869999999983,
+            "longTasks": [
+              154,
+              78,
+              56,
+              101,
+              140,
+              128,
+              94,
+              198
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "no-blurs",
+        "menuScroll": {
+          "p95FrameMs": 17,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 189.6,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 30.6,
+          "framesOver34Ms": 4,
+          "scriptMs": 153.07,
+          "layoutMs": 16.03,
+          "taskMs": 2012.22
+        },
+        "runs": [
+          {
+            "openMs": 211.39999985694885,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 88.29999995231628,
+            "framesOver34Ms": 14,
+            "scriptMs": 247.6759999999998,
+            "layoutMs": 30.935000000000045,
+            "taskMs": 3908.4919999999956,
+            "longTasks": [
+              212,
+              130,
+              96,
+              72,
+              127,
+              52,
+              65,
+              159,
+              103,
+              109,
+              51,
+              129,
+              188,
+              111
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 189.60000014305115,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 30.600000143051147,
+            "framesOver34Ms": 4,
+            "scriptMs": 153.06500000000023,
+            "layoutMs": 13.409999999999977,
+            "taskMs": 2012.2169999999996,
+            "longTasks": [
+              153,
+              83,
+              90,
+              71,
+              87
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 299.2999999523163,
+            "cardsOnOpen": 0,
+            "menuRequests": 1,
+            "p95FrameMs": 61.90000009536743,
+            "framesOver34Ms": 17,
+            "scriptMs": 308.49599999999987,
+            "layoutMs": 56.315999999999974,
+            "taskMs": 4216.236999999999,
+            "longTasks": [
+              215,
+              128,
+              183,
+              58,
+              53,
+              86,
+              103,
+              77,
+              145,
+              193,
+              77,
+              82
+            ],
+            "paint": {
+              "PrePaint": 44,
+              "RasterTask": 5.4,
+              "UpdateLayoutTree": 46.24,
+              "Paint": 414.3
+            }
+          },
+          {
+            "openMs": 152.70000004768372,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 26,
+            "framesOver34Ms": 3,
+            "scriptMs": 131.98700000000008,
+            "layoutMs": 16.012999999999998,
+            "taskMs": 1943.0610000000001,
+            "longTasks": [
+              127,
+              122
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 141.59999990463257,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 18.90000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 122.59699999999984,
+            "layoutMs": 16.029999999999987,
+            "taskMs": 1833.3610000000035,
+            "longTasks": [
+              115,
+              130,
+              56
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "heapBeforeBytes": 8161748,
+        "heapAfterBytes": 9319532,
+        "note": "unforced GC; not a retained-memory/leak claim"
+      },
+      {
+        "width": 390,
+        "burstProductRequests": 3
+      }
+    ],
+    "admin": [
+      {
+        "width": 1440,
+        "mode": "original",
+        "summary": {
+          "openMs": 75.59999990463257,
+          "listRenders": 0,
+          "requests": 0,
+          "scrollTaskMs": 325.45000000000005,
+          "p95FrameMs": 17
+        },
+        "runs": [
+          {
+            "openMs": 46,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 102.327,
+            "p95FrameMs": 17.09999990463257
+          },
+          {
+            "openMs": 44.5,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 325.45000000000005,
+            "p95FrameMs": 17.40000009536743
+          },
+          {
+            "openMs": 130.59999990463257,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 329.82,
+            "p95FrameMs": 17
+          },
+          {
+            "openMs": 75.59999990463257,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 309.1970000000002,
+            "p95FrameMs": 16
+          },
+          {
+            "openMs": 78.29999995231628,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 362.422,
+            "p95FrameMs": 16.90000009536743
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "mode": "no-backdrop",
+        "summary": {
+          "openMs": 75,
+          "listRenders": 0,
+          "requests": 0,
+          "scrollTaskMs": 270.80800000000016,
+          "p95FrameMs": 16.899999856948853
+        },
+        "runs": [
+          {
+            "openMs": 77.70000004768372,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 468.6180000000002,
+            "p95FrameMs": 17.399999856948853
+          },
+          {
+            "openMs": 75,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 270.80800000000016,
+            "p95FrameMs": 5.900000095367432
+          },
+          {
+            "openMs": 86.10000014305115,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 235.23900000000043,
+            "p95FrameMs": 16.899999856948853
+          },
+          {
+            "openMs": 68,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 375.2690000000003,
+            "p95FrameMs": 17.299999952316284
+          },
+          {
+            "openMs": 56.5,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 217.7699999999998,
+            "p95FrameMs": 5.3999998569488525
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "route": "dashboard",
+        "settleMs": 1024.9187999999995,
+        "requests": 4
+      },
+      {
+        "width": 1440,
+        "route": "orders",
+        "settleMs": 1310.7871999999988,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "analytics",
+        "settleMs": 1017.8307999999997,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "delivery",
+        "settleMs": 1034.8261999999995,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "testimonials",
+        "settleMs": 1033.0785000000014,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "feedback",
+        "settleMs": 994.479800000001,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "settings",
+        "settleMs": 977.4405000000006,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "mode": "original",
+        "summary": {
+          "openMs": 392.09999990463257,
+          "listRenders": 0,
+          "requests": 0,
+          "scrollTaskMs": 1968.0879999999997,
+          "p95FrameMs": 60.60000014305115
+        },
+        "runs": [
+          {
+            "openMs": 292.90000009536743,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 748.9259999999999,
+            "p95FrameMs": 20.09999990463257
+          },
+          {
+            "openMs": 392.09999990463257,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 1968.0879999999997,
+            "p95FrameMs": 72.19999980926514
+          },
+          {
+            "openMs": 731.9000000953674,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 2060.428000000001,
+            "p95FrameMs": 60.60000014305115
+          },
+          {
+            "openMs": 485.2000000476837,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 2032.6789999999999,
+            "p95FrameMs": 82.90000009536743
+          },
+          {
+            "openMs": 263.40000009536743,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 1491.1529999999989,
+            "p95FrameMs": 55
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "mode": "no-backdrop",
+        "summary": {
+          "openMs": 238.59999990463257,
+          "listRenders": 0,
+          "requests": 0,
+          "scrollTaskMs": 789.8850000000017,
+          "p95FrameMs": 18.700000047683716
+        },
+        "runs": [
+          {
+            "openMs": 252.90000009536743,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 747.7640000000001,
+            "p95FrameMs": 17.300000190734863
+          },
+          {
+            "openMs": 238.59999990463257,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 719.0909999999988,
+            "p95FrameMs": 14.299999952316284
+          },
+          {
+            "openMs": 233.89999985694885,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 789.8850000000017,
+            "p95FrameMs": 18.700000047683716
+          },
+          {
+            "openMs": 310.7999999523163,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 948.4130000000022,
+            "p95FrameMs": 21.5
+          },
+          {
+            "openMs": 237.20000004768372,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 798.2949999999995,
+            "p95FrameMs": 18.700000047683716
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "route": "dashboard",
+        "settleMs": 767.2992000000013,
+        "requests": 2
+      },
+      {
+        "width": 390,
+        "route": "orders",
+        "settleMs": 1225.6520999999993,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "analytics",
+        "settleMs": 1129.541799999999,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "delivery",
+        "settleMs": 1115.6114000000016,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "testimonials",
+        "settleMs": 1044.7661999999982,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "feedback",
+        "settleMs": 1114.3185999999987,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "settings",
+        "settleMs": 1037.4398,
+        "requests": 3
+      }
+    ]
+  },
+  "before-paired": {
+    "scope": "Instrumented production React builds; synthetic 120-product catalog, 12 variants, 8 add-ons. Mocked HTTP; no database/provider timing claim.",
+    "browser": "152.0.4191.62",
+    "payloadBytes": 68228,
+    "normalizationMedianMs": 0.3048999999999751,
+    "scenarios": [
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "original",
+        "menuScroll": {
+          "p95FrameMs": 17,
+          "framesOver34Ms": 1
+        },
+        "summary": {
+          "openMs": 56.3,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 7.1,
+          "framesOver34Ms": 0,
+          "scriptMs": 51.19,
+          "layoutMs": 4.39,
+          "taskMs": 628.54
+        },
+        "runs": [
+          {
+            "openMs": 38.60000014305115,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 4.300000190734863,
+            "framesOver34Ms": 1,
+            "scriptMs": 31.772000000000002,
+            "layoutMs": 5.62,
+            "taskMs": 212.944,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 56.299999952316284,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 7.1000001430511475,
+            "framesOver34Ms": 1,
+            "scriptMs": 52.76399999999999,
+            "layoutMs": 5.343000000000001,
+            "taskMs": 628.538,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 67.79999995231628,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 4.6000001430511475,
+            "framesOver34Ms": 0,
+            "scriptMs": 51.191999999999986,
+            "layoutMs": 4.392,
+            "taskMs": 595.432,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 6.91,
+              "RasterTask": 0.74
+            }
+          },
+          {
+            "openMs": 56,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 18.199999809265137,
+            "framesOver34Ms": 0,
+            "scriptMs": 45.120999999999995,
+            "layoutMs": 4.071999999999999,
+            "taskMs": 968.5029999999999,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 69.19999980926514,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.40000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 57.83299999999997,
+            "layoutMs": 4.229000000000004,
+            "taskMs": 808.0500000000002,
+            "longTasks": [
+              55
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "heapBeforeBytes": 8132884,
+        "heapAfterBytes": 16344372,
+        "note": "unforced GC; not a retained-memory/leak claim"
+      },
+      {
+        "width": 1440,
+        "burstProductRequests": 11
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "original",
+        "menuScroll": {
+          "p95FrameMs": 4.700000047683716,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 196.9,
+          "cardsOnOpen": 120,
+          "menuRequests": 0,
+          "p95FrameMs": 22.9,
+          "framesOver34Ms": 0,
+          "scriptMs": 192.11,
+          "layoutMs": 16.5,
+          "taskMs": 2036.77
+        },
+        "runs": [
+          {
+            "openMs": 196.89999985694885,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 8.100000143051147,
+            "framesOver34Ms": 0,
+            "scriptMs": 192.10599999999994,
+            "layoutMs": 27.819999999999983,
+            "taskMs": 1222.4279999999999,
+            "longTasks": [
+              172,
+              135
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 179.20000004768372,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 24.200000047683716,
+            "framesOver34Ms": 3,
+            "scriptMs": 217.23199999999997,
+            "layoutMs": 16.503000000000018,
+            "taskMs": 2170.2139999999995,
+            "longTasks": [
+              141,
+              66,
+              82,
+              140
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 195.5,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 22.90000009536743,
+            "framesOver34Ms": 1,
+            "scriptMs": 204.29600000000002,
+            "layoutMs": 14.742000000000004,
+            "taskMs": 2174.5540000000005,
+            "longTasks": [
+              174,
+              190
+            ],
+            "paint": {
+              "PrePaint": 20.52,
+              "RasterTask": 3.05,
+              "UpdateLayoutTree": 45.75,
+              "Paint": 196.53
+            }
+          },
+          {
+            "openMs": 219.20000004768372,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 17.90000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 163.5899999999999,
+            "layoutMs": 15.240999999999977,
+            "taskMs": 1749.7169999999994,
+            "longTasks": [
+              176,
+              144
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 213.20000004768372,
+            "cardsOnOpen": 120,
+            "menuRequests": 0,
+            "p95FrameMs": 25.200000047683716,
+            "framesOver34Ms": 0,
+            "scriptMs": 182.54199999999997,
+            "layoutMs": 20.927000000000028,
+            "taskMs": 2036.7730000000001,
+            "longTasks": [
+              183,
+              198
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "heapBeforeBytes": 8102748,
+        "heapAfterBytes": 17237600,
+        "note": "unforced GC; not a retained-memory/leak claim"
+      },
+      {
+        "width": 390,
+        "burstProductRequests": 11
+      }
+    ],
+    "admin": [
+      {
+        "width": 1440,
+        "mode": "original",
+        "summary": {
+          "openMs": 92.90000009536743,
+          "listRenders": 1,
+          "requests": 0,
+          "scrollTaskMs": 191.14600000000004,
+          "p95FrameMs": 16.700000047683716
+        },
+        "runs": [
+          {
+            "openMs": 47.5,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 119.226,
+            "p95FrameMs": 16.700000047683716
+          },
+          {
+            "openMs": 55.5,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 191.14600000000004,
+            "p95FrameMs": 16.700000047683716
+          },
+          {
+            "openMs": 92.90000009536743,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 183.886,
+            "p95FrameMs": 4.3999998569488525
+          },
+          {
+            "openMs": 143.89999985694885,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 247.992,
+            "p95FrameMs": 10.200000047683716
+          },
+          {
+            "openMs": 100.90000009536743,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 463.19100000000014,
+            "p95FrameMs": 18
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "route": "dashboard",
+        "settleMs": 991.7403999999988,
+        "requests": 4
+      },
+      {
+        "width": 1440,
+        "route": "orders",
+        "settleMs": 664.1431999999986,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "analytics",
+        "settleMs": 939.9195,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "delivery",
+        "settleMs": 698.1543000000001,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "testimonials",
+        "settleMs": 683.7062999999998,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "feedback",
+        "settleMs": 659.2183000000005,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "settings",
+        "settleMs": 710.3105000000014,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "mode": "original",
+        "summary": {
+          "openMs": 369.60000014305115,
+          "listRenders": 1,
+          "requests": 0,
+          "scrollTaskMs": 1015.958,
+          "p95FrameMs": 25.299999952316284
+        },
+        "runs": [
+          {
+            "openMs": 294.2999999523163,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 887.2439999999999,
+            "p95FrameMs": 21.200000047683716
+          },
+          {
+            "openMs": 403.09999990463257,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 1015.958,
+            "p95FrameMs": 26.600000143051147
+          },
+          {
+            "openMs": 369.60000014305115,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 1178.0019999999993,
+            "p95FrameMs": 24.300000190734863
+          },
+          {
+            "openMs": 317.7000000476837,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 913.749000000001,
+            "p95FrameMs": 26.899999856948853
+          },
+          {
+            "openMs": 374.2999999523163,
+            "listRenders": 1,
+            "requests": 0,
+            "scrollTaskMs": 1025.7330000000006,
+            "p95FrameMs": 25.299999952316284
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "route": "dashboard",
+        "settleMs": 1189.7524999999987,
+        "requests": 4
+      },
+      {
+        "width": 390,
+        "route": "orders",
+        "settleMs": 726.7271999999975,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "analytics",
+        "settleMs": 1047.8812999999973,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "delivery",
+        "settleMs": 711.888600000002,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "testimonials",
+        "settleMs": 739.4939999999988,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "feedback",
+        "settleMs": 720.0358000000015,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "settings",
+        "settleMs": 782.0220000000008,
+        "requests": 3
+      }
+    ]
+  },
+  "after-paired": {
+    "scope": "Instrumented production React builds; synthetic 120-product catalog, 12 variants, 8 add-ons. Mocked HTTP; no database/provider timing claim.",
+    "browser": "152.0.4191.62",
+    "payloadBytes": 68228,
+    "normalizationMedianMs": 0.29460000000000264,
+    "scenarios": [
+      {
+        "width": 1440,
+        "cpu": 1,
+        "mode": "original",
+        "menuScroll": {
+          "p95FrameMs": 17,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 50.3,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 17.7,
+          "framesOver34Ms": 0,
+          "scriptMs": 39.42,
+          "layoutMs": 6.35,
+          "taskMs": 757.31
+        },
+        "runs": [
+          {
+            "openMs": 67.20000004768372,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.700000047683716,
+            "framesOver34Ms": 0,
+            "scriptMs": 44.453,
+            "layoutMs": 7.987000000000001,
+            "taskMs": 454.85300000000007,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 40.700000047683716,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.700000047683716,
+            "framesOver34Ms": 0,
+            "scriptMs": 39.416000000000004,
+            "layoutMs": 6.3509999999999955,
+            "taskMs": 1168.4419999999998,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 50.299999952316284,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.90000009536743,
+            "framesOver34Ms": 0,
+            "scriptMs": 22.55300000000002,
+            "layoutMs": 2.5360000000000036,
+            "taskMs": 757.3069999999999,
+            "longTasks": [],
+            "paint": {
+              "PrePaint": 15.83,
+              "RasterTask": 0.7
+            }
+          },
+          {
+            "openMs": 43.700000047683716,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.59999990463257,
+            "framesOver34Ms": 0,
+            "scriptMs": 27.164000000000023,
+            "layoutMs": 3.8810000000000024,
+            "taskMs": 658.982,
+            "longTasks": [],
+            "paint": null
+          },
+          {
+            "openMs": 63.200000047683716,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 17.600000143051147,
+            "framesOver34Ms": 0,
+            "scriptMs": 57.833999999999996,
+            "layoutMs": 6.836999999999996,
+            "taskMs": 1239.5190000000005,
+            "longTasks": [],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "heapBeforeBytes": 8133268,
+        "heapAfterBytes": 7928516,
+        "note": "unforced GC; not a retained-memory/leak claim"
+      },
+      {
+        "width": 1440,
+        "burstProductRequests": 2
+      },
+      {
+        "width": 390,
+        "cpu": 4,
+        "mode": "original",
+        "menuScroll": {
+          "p95FrameMs": 17.40000009536743,
+          "framesOver34Ms": 0
+        },
+        "summary": {
+          "openMs": 186.7,
+          "cardsOnOpen": 0,
+          "menuRequests": 0,
+          "p95FrameMs": 27.4,
+          "framesOver34Ms": 3,
+          "scriptMs": 164.55,
+          "layoutMs": 15.49,
+          "taskMs": 2049.35
+        },
+        "runs": [
+          {
+            "openMs": 186.70000004768372,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 23.59999990463257,
+            "framesOver34Ms": 2,
+            "scriptMs": 166.006,
+            "layoutMs": 31.245999999999995,
+            "taskMs": 1605.913,
+            "longTasks": [
+              138,
+              108
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 204,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 42.299999952316284,
+            "framesOver34Ms": 5,
+            "scriptMs": 180.27499999999998,
+            "layoutMs": 15.491000000000005,
+            "taskMs": 2445.438,
+            "longTasks": [
+              141,
+              84,
+              109,
+              145,
+              145,
+              50,
+              91
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 137,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 57.5,
+            "framesOver34Ms": 9,
+            "scriptMs": 164.55100000000002,
+            "layoutMs": 13.662000000000008,
+            "taskMs": 2320.555,
+            "longTasks": [
+              115,
+              82,
+              63,
+              67,
+              59,
+              85,
+              84
+            ],
+            "paint": {
+              "PrePaint": 40.33,
+              "RasterTask": 4.53,
+              "UpdateLayoutTree": 57.23,
+              "Paint": 332.02
+            }
+          },
+          {
+            "openMs": 136.59999990463257,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 27.40000009536743,
+            "framesOver34Ms": 1,
+            "scriptMs": 143.71299999999997,
+            "layoutMs": 16.44899999999999,
+            "taskMs": 2049.347000000001,
+            "longTasks": [
+              104,
+              57,
+              85
+            ],
+            "paint": null
+          },
+          {
+            "openMs": 225.20000004768372,
+            "cardsOnOpen": 0,
+            "menuRequests": 0,
+            "p95FrameMs": 25.5,
+            "framesOver34Ms": 3,
+            "scriptMs": 135.19799999999992,
+            "layoutMs": 12.132000000000003,
+            "taskMs": 1951.505000000001,
+            "longTasks": [
+              192,
+              60,
+              52,
+              52,
+              149
+            ],
+            "paint": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "heapBeforeBytes": 8158680,
+        "heapAfterBytes": 9179140,
+        "note": "unforced GC; not a retained-memory/leak claim"
+      },
+      {
+        "width": 390,
+        "burstProductRequests": 4
+      }
+    ],
+    "admin": [
+      {
+        "width": 1440,
+        "mode": "original",
+        "summary": {
+          "openMs": 60.19999980926514,
+          "listRenders": 0,
+          "requests": 0,
+          "scrollTaskMs": 182.04900000000012,
+          "p95FrameMs": 17.09999990463257
+        },
+        "runs": [
+          {
+            "openMs": 50.200000047683716,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 105.118,
+            "p95FrameMs": 17.09999990463257
+          },
+          {
+            "openMs": 59.59999990463257,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 453.03000000000003,
+            "p95FrameMs": 17.700000047683716
+          },
+          {
+            "openMs": 74,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 170.43600000000004,
+            "p95FrameMs": 16.700000047683716
+          },
+          {
+            "openMs": 60.19999980926514,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 182.04900000000012,
+            "p95FrameMs": 16.40000009536743
+          },
+          {
+            "openMs": 69,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 335.1330000000003,
+            "p95FrameMs": 17.300000190734863
+          }
+        ]
+      },
+      {
+        "width": 1440,
+        "route": "dashboard",
+        "settleMs": 938.9405999999999,
+        "requests": 4
+      },
+      {
+        "width": 1440,
+        "route": "orders",
+        "settleMs": 1001.509,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "analytics",
+        "settleMs": 1081.3402999999998,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "delivery",
+        "settleMs": 1065.5437000000002,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "testimonials",
+        "settleMs": 995.8644999999997,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "feedback",
+        "settleMs": 1053.6324999999997,
+        "requests": 3
+      },
+      {
+        "width": 1440,
+        "route": "settings",
+        "settleMs": 967.0948000000008,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "mode": "original",
+        "summary": {
+          "openMs": 390.2999999523163,
+          "listRenders": 0,
+          "requests": 0,
+          "scrollTaskMs": 910.6000000000005,
+          "p95FrameMs": 32.90000009536743
+        },
+        "runs": [
+          {
+            "openMs": 235.90000009536743,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 768.283,
+            "p95FrameMs": 22.199999809265137
+          },
+          {
+            "openMs": 237.70000004768372,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 1990.484,
+            "p95FrameMs": 74.20000004768372
+          },
+          {
+            "openMs": 394.80000019073486,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 898.5390000000004,
+            "p95FrameMs": 22
+          },
+          {
+            "openMs": 390.2999999523163,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 910.6000000000005,
+            "p95FrameMs": 32.90000009536743
+          },
+          {
+            "openMs": 440.7999999523163,
+            "listRenders": 0,
+            "requests": 0,
+            "scrollTaskMs": 1426.9890000000007,
+            "p95FrameMs": 44.39999985694885
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "route": "dashboard",
+        "settleMs": 1178.8135000000038,
+        "requests": 4
+      },
+      {
+        "width": 390,
+        "route": "orders",
+        "settleMs": 1218.5647000000026,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "analytics",
+        "settleMs": 1129.6722999999984,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "delivery",
+        "settleMs": 715.9259999999995,
+        "requests": 2
+      },
+      {
+        "width": 390,
+        "route": "testimonials",
+        "settleMs": 1224.5589999999938,
+        "requests": 3
+      },
+      {
+        "width": 390,
+        "route": "feedback",
+        "settleMs": 1190.2746000000043,
+        "requests": 2
+      },
+      {
+        "width": 390,
+        "route": "settings",
+        "settleMs": 819.3223999999973,
+        "requests": 2
+      }
+    ]
+  },
+  "bundlesBefore": {
+    "storefront": [
+      {
+        "file": "CheckoutPage-BEcUptnM.js",
+        "bytes": 26169,
+        "gzip": 7904
+      },
+      {
+        "file": "index-BaLWl3jZ.js",
+        "bytes": 759628,
+        "gzip": 226347
+      },
+      {
+        "file": "index-BN4wIHG4.css",
+        "bytes": 44631,
+        "gzip": 8521
+      },
+      {
+        "file": "PaymentPage-DFiPpHj8.js",
+        "bytes": 5032,
+        "gzip": 2140
+      },
+      {
+        "file": "plannerHydration-DmDKrovF.js",
+        "bytes": 5386,
+        "gzip": 2185
+      },
+      {
+        "file": "plannerModel-KfOhxYwI.js",
+        "bytes": 4729,
+        "gzip": 1976
+      },
+      {
+        "file": "PlannerPage-B2VbSV7j.js",
+        "bytes": 20313,
+        "gzip": 6666
+      },
+      {
+        "file": "whatsappHandoff-DFJKaasF.js",
+        "bytes": 8755,
+        "gzip": 3490
+      }
+    ],
+    "admin": [
+      {
+        "file": "AnalyticsPage-1LyTvGFb.js",
+        "bytes": 27402,
+        "gzip": 8775
+      },
+      {
+        "file": "DashboardPage-YFkbb2Xs.js",
+        "bytes": 2862,
+        "gzip": 1269
+      },
+      {
+        "file": "index-DqBSEY6R.css",
+        "bytes": 28698,
+        "gzip": 6404
+      },
+      {
+        "file": "index-DYPuE5Bj.js",
+        "bytes": 750982,
+        "gzip": 222451
+      },
+      {
+        "file": "MenuPage-aVvdPdZ5.js",
+        "bytes": 53427,
+        "gzip": 14211
+      },
+      {
+        "file": "useAnalytics-DfdsVnqg.js",
+        "bytes": 394839,
+        "gzip": 115664
+      }
+    ]
+  },
+  "bundlesAfter": {
+    "storefront": [
+      {
+        "file": "CheckoutPage-C7Q4k1Ne.js",
+        "bytes": 26169,
+        "gzip": 7905
+      },
+      {
+        "file": "index-BN4wIHG4.css",
+        "bytes": 44631,
+        "gzip": 8521
+      },
+      {
+        "file": "index-CVCFEY-w.js",
+        "bytes": 760469,
+        "gzip": 226678
+      },
+      {
+        "file": "PaymentPage-BCZLYfE8.js",
+        "bytes": 5032,
+        "gzip": 2141
+      },
+      {
+        "file": "plannerHydration-DSb_lsd0.js",
+        "bytes": 5386,
+        "gzip": 2186
+      },
+      {
+        "file": "plannerModel-BIvW4DJv.js",
+        "bytes": 4729,
+        "gzip": 1976
+      },
+      {
+        "file": "PlannerPage-CRPUr9lc.js",
+        "bytes": 20313,
+        "gzip": 6668
+      },
+      {
+        "file": "whatsappHandoff-CCx-tLxz.js",
+        "bytes": 8755,
+        "gzip": 3491
+      }
+    ],
+    "admin": [
+      {
+        "file": "AdminPrimitives-CzfkxtzX.js",
+        "bytes": 9854,
+        "gzip": 3578
+      },
+      {
+        "file": "AnalyticsPage-DkIG_dZy.js",
+        "bytes": 27510,
+        "gzip": 8827
+      },
+      {
+        "file": "catalog-rc0UtcHn.js",
+        "bytes": 3289,
+        "gzip": 1294
+      },
+      {
+        "file": "currency-CH9rUCMc.js",
+        "bytes": 561,
+        "gzip": 360
+      },
+      {
+        "file": "DashboardPage-CbpPN205.js",
+        "bytes": 3113,
+        "gzip": 1384
+      },
+      {
+        "file": "DataTable-CGC72Jpx.js",
+        "bytes": 815,
+        "gzip": 464
+      },
+      {
+        "file": "DeliveryPage-CQ9jv5nX.js",
+        "bytes": 3143,
+        "gzip": 1410
+      },
+      {
+        "file": "FeedbackPage-d5vSQuU1.js",
+        "bytes": 3815,
+        "gzip": 1476
+      },
+      {
+        "file": "index-479kz5iG.js",
+        "bytes": 683987,
+        "gzip": 204071
+      },
+      {
+        "file": "index-DqBSEY6R.css",
+        "bytes": 28698,
+        "gzip": 6404
+      },
+      {
+        "file": "MenuPage-Ph-Sp62T.js",
+        "bytes": 53675,
+        "gzip": 14381
+      },
+      {
+        "file": "OrderDetailPage-B03QHsyo.js",
+        "bytes": 13440,
+        "gzip": 4374
+      },
+      {
+        "file": "orders-B6QafpcC.js",
+        "bytes": 843,
+        "gzip": 463
+      },
+      {
+        "file": "OrdersList-DROp1J5L.js",
+        "bytes": 3306,
+        "gzip": 1050
+      },
+      {
+        "file": "OrdersPage-DNkDVjfY.js",
+        "bytes": 6232,
+        "gzip": 2312
+      },
+      {
+        "file": "OrderStatusBadge-Ceglstj5.js",
+        "bytes": 4285,
+        "gzip": 1894
+      },
+      {
+        "file": "SettingsPage-CTlYJl7f.js",
+        "bytes": 3254,
+        "gzip": 1566
+      },
+      {
+        "file": "TestimonialsPage-BTYZ25hv.js",
+        "bytes": 4497,
+        "gzip": 1834
+      },
+      {
+        "file": "useAnalytics-BaHcJN0p.js",
+        "bytes": 394952,
+        "gzip": 115724
+      },
+      {
+        "file": "useCheckoutSettingsAdmin-BfvMJ9x_.js",
+        "bytes": 5282,
+        "gzip": 1989
+      },
+      {
+        "file": "useContent-DucTJ-jS.js",
+        "bytes": 7037,
+        "gzip": 2828
+      },
+      {
+        "file": "useMutation-BXSeadJp.js",
+        "bytes": 2296,
+        "gzip": 940
+      }
+    ]
+  },
+  "publicReads": [
+    {
+      "table": "products",
+      "run": 0,
+      "status": 200,
+      "elapsedMs": 1328.7242999999999,
+      "bodyBytes": 8016,
+      "normalizationMs": 0.5457000000001244,
+      "rows": 7
+    },
+    {
+      "table": "products",
+      "run": 1,
+      "status": 200,
+      "elapsedMs": 384.71579999999994,
+      "bodyBytes": 8016,
+      "normalizationMs": 0.1369999999999436,
+      "rows": 7
+    },
+    {
+      "table": "products",
+      "run": 2,
+      "status": 200,
+      "elapsedMs": 382.58929999999987,
+      "bodyBytes": 8016,
+      "normalizationMs": 0.10719999999992069,
+      "rows": 7
+    },
+    {
+      "table": "categories",
+      "run": 0,
+      "status": 200,
+      "elapsedMs": 332.2417999999998,
+      "bodyBytes": 309
+    },
+    {
+      "table": "categories",
+      "run": 1,
+      "status": 200,
+      "elapsedMs": 352.5033000000003,
+      "bodyBytes": 309
+    },
+    {
+      "table": "categories",
+      "run": 2,
+      "status": 200,
+      "elapsedMs": 348.00329999999985,
+      "bodyBytes": 309
+    },
+    {
+      "table": "delivery_zones",
+      "run": 0,
+      "status": 200,
+      "elapsedMs": 355.4839999999999,
+      "bodyBytes": 500
+    },
+    {
+      "table": "delivery_zones",
+      "run": 1,
+      "status": 200,
+      "elapsedMs": 337.4328999999998,
+      "bodyBytes": 500
+    },
+    {
+      "table": "delivery_zones",
+      "run": 2,
+      "status": 200,
+      "elapsedMs": 331.7651999999998,
+      "bodyBytes": 500
+    },
+    {
+      "table": "checkout_payment_options",
+      "run": 0,
+      "status": 200,
+      "elapsedMs": 803.5947000000006,
+      "bodyBytes": 51
+    },
+    {
+      "table": "checkout_payment_options",
+      "run": 1,
+      "status": 200,
+      "elapsedMs": 332.90210000000025,
+      "bodyBytes": 51
+    },
+    {
+      "table": "checkout_payment_options",
+      "run": 2,
+      "status": 200,
+      "elapsedMs": 350.64649999999983,
+      "bodyBytes": 51
+    },
+    {
+      "table": "public image",
+      "status": 400,
+      "bytes": 88,
+      "elapsedMs": 623.9623000000001,
+      "cacheControl": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "table": "public image",
+      "status": 400,
+      "bytes": 88,
+      "elapsedMs": 1174.4762,
+      "cacheControl": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "table": "public image",
+      "status": 400,
+      "bytes": 88,
+      "elapsedMs": 633.0793999999996,
+      "cacheControl": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "table": "public image",
+      "status": 400,
+      "bytes": 88,
+      "elapsedMs": 671.9605000000001,
+      "cacheControl": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "table": "public image",
+      "status": 400,
+      "bytes": 88,
+      "elapsedMs": 599.7206999999999,
+      "cacheControl": null,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ],
+  "baselineCommit": "379bdba29f397f56766e35a126d75e7742d306e5",
+  "baselineBranch": "main",
+  "initialGitStatus": "clean",
+  "graphics": {
+    "browser": "152.0.4191.62",
+    "devices": [
+      {
+        "vendorId": 32902,
+        "deviceId": 32103,
+        "subSysId": 2369851452,
+        "revision": 6,
+        "vendorString": "",
+        "deviceString": "Intel(R) Graphics",
+        "driverVendor": "Intel",
+        "driverVersion": "32.0.101.8626"
+      },
+      {
+        "vendorId": 4318,
+        "deviceId": 11353,
+        "subSysId": 2369851452,
+        "revision": 161,
+        "vendorString": "",
+        "deviceString": "NVIDIA GeForce RTX 5080 Laptop GPU",
+        "driverVendor": "",
+        "driverVersion": "32.0.16.1088"
+      },
+      {
+        "vendorId": 5140,
+        "deviceId": 140,
+        "subSysId": 0,
+        "revision": 0,
+        "vendorString": "",
+        "deviceString": "Microsoft Basic Render Driver",
+        "driverVendor": "",
+        "driverVersion": "10.0.26100.8972"
+      }
+    ],
+    "renderer": "ANGLE (Intel, Intel(R) Graphics (0x00007D67) Direct3D11 vs_5_0 ps_5_0, D3D11-32.0.101.8626)",
+    "featureStatus": {
+      "2d_canvas": "enabled",
+      "direct_rendering_display_compositor": "disabled_off_ok",
+      "gpu_compositing": "enabled",
+      "multiple_raster_threads": "enabled_on",
+      "opengl": "enabled_on",
+      "rasterization": "enabled",
+      "raw_draw": "disabled_off_ok",
+      "skia_graphite": "disabled_off",
+      "trees_in_viz": "disabled_off",
+      "video_decode": "enabled",
+      "video_encode": "enabled",
+      "webgl": "enabled",
+      "webgpu": "enabled",
+      "webnn": "disabled_off"
+    }
+  },
+  "finalVerification": {
+    "nodeTests": {
+      "pass": 187,
+      "fail": 0,
+      "skipped": 0
+    },
+    "lint": "PASS",
+    "builds": "PASS",
+    "secrets": "PASS (361 source/built files)",
+    "cycle18": {
+      "checks": 109,
+      "violations": 0,
+      "layoutViolations": 0,
+      "exceptions": 0
+    },
+    "cycle17Content": "PASS with msedge",
+    "databaseAndProvider": "NOT RUN",
+    "scrollingAcceptance": "INCONCLUSIVE",
+    "timingSourceNote": "Paired measurements precede final cleanup-only disposed-callback guard; ordinary bundle sizes and final checks include it."
+  }
+}

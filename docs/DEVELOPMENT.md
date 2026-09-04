@@ -1,5 +1,27 @@
 # Development guide
 
+## Catalog image removal
+
+Standard meals, grouped parents and variants support **Remove image** and **Undo
+removal** in their editors. Removal is a draft change until saved; cancelling
+discards it. Saving clears `image_path` before best-effort Storage cleanup, using
+the existing authenticated adapters and policies. A rejected database write keeps
+the existing object. Run `node scripts/verify-image-removal-browser.mjs` for the
+mocked browser/API checks covering all three editors, cancellation, undo, pending
+file removal, failed-save retry and cleanup ordering. This does not test hosted RLS.
+
+## Post-Cycle-18 performance checks
+
+See [the measured hardening report](PERFORMANCE.md) for results and limitations.
+After `npm run verify`, run `npm run test:secrets`, `npm run test:browser:cycle18`
+and `npm run test:performance`. The latter builds isolated instrumented production
+apps in ignored `coverage/performance/`, reuses the Cycle 18 mocked catalog/Auth
+fixtures, and measures repeated menu/editor interactions at desktop and 4× CPU
+mobile sizes. Ordinary frontend builds contain no performance instrumentation.
+The optional `node scripts/measure-public-performance.mjs` makes only public GET
+requests to the configured backend and records sizes/timings, never row values.
+No performance result substitutes for live RLS, provider or physical-device checks.
+
 ## Cycle 18 — final hardening, external launch blocked
 
 [Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.

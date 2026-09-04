@@ -1,5 +1,5 @@
 import { FolderCog, Layers3, Plus, Puzzle } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { AdminPageHeader } from "../components/layout/AdminPageHeader.jsx";
 import { MetricCard } from "../components/ui/AdminPrimitives.jsx";
@@ -33,6 +33,7 @@ export function MenuPage() {
   const createMutation = useCreateProduct();
   const updateMutation = useUpdateProduct();
   const statusMutation = useUpdateProductStatus();
+  const mutateStatus = statusMutation.mutateAsync;
   const { notify } = useToast();
   const [filters, setFilters] = useState(initialFilters);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -60,19 +61,19 @@ export function MenuPage() {
     setEditorOpen(true);
   };
 
-  const openEdit = (product) => {
+  const openEdit = useCallback((product) => {
     setEditingProduct(product);
     setEditorType(product.product_type);
     setEditorOpen(true);
-  };
+  }, []);
 
-  const applyStatusAction = async (product, action) => {
+  const applyStatusAction = useCallback(async (product, action) => {
     if (statusOperationInFlight.current) return;
     statusOperationInFlight.current = true;
     setStatusPendingId(product.id);
     try {
       const status = nextProductStatus(product, action);
-      await statusMutation.mutateAsync({ id: product.id, status });
+      await mutateStatus({ id: product.id, status });
       const messages = {
         mark_available: "marked available",
         mark_sold_out: "marked sold out",
@@ -87,7 +88,7 @@ export function MenuPage() {
       statusOperationInFlight.current = false;
       setStatusPendingId(null);
     }
-  };
+  }, [mutateStatus, notify]);
 
   const confirmArchive = async () => {
     if (!archiveProduct || statusOperationInFlight.current) return;

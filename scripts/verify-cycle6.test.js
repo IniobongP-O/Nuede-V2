@@ -83,7 +83,8 @@ test("Cycle 6 centralizes Supabase access and uses TanStack Query plus selective
   assert.match(api, /categories!inner/);
   assert.match(hooks, /useQuery/);
   assert.match(realtime, /product_variants/);
-  assert.match(realtime, /invalidateQueries/);
+  assert.match(realtime, /createCatalogInvalidator\(queryClient, menuQueryKeys\)/);
+  assert.match(await read("apps/storefront/src/features/menu/utils/catalogInvalidation.js"), /invalidateQueries/);
   assert.match(realtime, /removeChannel/);
   assert.doesNotMatch(visualFiles, /supabase|\.from\("/);
 });

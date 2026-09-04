@@ -34,6 +34,7 @@
     "test:catalog:cycle5": "node scripts/verify-cycle5-catalog.mjs",
     "verify:cycle5": "npm run db:reset && npm run db:test && npm run test:security:cycle3 && npm run test:catalog:cycle4 && npm run test:catalog:cycle5 && npm run verify",
     "test:browser:cycle18": "node scripts/verify-cycle18-browser.mjs",
+    "test:performance": "node scripts/verify-performance.mjs after && node scripts/measure-admin-performance.mjs after",
     "test:secrets": "node scripts/verify-cycle18-secrets.mjs"
   },
   "devDependencies": {
