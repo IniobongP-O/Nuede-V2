@@ -7,7 +7,7 @@ const productFields = [
   "calories", "protein_g", "carbohydrates_g", "fat_g", "image_path", "status",
   "requires_variant_selection", "default_variant_id", "sort_order", "updated_at",
   "category:categories!products_category_fk(id,name,is_enabled)",
-  "product_variants(id,product_id,name,description,price_kobo,calories,protein_g,carbohydrates_g,fat_g,image_path,status,sort_order,updated_at)",
+  "product_variants!product_variants_product_fk(id,product_id,name,description,price_kobo,calories,protein_g,carbohydrates_g,fat_g,image_path,status,sort_order,updated_at)",
   "product_addon_assignments(addon_id,sort_order)",
 ].join(",");
 

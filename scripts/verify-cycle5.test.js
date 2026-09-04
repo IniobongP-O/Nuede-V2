@@ -31,6 +31,17 @@ const categoryId = "10000000-0000-4000-8000-000000000003";
 const variantA = { id: "30000000-0000-4000-8000-000000000001", product_id: groupId, status: "available", price_kobo: 650000, sort_order: 10 };
 const variantB = { id: "30000000-0000-4000-8000-000000000002", product_id: groupId, status: "sold_out", price_kobo: 700000, sort_order: 20 };
 
+test("catalog queries disambiguate child variants from the default-variant relationship", async () => {
+  for (const relativePath of [
+    "apps/admin/src/features/catalog/api/catalogApi.js",
+    "apps/storefront/src/features/menu/api/menuApi.js",
+  ]) {
+    const api = await read(relativePath);
+    assert.match(api, /product_variants!product_variants_product_fk\(id,product_id,/, relativePath);
+    assert.doesNotMatch(api, /["']product_variants\(/, relativePath);
+  }
+});
+
 test("Cycle 5 grouped orderability requires a valid visible priced variant", () => {
   const group = { id: groupId, product_type: "grouped", status: "available", requires_variant_selection: true, default_variant_id: null };
   assert.match(groupedProductOrderabilityMessage(group, []), /at least one/i);
