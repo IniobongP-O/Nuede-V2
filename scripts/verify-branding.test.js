@@ -15,7 +15,6 @@ test("the shared logo preserves the supplied photo's original artwork without re
     "storefront/src/components/layout/StorefrontHeader.jsx",
     "storefront/src/components/layout/StorefrontFooter.jsx",
     "admin/src/components/layout/AdminLayout.jsx",
-    "admin/src/pages/LoginPage.jsx",
     "admin/src/features/auth/components/AuthStatusPage.jsx",
   ]) {
     const source = await readFile(new URL(`../apps/${file}`, import.meta.url), "utf8");
@@ -23,6 +22,11 @@ test("the shared logo preserves the supplied photo's original artwork without re
     assert.ok(source.includes('alt="Nuede" width="374" height="112" className="h-auto w-32 shrink-0"'));
     assert.doesNotMatch(source, /Sprout|>nuede</);
   }
+  const login = await readFile(new URL("../apps/admin/src/pages/LoginPage.jsx", import.meta.url), "utf8");
+  const adminLogo = await readFile(new URL("../apps/admin/src/components/layout/AdminLogo.jsx", import.meta.url), "utf8");
+  assert.ok(login.includes('<AdminLogo className="h-auto w-48 shrink-0 brightness-125 saturate-150"'));
+  assert.ok(adminLogo.includes('nuede-admin-logo-source.png'));
+  assert.ok(adminLogo.includes('filter="url(#admin-logo-background-key)"'));
 });
 
 test("wider Poppins table labels remain contained by the existing scroll region", async () => {
