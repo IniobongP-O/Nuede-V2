@@ -29,5 +29,8 @@ Later RLS policies, Storage setup, analytics views, and commerce functions do no
 - `20260904000300_complete_launch_analytics.sql` adds order-created activity counts and verified cart/meal-plan sales to the existing guarded analytics RPC.
 
 - `20260904000400_use_invoker_public_views.sql` resolves the two definer-view advisor findings using invoker security, narrow guest column grants, and guest-only RLS policies.
+- `20260906000100_enable_owner_order_deletion.sql` adds owner-only order deletion with confirmation and trusted audit metadata.
+- `20260906000200_enable_admin_whatsapp_payment_confirmation.sql` adds idempotent admin confirmation for WhatsApp payments.
+- `20260906000300_import_menu_macros.sql` imports the 33-item business menu, retains unknown macros as null, supports decimal calories end to end, and exposes new unpriced items as price-pending.
 
-The complete chain has 15 migrations. The public-view migration passes focused embedded PostgreSQL tests; full Supabase migration/pgTAP and hosted verification are still required. Follow `docs/DEPLOYMENT.md` and do not include development seed data in a hosted push.
+The complete chain has 18 migrations. The public-view migration passes focused embedded PostgreSQL tests; full Supabase migration/pgTAP and hosted verification are still required. Follow `docs/DEPLOYMENT.md`; only the explicit menu import migration contains production catalog data, while `seed.sql` remains local development data.

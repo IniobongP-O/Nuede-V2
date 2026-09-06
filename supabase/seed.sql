@@ -8,7 +8,8 @@ insert into public.categories (id, name, slug, is_enabled, sort_order)
 values
   ('10000000-0000-4000-8000-000000000001', 'Main Meals', 'main-meals', true, 10),
   ('10000000-0000-4000-8000-000000000002', 'Sides', 'sides', true, 20),
-  ('10000000-0000-4000-8000-000000000003', 'Grouped Meals', 'grouped-meals', true, 30);
+  ('10000000-0000-4000-8000-000000000003', 'Grouped Meals', 'grouped-meals', true, 30)
+on conflict (id) do nothing;
 
 insert into public.products (
   id,

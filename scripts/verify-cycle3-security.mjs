@@ -141,7 +141,7 @@ try {
     verification_status: "not_applicable",
   }), "create trusted test payment");
 
-  assert.equal(expectSuccess(await anonClient.from("products").select("id"), "anonymous visible-product read").length, 7);
+  assert.equal(expectSuccess(await anonClient.from("products").select("id"), "anonymous visible-product read").length, 40);
   assert.equal(expectSuccess(await anonClient.from("products").select("id").eq("id", "20000000-0000-4000-8000-000000000004"), "anonymous hidden-product query").length, 0);
   assert.equal(expectSuccess(await anonClient.from("product_variants").select("id"), "anonymous visible-variant read").length, 2);
   assert.equal(expectSuccess(await anonClient.from("delivery_zones").select("id"), "anonymous active-zone read").length, 6);

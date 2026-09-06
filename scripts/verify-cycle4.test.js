@@ -43,6 +43,8 @@ test("Cycle 4 converts NGN text to integer kobo without floating-point money", (
 
 test("Cycle 4 product validation preserves price and optional nutrition rules", () => {
   assert.equal(productFormSchema.safeParse(validForm).success, true);
+  assert.equal(productFormSchema.safeParse({ ...validForm, calories: "1089.7" }).success, true);
+  assert.equal(productFormSchema.safeParse({ ...validForm, calories: "1089.777" }).success, false);
   assert.equal(productFormSchema.safeParse({ ...validForm, priceNgn: "", availability: "available" }).success, false);
   assert.equal(productFormSchema.safeParse({ ...validForm, priceNgn: "100", availability: "price_pending" }).success, false);
   assert.equal(productFormSchema.safeParse({ ...validForm, protein: "-1" }).success, false);

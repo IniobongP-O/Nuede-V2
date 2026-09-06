@@ -77,7 +77,7 @@ select ok(has_table_privilege('service_role', 'public.orders', 'INSERT'), 'trust
 set local role anon;
 
 select is((select count(*)::integer from public.categories), 3, 'anon sees enabled categories');
-select is((select count(*)::integer from public.products), 7, 'anon does not see hidden products');
+select is((select count(*)::integer from public.products), 40, 'anon sees the public fixtures and imported menu, but not hidden products');
 select is((select count(*)::integer from public.product_variants), 2, 'anon sees only public variants with public parents');
 select is((select count(*)::integer from public.product_addons), 3, 'anon sees only available add-ons');
 select is((select count(*)::integer from public.product_addon_assignments), 3, 'anon sees only public add-on assignments');

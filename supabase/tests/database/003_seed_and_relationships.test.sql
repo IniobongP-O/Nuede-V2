@@ -5,7 +5,7 @@ create extension if not exists pgtap with schema extensions;
 select plan(13);
 
 select is((select count(*)::integer from public.categories), 3, 'three categories are seeded');
-select is((select count(*)::integer from public.products), 8, 'eight products are seeded');
+select is((select count(*)::integer from public.products), 41, 'eight fixtures and thirty-three menu products are seeded');
 select is(
   (select count(*)::integer from public.products where product_type = 'grouped'),
   1,

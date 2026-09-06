@@ -70,7 +70,7 @@ Long-lived entities use PostgreSQL-generated UUID primary keys. Names and slugs 
 
 ## Nutrition
 
-Calories are nullable integers. Protein, carbohydrates, and fat are nullable fixed-point numeric values. Every populated value must be non-negative; null means unknown rather than zero.
+Calories, protein, carbohydrates, and fat are nullable fixed-point numeric values with up to two decimal places. Every populated value must be non-negative; null means unknown rather than zero.
 
 Catalog completeness is derived: all four values are complete, some values are partial, and all null values are unavailable. Orders retain a completeness snapshot because later catalog edits must not reinterpret historical nutrition.
 

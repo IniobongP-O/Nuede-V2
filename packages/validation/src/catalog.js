@@ -33,8 +33,8 @@ const moneyInputSchema = z.string().trim().refine(
   "Enter a non-negative NGN amount with no more than two decimal places.",
 );
 const caloriesInputSchema = z.string().trim().refine(
-  (value) => value === "" || integerPattern.test(value),
-  "Enter a whole number of zero or more.",
+  (value) => value === "" || decimalPattern.test(value),
+  "Enter a non-negative calorie value with no more than two decimal places.",
 );
 const addonIdsSchema = z.array(uuidSchema).max(100, "Select no more than 100 add-ons.").default([]);
 
