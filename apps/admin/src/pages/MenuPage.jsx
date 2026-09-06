@@ -17,6 +17,7 @@ import {
   useAddons,
   useCategories,
   useCreateProduct,
+  useDeleteProduct,
   useProducts,
   useUpdateProduct,
   useUpdateProductStatus,
@@ -33,7 +34,9 @@ export function MenuPage() {
   const createMutation = useCreateProduct();
   const updateMutation = useUpdateProduct();
   const statusMutation = useUpdateProductStatus();
+  const deleteMutation = useDeleteProduct();
   const mutateStatus = statusMutation.mutateAsync;
+  const deleteMeal = deleteMutation.mutateAsync;
   const { notify } = useToast();
   const [filters, setFilters] = useState(initialFilters);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -69,17 +72,20 @@ export function MenuPage() {
 
   const applyStatusAction = useCallback(async (product, action) => {
     if (statusOperationInFlight.current) return;
+    if (action === "delete" && !window.confirm(`Permanently delete ${product.name}? This removes its variants and add-on assignments. Historical order snapshots will remain intact.`)) return;
     statusOperationInFlight.current = true;
     setStatusPendingId(product.id);
     try {
-      const status = nextProductStatus(product, action);
-      await mutateStatus({ id: product.id, status });
+      const status = action === "delete" ? null : nextProductStatus(product, action);
+      if (action === "delete") await deleteMeal(product);
+      else await mutateStatus({ id: product.id, status });
       const messages = {
         mark_available: "marked available",
         mark_sold_out: "marked sold out",
         hide: "hidden",
         show: status === "price_pending" ? "shown as price pending" : status === "unavailable" ? "shown but unavailable" : "shown and available",
         restore: "restored as hidden",
+        delete: "permanently deleted",
       };
       notify(`${product.name} was ${messages[action]}.`);
     } catch (error) {
@@ -88,7 +94,7 @@ export function MenuPage() {
       statusOperationInFlight.current = false;
       setStatusPendingId(null);
     }
-  }, [mutateStatus, notify]);
+  }, [deleteMeal, mutateStatus, notify]);
 
   const confirmArchive = async () => {
     if (!archiveProduct || statusOperationInFlight.current) return;

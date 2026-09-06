@@ -172,6 +172,21 @@ export async function updateProductStatus({ id, status }) {
   return readProduct(id);
 }
 
+export async function deleteProduct(product) {
+  const imagePaths = [...new Set([
+    product.image_path,
+    ...(product.product_variants || []).map((variant) => variant.image_path),
+  ].filter(Boolean))];
+  const { data, error } = await requireSupabase().from("products").delete()
+    .eq("id", product.id).select("id").single();
+  throwIfError(error);
+
+  // PostgreSQL deletion is authoritative. Storage cleanup follows the commit so
+  // a transient object-store failure can never leave a live meal with no image.
+  await Promise.allSettled(imagePaths.map((path) => removeCatalogImage(path)));
+  return data;
+}
+
 export async function listAddons() {
   const { data, error } = await requireSupabase().from("product_addons").select(addonFields).order("name");
   throwIfError(error);

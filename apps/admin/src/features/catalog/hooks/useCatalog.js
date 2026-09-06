@@ -5,6 +5,7 @@ import {
   createCategory,
   createStandardProduct,
   deleteAddon,
+  deleteProduct,
   deleteVariant,
   listAddons,
   listCategories,
@@ -63,6 +64,7 @@ export function useCreateProduct() { return useCatalogMutation(createStandardPro
 export function useUpdateProduct() { return useCatalogMutation(updateStandardProduct); }
 export function useSaveGroupedProduct() { return useCatalogMutation(saveGroupedProduct); }
 export function useUpdateProductStatus() { return useCatalogMutation(updateProductStatus); }
+export function useDeleteProduct() { return useCatalogMutation(deleteProduct); }
 export function useSaveVariant() { return useCatalogMutation(saveVariant); }
 export function useDeleteVariant() { return useCatalogMutation(deleteVariant); }
 export function useReorderVariants() { return useCatalogMutation(reorderVariants); }

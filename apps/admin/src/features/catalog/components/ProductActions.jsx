@@ -3,13 +3,17 @@ import { useState } from "react";
 import { Button } from "../../../components/ui/Button.jsx";
 
 function actionsFor(product) {
-  if (product.status === "archived") return [{ value: "restore", label: "Restore as hidden" }];
+  if (product.status === "archived") return [
+    { value: "restore", label: "Restore as hidden" },
+    { value: "delete", label: "Delete permanently" },
+  ];
   const actions = [];
   if (product.status !== "available") actions.push({ value: "mark_available", label: "Mark available" });
   if (product.status !== "sold_out") actions.push({ value: "mark_sold_out", label: "Mark sold out" });
   if (product.status === "hidden") actions.push({ value: "show", label: "Show" });
   if (product.status !== "hidden") actions.push({ value: "hide", label: "Hide" });
   actions.push({ value: "archive", label: "Archive" });
+  actions.push({ value: "delete", label: "Delete permanently" });
   return actions;
 }
 
