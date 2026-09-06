@@ -18,7 +18,7 @@ await mkdir(output, { recursive: true });
 process.env.VITE_SUPABASE_URL = "http://127.0.0.1:54321";
 process.env.VITE_SUPABASE_ANON_KEY = "cycle18-browser-public-fixture";
 import { id, category, meal, addons, variant, grouped, products, zone, settings, user, token } from "./cycle18-browser-fixtures.mjs";
-let persona = "admin";
+let persona = "owner";
 let analyticsFailure = false;
 const orders = [];
 const reports = [];
@@ -56,7 +56,7 @@ async function mock(route) {
   if (table === "token") return respond({ access_token: token, refresh_token: "qa-refresh", token_type: "bearer", expires_in: 3600, user });
   if (table === "user") return persona === "expired" ? respond({ message: "Expired", code: "bad_jwt" }, 401) : respond(user);
   if (table === "logout") return respond({});
-  if (table === "admin_users") return respond(persona === "nonadmin" ? null : { ...user, display_name: "QA administrator with a long display name", role: persona === "editor" ? "editor" : "admin", is_active: persona !== "inactive" });
+  if (table === "admin_users") return respond(persona === "nonadmin" ? null : { ...user, display_name: "QA administrator with a long display name", role: persona === "editor" ? "editor" : persona === "owner" ? "owner" : "admin", is_active: persona !== "inactive" });
   if (table === "products") return respond(products);
   if (table === "categories") return respond([category]);
   if (table === "product_addons") return respond(addons);
@@ -71,6 +71,15 @@ async function mock(route) {
     assert.equal(canTransitionFulfilmentStatus(order.fulfilment_status, body.p_next_status), true);
     order.fulfilment_status = body.p_next_status;
     return respond(order);
+  }
+  if (table === "delete_admin_order") {
+    const body = request.postDataJSON();
+    if (persona !== "owner") return respond({ message: "OWNER_ACCESS_REQUIRED" }, 403);
+    const index = orders.findIndex((order) => order.id === body.p_order_id);
+    if (index < 0) return respond({ message: "ORDER_NOT_FOUND" }, 404);
+    if (orders[index].order_reference !== body.p_confirmation) return respond({ message: "ORDER_DELETE_CONFIRMATION_MISMATCH" }, 400);
+    const [deleted] = orders.splice(index, 1);
+    return respond({ order_id: deleted.id, order_reference: deleted.order_reference, deleted: true });
   }
   if (table === "create-whatsapp-order" || table === "initialize-paystack") {
     const candidate = request.postDataJSON(); payloads.push(candidate);
@@ -115,7 +124,7 @@ async function check(page, label, { axe = true } = {}) {
 async function fillCheckout(page, method) {
   await page.getByLabel("Full name", { exact: false }).fill("QA customer");
   await page.getByLabel("Phone number", { exact: false }).fill("08000000000");
-  await page.getByLabel("Email", { exact: false }).fill("qa-customer@example.com");
+  await page.getByLabel("Email", { exact: true }).fill("qa-customer@example.com");
   await page.getByLabel("Street address", { exact: false }).fill("18 QA Street, Abuja");
   await page.getByLabel("Delivery area", { exact: false }).selectOption(zone.id);
   await page.getByRole("radio", { name: method === "paystack" ? /Pay with Paystack/ : /Continue on WhatsApp/ }).check();
@@ -298,6 +307,17 @@ try {
     for (const route of ["", "menu", "saved", "planner", "checkout?source=cart", "payment?status=success"]) { await page.goto(`${storefront}/${route}`); await check(page, `storefront ${route || "home"} ${width}`, { axe: width === 320 || width === 1440 }); }
     for (const route of ["dashboard", "menu", "orders", `orders/${orders[2].order_reference}`, "analytics", "delivery", "testimonials", "feedback", "settings"]) { await adminPage.goto(`${admin}/${route}`); await check(adminPage, `admin ${route} ${width}`, { axe: width === 320 || width === 1440 }); }
   }
+  const deletionTarget = orders.at(-1);
+  await adminPage.goto(`${admin}/orders/${deletionTarget.order_reference}`);
+  await adminPage.getByRole("button", { name: "Delete order", exact: true }).click();
+  await adminPage.getByRole("heading", { name: `Permanently delete ${deletionTarget.order_reference}?`, exact: true }).waitFor();
+  assert.equal(await adminPage.getByRole("button", { name: "Permanently delete", exact: true }).isDisabled(), true);
+  await adminPage.getByLabel(`Type ${deletionTarget.order_reference} to confirm`, { exact: true }).fill(deletionTarget.order_reference);
+  await adminPage.getByRole("button", { name: "Permanently delete", exact: true }).click();
+  await adminPage.getByText(`${deletionTarget.order_reference} was permanently deleted.`, { exact: true }).waitFor();
+  assert.equal(orders.some((order) => order.id === deletionTarget.id), false);
+  assert.match(adminPage.url(), /\/orders(?:\?|$)/);
+  reports.push("owner exact-reference order deletion and post-delete navigation");
   analyticsFailure = true;
   for (const route of ["dashboard", "analytics"]) {
     await adminPage.goto(`${admin}/${route}`);

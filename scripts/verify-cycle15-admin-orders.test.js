@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+import { PGlite } from "@electric-sql/pglite";
+
 import {
   canCancelFulfilment,
   canTransitionFulfilmentStatus,
@@ -116,4 +118,88 @@ test("Cycle 15 browser code contains no privileged secrets or payment mutation",
   assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY|PAYSTACK_SECRET_KEY|webhook.secret/i);
   assert.doesNotMatch(source, /\.update\s*\(\s*\{[^}]*payment_status/is);
   assert.doesNotMatch(source, /\.from\(["']payments["']\)\.update/i);
+});
+
+test("owner order deletion requires exact confirmation, deletes the full graph, and retains an audit event", async () => {
+  const migration = await read("supabase/migrations/20260906000100_enable_owner_order_deletion.sql");
+  assert.match(migration, /admin_user\.role = 'owner'/);
+  assert.match(migration, /ORDER_DELETE_CONFIRMATION_MISMATCH/);
+  assert.match(migration, /for update/);
+  assert.match(migration, /'order_deleted'/);
+  assert.match(migration, /delete from public\.order_item_addons[\s\S]*delete from public\.payments[\s\S]*delete from public\.order_items[\s\S]*delete from public\.orders/);
+  assert.match(migration, /revoke all on function public\.delete_admin_order\(uuid, text\) from public, anon, authenticated/);
+  assert.match(migration, /grant execute on function public\.delete_admin_order\(uuid, text\) to authenticated/);
+});
+
+test("owner order deletion is confirmed in the UI and routed through the centralized API", async () => {
+  const api = await read("apps/admin/src/features/orders/api/ordersApi.js");
+  const action = await read("apps/admin/src/features/orders/components/DeleteOrderAction.jsx");
+  const list = await read("apps/admin/src/features/orders/components/OrdersList.jsx");
+  const detail = await read("apps/admin/src/pages/OrderDetailPage.jsx");
+  assert.match(api, /\.rpc\("delete_admin_order"/);
+  assert.match(action, /admin\?\.role !== "owner"/);
+  assert.match(action, /confirmation\.trim\(\) === order\.order_reference/);
+  assert.match(action, /does not refund or cancel the Paystack transaction/i);
+  assert.match(action, /Permanently delete/);
+  assert.match(list, /DeleteOrderAction/);
+  assert.match(detail, /DeleteOrderAction/);
+  assert.doesNotMatch(`${action}\n${list}\n${detail}`, /\.from\(["']orders["']\)\.delete/);
+});
+
+test("owner order deletion executes atomically against an isolated database", async () => {
+  const db = new PGlite();
+  const ownerId = "11111111-1111-4111-8111-111111111111";
+  const orderId = "22222222-2222-4222-8222-222222222222";
+  const itemId = "33333333-3333-4333-8333-333333333333";
+  try {
+    await db.exec(`
+      create schema auth;
+      create role anon;
+      create role authenticated;
+      create function auth.uid() returns uuid language sql stable as $$ select '${ownerId}'::uuid $$;
+      create table public.admin_users (id uuid primary key, email text, is_active boolean, role text);
+      create table public.orders (id uuid primary key, order_reference text, payment_status text, fulfilment_status text, total_kobo bigint);
+      create table public.order_items (id uuid primary key, order_id uuid);
+      create table public.order_item_addons (id uuid primary key, order_item_id uuid);
+      create table public.payments (id uuid primary key, order_id uuid);
+      create table public.admin_audit_log (
+        id uuid primary key default gen_random_uuid(), admin_user_id uuid, admin_email_snapshot text,
+        action text, entity_type text, entity_id uuid, previous_values jsonb, new_values jsonb,
+        created_at timestamptz default now()
+      );
+    `);
+    await db.exec(await read("supabase/migrations/20260906000100_enable_owner_order_deletion.sql"));
+    await db.exec(`
+      insert into public.admin_users values ('${ownerId}', 'owner@nuede.test', true, 'owner');
+      insert into public.orders values ('${orderId}', 'NUE-TEST-001', 'paid', 'delivered', 33300);
+      insert into public.order_items values ('${itemId}', '${orderId}');
+      insert into public.order_item_addons values ('44444444-4444-4444-8444-444444444444', '${itemId}');
+      insert into public.payments values ('55555555-5555-4555-8555-555555555555', '${orderId}');
+    `);
+
+    await assert.rejects(
+      db.query(`select public.delete_admin_order('${orderId}', 'wrong-reference')`),
+      /ORDER_DELETE_CONFIRMATION_MISMATCH/,
+    );
+    assert.equal((await db.query("select count(*)::integer as count from public.orders")).rows[0].count, 1);
+
+    await db.exec(`update public.admin_users set role = 'admin' where id = '${ownerId}'`);
+    await assert.rejects(
+      db.query(`select public.delete_admin_order('${orderId}', 'NUE-TEST-001')`),
+      /OWNER_ACCESS_REQUIRED/,
+    );
+    await db.exec(`update public.admin_users set role = 'owner' where id = '${ownerId}'`);
+
+    const deletion = await db.query(`select public.delete_admin_order('${orderId}', 'NUE-TEST-001') as result`);
+    assert.equal(deletion.rows[0].result.deleted, true);
+    for (const table of ["orders", "order_items", "order_item_addons", "payments"]) {
+      assert.equal((await db.query(`select count(*)::integer as count from public.${table}`)).rows[0].count, 0);
+    }
+    const audit = await db.query("select action, previous_values, new_values from public.admin_audit_log");
+    assert.equal(audit.rows[0].action, "order_deleted");
+    assert.equal(audit.rows[0].previous_values.order_reference, "NUE-TEST-001");
+    assert.equal(audit.rows[0].new_values.deleted, true);
+  } finally {
+    await db.close();
+  }
 });

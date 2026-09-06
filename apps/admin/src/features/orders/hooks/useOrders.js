@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getOrderByReference, getOrdersPage, updateFulfilmentStatus } from "../api/ordersApi.js";
+import { deleteOrder, getOrderByReference, getOrdersPage, updateFulfilmentStatus } from "../api/ordersApi.js";
 
 export const ordersQueryKey = ["admin", "orders"];
 
@@ -30,6 +30,20 @@ export function useUpdateFulfilmentStatus(orderReference) {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: [...ordersQueryKey, "list"] }),
         queryClient.invalidateQueries({ queryKey: [...ordersQueryKey, "detail", orderReference] }),
+      ]);
+    },
+  });
+}
+
+export function useDeleteOrder(orderReference) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteOrder,
+    onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: [...ordersQueryKey, "detail", orderReference] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [...ordersQueryKey, "list"] }),
+        queryClient.invalidateQueries({ queryKey: ["admin", "sales-analytics"] }),
       ]);
     },
   });

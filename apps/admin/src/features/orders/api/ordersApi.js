@@ -80,3 +80,14 @@ export async function updateFulfilmentStatus({ orderId, nextFulfilmentStatus }) 
   if (error) throw error;
   return data;
 }
+
+export async function deleteOrder({ orderId, confirmation }) {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc("delete_admin_order", {
+    p_order_id: orderId,
+    p_confirmation: confirmation,
+  });
+
+  if (error) throw error;
+  return data;
+}

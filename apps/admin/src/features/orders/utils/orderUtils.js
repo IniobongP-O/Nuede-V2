@@ -19,6 +19,8 @@ export function orderStatusTone(type, value) {
 
 export function orderErrorMessage(error, fallback = "Orders are temporarily unavailable. Please try again.") {
   const message = String(error?.message || "");
+  if (/OWNER_ACCESS_REQUIRED/i.test(message)) return "Only an active owner can permanently delete orders.";
+  if (/ORDER_DELETE_CONFIRMATION_MISMATCH/i.test(message)) return "The confirmation must exactly match the order reference.";
   if (/ADMIN_ACCESS_REQUIRED|permission denied|42501/i.test(message)) return "Your session is not authorized to access order operations.";
   if (/INVALID_FULFILMENT_TRANSITION/i.test(message)) return "This order changed or that fulfilment step is no longer valid. The latest order state has been loaded.";
   if (/ORDER_NOT_FOUND/i.test(message)) return "This order is no longer available.";
