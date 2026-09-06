@@ -4,6 +4,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { StorefrontLayout } from "../components/layout/StorefrontLayout.jsx";
 const CheckoutPage = lazy(() => import("../pages/CheckoutPage.jsx").then((module) => ({ default: module.CheckoutPage })));
+import { StorefrontErrorPage } from "../pages/StorefrontErrorPage.jsx";
 import { HomePage } from "../pages/HomePage.jsx";
 import { MenuPage } from "../pages/MenuPage.jsx";
 import { NotFoundPage } from "../pages/NotFoundPage.jsx";
@@ -15,6 +16,7 @@ export const storefrontRouter = createBrowserRouter([
   {
     path: "/",
     element: <StorefrontLayout />,
+    errorElement: <StorefrontErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
       { path: "menu", element: <MenuPage /> },

@@ -5,6 +5,7 @@ import { AdminLayout } from "../components/layout/AdminLayout.jsx";
 import { LoadingState } from "../components/ui/FeedbackStates.jsx";
 import { ProtectedRoute } from "../features/auth/components/ProtectedRoute.jsx";
 import { PublicOnlyRoute } from "../features/auth/components/PublicOnlyRoute.jsx";
+import { AdminErrorPage } from "../pages/AdminErrorPage.jsx";
 const AnalyticsPage = lazy(() => import("../pages/AnalyticsPage.jsx").then((module) => ({ default: module.AnalyticsPage })));
 const DashboardPage = lazy(() => import("../pages/DashboardPage.jsx").then((module) => ({ default: module.DashboardPage })));
 const DeliveryPage = lazy(() => import("../pages/DeliveryPage.jsx").then((module) => ({ default: module.DeliveryPage })));
@@ -19,13 +20,15 @@ const TestimonialsPage = lazy(() => import("../pages/TestimonialsPage.jsx").then
 const MenuPage = lazy(() => import("../pages/MenuPage.jsx").then((module) => ({ default: module.MenuPage })));
 
 export const adminRouter = createBrowserRouter([
-  { path: "/", element: <Navigate replace to="/login" /> },
+  { path: "/", element: <Navigate replace to="/login" />, errorElement: <AdminErrorPage /> },
   {
     element: <PublicOnlyRoute />,
+    errorElement: <AdminErrorPage />,
     children: [{ path: "/login", element: <LoginPage /> }],
   },
   {
     element: <ProtectedRoute />,
+    errorElement: <AdminErrorPage />,
     children: [
       {
         element: <AdminLayout />,
