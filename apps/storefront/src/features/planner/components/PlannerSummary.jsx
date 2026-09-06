@@ -42,7 +42,7 @@ export function PlannerSummary({ plan, summary, onClear }) {
       </div>
       {!summary.priceComplete && hasMeals ? <p className="mt-2 text-xs text-amber-200">The estimate excludes selections without a current valid price.</p> : null}
       {summary.checkoutReady ? (
-        <Button to={`${storefrontPaths.checkout}?source=meal-plan`} className="mt-6 w-full bg-white text-brand-950 hover:bg-brand-100">
+        <Button to={`${storefrontPaths.checkout}?source=meal-plan`} variant="inverse" className="mt-6 w-full">
           <CircleCheck className="size-4" aria-hidden="true" />Continue to checkout
         </Button>
       ) : (

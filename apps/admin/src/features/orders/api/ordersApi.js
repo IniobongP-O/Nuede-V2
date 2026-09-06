@@ -81,6 +81,16 @@ export async function updateFulfilmentStatus({ orderId, nextFulfilmentStatus }) 
   return data;
 }
 
+export async function markWhatsappOrderPaid({ orderId }) {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc("mark_whatsapp_order_paid", {
+    p_order_id: orderId,
+  });
+
+  if (error) throw error;
+  return data;
+}
+
 export async function deleteOrder({ orderId, confirmation }) {
   const client = requireSupabase();
   const { data, error } = await client.rpc("delete_admin_order", {

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { deleteOrder, getOrderByReference, getOrdersPage, updateFulfilmentStatus } from "../api/ordersApi.js";
+import { deleteOrder, getOrderByReference, getOrdersPage, markWhatsappOrderPaid, updateFulfilmentStatus } from "../api/ordersApi.js";
 
 export const ordersQueryKey = ["admin", "orders"];
 
@@ -30,6 +30,20 @@ export function useUpdateFulfilmentStatus(orderReference) {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: [...ordersQueryKey, "list"] }),
         queryClient.invalidateQueries({ queryKey: [...ordersQueryKey, "detail", orderReference] }),
+      ]);
+    },
+  });
+}
+
+export function useMarkWhatsappOrderPaid(orderReference) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: markWhatsappOrderPaid,
+    onSettled: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [...ordersQueryKey, "list"] }),
+        queryClient.invalidateQueries({ queryKey: [...ordersQueryKey, "detail", orderReference] }),
+        queryClient.invalidateQueries({ queryKey: ["admin", "sales-analytics"] }),
       ]);
     },
   });

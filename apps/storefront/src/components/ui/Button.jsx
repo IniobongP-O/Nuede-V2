@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 const variants = {
   primary: "bg-brand-700 text-white hover:bg-brand-900 active:bg-brand-950",
+  inverse: "bg-white text-brand-950 hover:bg-brand-100 active:bg-brand-200",
   secondary: "border border-brand-950 bg-transparent text-brand-950 hover:bg-brand-100",
   ghost: "bg-transparent text-brand-950 hover:bg-brand-100",
   destructive: "bg-danger text-white hover:brightness-90",

@@ -19,6 +19,9 @@ export function orderStatusTone(type, value) {
 
 export function orderErrorMessage(error, fallback = "Orders are temporarily unavailable. Please try again.") {
   const message = String(error?.message || "");
+  if (/PAYMENT_MANAGEMENT_ACCESS_REQUIRED/i.test(message)) return "Only an active owner or administrator can confirm WhatsApp payments.";
+  if (/WHATSAPP_ORDER_REQUIRED/i.test(message)) return "Only WhatsApp orders can be marked as paid manually.";
+  if (/INVALID_WHATSAPP_PAYMENT_TRANSITION/i.test(message)) return "This payment can no longer be marked as paid. The latest order state has been loaded.";
   if (/OWNER_ACCESS_REQUIRED/i.test(message)) return "Only an active owner can permanently delete orders.";
   if (/ORDER_DELETE_CONFIRMATION_MISMATCH/i.test(message)) return "The confirmation must exactly match the order reference.";
   if (/ADMIN_ACCESS_REQUIRED|permission denied|42501/i.test(message)) return "Your session is not authorized to access order operations.";
