@@ -28,6 +28,7 @@ const exceptions = [];
 const servers = [];
 const payloads = [];
 const imageUploads = [];
+const deliveryZones = [zone];
 let browser;
 
 function orderContext() { return { products, variants: [variant], addons, assignments: addons.map((addon) => ({ product_id: grouped.id, addon_id: addon.id })), deliveryZone: zone, checkoutSettings: settings }; }
@@ -60,7 +61,26 @@ async function mock(route) {
   if (table === "products") return respond(products);
   if (table === "categories") return respond([category]);
   if (table === "product_addons") return respond(addons);
-  if (table === "delivery_zones") return respond([zone]);
+  if (table === "delivery_zones") {
+    if (request.method() === "POST") {
+      const candidate = request.postDataJSON();
+      const created = { ...candidate, id: id(900 + deliveryZones.length), updated_at: new Date().toISOString() };
+      deliveryZones.push(created);
+      return respond(created, 201);
+    }
+    if (request.method() === "DELETE") {
+      const targetId = url.searchParams.get("id")?.replace(/^eq\./, "");
+      const index = deliveryZones.findIndex((candidate) => candidate.id === targetId);
+      return respond(index < 0 ? null : deliveryZones.splice(index, 1)[0]);
+    }
+    if (request.method() === "PATCH") {
+      const targetId = url.searchParams.get("id")?.replace(/^eq\./, "");
+      const current = deliveryZones.find((candidate) => candidate.id === targetId);
+      Object.assign(current, request.postDataJSON(), { updated_at: new Date().toISOString() });
+      return respond(current);
+    }
+    return respond(deliveryZones);
+  }
   if (table === "checkout_payment_options" || table === "checkout_settings") return respond(settings);
   if (["published_testimonials", "testimonials", "feedback"].includes(table)) return respond([]);
   if (table === "list_admin_orders") return respond(orders.map((o) => ({ ...o, total_count: orders.length, item_count: o.order_items.length })));
@@ -160,6 +180,24 @@ try {
   await adminPage.getByRole("heading", { name: "Settings", exact: true }).waitFor();
 
   if (!layoutOnly) {
+    await adminPage.goto(`${admin}/delivery`);
+    await adminPage.getByRole("button", { name: "Add delivery area", exact: true }).first().click();
+    const addAreaDialog = adminPage.locator("dialog[open]");
+    await addAreaDialog.getByRole("heading", { name: "Add delivery area", exact: true }).waitFor();
+    await addAreaDialog.getByLabel("Area name", { exact: false }).fill("QA Maitama");
+    await addAreaDialog.getByLabel("Delivery fee (NGN)", { exact: false }).fill("1800.50");
+    await addAreaDialog.getByRole("button", { name: "Add delivery area", exact: true }).click();
+    const addedArea = adminPage.getByRole("listitem").filter({ hasText: "QA Maitama" });
+    await addedArea.getByRole("heading", { name: "QA Maitama", exact: true }).waitFor();
+    assert.equal(deliveryZones.at(-1).fee_kobo, 180050);
+    assert.equal(deliveryZones.at(-1).is_active, true);
+    await addedArea.getByRole("button", { name: "Delete", exact: true }).click();
+    const deleteAreaDialog = adminPage.getByRole("dialog", { name: "Delete delivery area?" });
+    await deleteAreaDialog.getByRole("button", { name: "Delete area", exact: true }).click();
+    await addedArea.waitFor({ state: "detached" });
+    assert.equal(deliveryZones.some((candidate) => candidate.name === "QA Maitama"), false);
+    reports.push("delivery-area create and confirmed delete (mocked Supabase)");
+
     adminPage.on("console", (message) => { if (message.text().startsWith("NUEDE image:")) console.log(message.text()); });
     let imageTimeout;
     const imageResult = await Promise.race([adminPage.evaluate(async (entityId) => {

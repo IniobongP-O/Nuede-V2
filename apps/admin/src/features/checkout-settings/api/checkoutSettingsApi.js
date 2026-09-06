@@ -1,4 +1,7 @@
 import { supabase, supabaseConfigurationError } from "../../../lib/supabaseClient.js";
+import { slugify } from "../../catalog/utils/catalogUtils.js";
+
+const deliveryZoneFields = "id,name,slug,fee_kobo,is_active,sort_order,updated_at";
 
 function requireSupabase() {
   if (!supabase) throw new Error(supabaseConfigurationError);
@@ -11,18 +14,49 @@ function throwIfError(error, message) {
 
 export async function listDeliveryZones() {
   const { data, error } = await requireSupabase().from("delivery_zones")
-    .select("id,name,slug,fee_kobo,is_active,sort_order,updated_at")
+    .select(deliveryZoneFields)
     .order("sort_order").order("name");
   throwIfError(error, "Delivery settings could not be loaded.");
   return data || [];
+}
+
+async function uniqueDeliveryZoneSlug(name) {
+  const base = slugify(name);
+  const { data, error } = await requireSupabase().from("delivery_zones")
+    .select("slug")
+    .like("slug", `${base}%`);
+  throwIfError(error, "The delivery area could not be created.");
+  const used = new Set((data || []).map((row) => row.slug));
+  if (!used.has(base)) return base;
+  let suffix = 2;
+  while (used.has(`${base}-${suffix}`)) suffix += 1;
+  return `${base}-${suffix}`;
+}
+
+export async function createDeliveryZone({ name, feeKobo, sortOrder }) {
+  const slug = await uniqueDeliveryZoneSlug(name);
+  const { data, error } = await requireSupabase().from("delivery_zones")
+    .insert({ name: name.trim(), slug, fee_kobo: feeKobo, is_active: true, sort_order: sortOrder })
+    .select(deliveryZoneFields).single();
+  throwIfError(error, "The delivery area could not be created.");
+  return data;
 }
 
 export async function updateDeliveryZone({ id, feeKobo, isActive }) {
   const { data, error } = await requireSupabase().from("delivery_zones")
     .update({ fee_kobo: feeKobo, is_active: isActive })
     .eq("id", id)
-    .select("id,name,slug,fee_kobo,is_active,sort_order,updated_at").single();
+    .select(deliveryZoneFields).single();
   throwIfError(error, "The delivery area could not be updated.");
+  return data;
+}
+
+export async function deleteDeliveryZone(id) {
+  const { data, error } = await requireSupabase().from("delivery_zones")
+    .delete()
+    .eq("id", id)
+    .select("id,name").single();
+  throwIfError(error, "The delivery area could not be deleted.");
   return data;
 }
 

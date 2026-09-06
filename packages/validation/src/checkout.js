@@ -38,6 +38,10 @@ export const deliveryZoneAdminFormSchema = z.object({
   feeNgn: z.string().trim().regex(/^\d+(\.\d{1,2})?$/, "Enter a non-negative NGN amount with no more than two decimal places."),
 });
 
+export const createDeliveryZoneAdminFormSchema = deliveryZoneAdminFormSchema.extend({
+  name: z.string().trim().min(1, "Enter a delivery-area name.").max(80, "Use 80 characters or fewer."),
+});
+
 export const checkoutSettingsFormSchema = z.object({
   paystackEnabled: z.boolean(),
   whatsappEnabled: z.boolean(),

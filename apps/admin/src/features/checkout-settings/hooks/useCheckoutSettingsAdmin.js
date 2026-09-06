@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getAdminCheckoutSettings, listDeliveryZones, updateAdminCheckoutSettings, updateDeliveryZone } from "../api/checkoutSettingsApi.js";
+import { createDeliveryZone, deleteDeliveryZone, getAdminCheckoutSettings, listDeliveryZones, updateAdminCheckoutSettings, updateDeliveryZone } from "../api/checkoutSettingsApi.js";
 
 export const adminCheckoutQueryKeys = Object.freeze({
   all: ["admin-checkout-settings"],
@@ -23,6 +23,14 @@ function useSettingsMutation(mutationFn, queryKey) {
 
 export function useUpdateDeliveryZone() {
   return useSettingsMutation(updateDeliveryZone, adminCheckoutQueryKeys.deliveryZones);
+}
+
+export function useCreateDeliveryZone() {
+  return useSettingsMutation(createDeliveryZone, adminCheckoutQueryKeys.deliveryZones);
+}
+
+export function useDeleteDeliveryZone() {
+  return useSettingsMutation(deleteDeliveryZone, adminCheckoutQueryKeys.deliveryZones);
 }
 
 export function useUpdateAdminCheckoutSettings() {
