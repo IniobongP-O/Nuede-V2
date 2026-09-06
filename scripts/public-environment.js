@@ -2,6 +2,7 @@ const publicNames = new Set([
   "VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY", "VITE_CONTACT_PHONE",
   "VITE_CONTACT_WHATSAPP", "VITE_CONTACT_EMAIL", "VITE_CONTACT_INSTAGRAM", "VITE_CONTACT_HOURS",
 ]);
+const vercelPublicPrefix = "VITE_VERCEL_";
 
 export function containsBackendSecret(value) {
   if (/(?:sk_(?:live|test)_[a-zA-Z0-9]{12,}|sb_secret_[a-zA-Z0-9_-]{12,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|postgres(?:ql)?:\/\/[^\s:/]+:[^\s@]+@)/.test(value)) return true;
@@ -16,7 +17,9 @@ export function containsBackendSecret(value) {
 export function validatePublicEnvironment(env, { production = false } = {}) {
   for (const [name, value] of Object.entries(env)) {
     if (!name.startsWith("VITE_")) continue;
-    if (!publicNames.has(name) || containsBackendSecret(String(value))) {
+    const allowedName = publicNames.has(name) || name.startsWith(vercelPublicPrefix);
+    // Platform metadata is public by name, but it must cross the same secret-value boundary.
+    if (!allowedName || containsBackendSecret(String(value))) {
       // Never include a rejected value in build logs.
       throw new Error(`Unsafe frontend environment variable: ${name}`);
     }

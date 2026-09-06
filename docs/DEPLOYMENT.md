@@ -91,7 +91,9 @@ must be fixed by applying their original migrations, not recreating them manuall
 | Edge custom secrets | `PAYSTACK_SECRET_KEY`, `NUEDE_STOREFRONT_URL`, `NUEDE_WHATSAPP_NUMBER` | Backend only; storefront URL is the final origin with trailing slash |
 | Operator tooling | `SUPABASE_ACCESS_TOKEN`, database password, Vercel CLI authentication | Secure session/secret store only |
 
-The Vite build guard rejects unknown `VITE_` names and backend secret patterns. Production
+The Vite build guard rejects arbitrary `VITE_` names while permitting Nuede's explicit
+allowlist and Vercel-generated public metadata under `VITE_VERCEL_*`. Every permitted value,
+including Vercel metadata, is still rejected if it matches a backend secret pattern. Production
 Vercel builds reject missing/placeholder configuration. Keep preview and production
 environment values separate. Do not pass backend keys through Vite to solve access errors.
 

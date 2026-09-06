@@ -47,16 +47,100 @@ test("Cycle 18 Paystack timeout covers the response body as well as headers", as
   assert.ok(Date.now() - started < 1000);
 });
 
-test("Cycle 18 build guard rejects backend secrets even under a public variable name", () => {
-  const serviceToken = `${Buffer.from('{"alg":"HS256"}').toString("base64url")}.${Buffer.from('{"role":"service_role"}').toString("base64url")}.fixture`;
-  const secret = ["sk", "live", "a".repeat(30)].join("_");
-  for (const value of [serviceToken, secret, ["sb", "secret", "x".repeat(30)].join("_")]) {
-    assert.equal(containsBackendSecret(value), true);
-    assert.throws(() => validatePublicEnvironment({ VITE_SUPABASE_ANON_KEY: value }), /Unsafe frontend/);
+test("Cycle 18 build guard accepts allowlisted Nuede public variables", () => {
+  assert.doesNotThrow(() => validatePublicEnvironment({
+    VITE_SUPABASE_URL: "https://test-project.supabase.co",
+    VITE_SUPABASE_ANON_KEY: "public-anon-key-for-tests",
+    VITE_CONTACT_PHONE: "",
+    VITE_CONTACT_WHATSAPP: "",
+    VITE_CONTACT_EMAIL: "",
+    VITE_CONTACT_INSTAGRAM: "",
+    VITE_CONTACT_HOURS: "",
+  }));
+});
+
+test("Cycle 18 build guard accepts Vercel public deployment metadata", () => {
+  assert.doesNotThrow(() => validatePublicEnvironment({
+    VITE_VERCEL_GIT_REPO_ID: "synthetic-repo-id",
+    VITE_VERCEL_GIT_PROVIDER: "github",
+    VITE_VERCEL_GIT_REPO_SLUG: "nuede-v2",
+    VITE_VERCEL_ENV: "production",
+    VITE_VERCEL_URL: "nuede.example.vercel.app",
+  }));
+});
+
+test("Cycle 18 build guard rejects arbitrary unknown Vite variables", () => {
+  for (const name of ["VITE_RANDOM_UNAPPROVED_VARIABLE", "VITE_DATABASE_PASSWORD", "VITE_INTERNAL_TOKEN"]) {
+    assert.throws(
+      () => validatePublicEnvironment({ [name]: "value" }),
+      new RegExp(`Unsafe frontend environment variable: ${name}`),
+    );
   }
+});
+
+test("Cycle 18 Vercel namespace does not bypass backend-secret detection", () => {
+  const privateKey = ["-----BEGIN", "PRIVATE KEY-----\nsynthetic-test-data"].join(" ");
+  assert.equal(containsBackendSecret(privateKey), true);
+  assert.throws(
+    () => validatePublicEnvironment({ VITE_VERCEL_FAKE_TEST: privateKey }),
+    /Unsafe frontend environment variable: VITE_VERCEL_FAKE_TEST/,
+  );
+});
+
+test("Cycle 18 service-role detection remains protected", () => {
+  const serviceToken = `${Buffer.from('{"alg":"HS256"}').toString("base64url")}.${Buffer.from('{"role":"service_role"}').toString("base64url")}.synthetic`;
+  assert.equal(containsBackendSecret(serviceToken), true);
+  assert.throws(() => validatePublicEnvironment({ VITE_SUPABASE_ANON_KEY: serviceToken }), /Unsafe frontend/);
+  assert.throws(() => validatePublicEnvironment({ VITE_VERCEL_FAKE_TEST: serviceToken }), /Unsafe frontend/);
+});
+
+test("Cycle 18 Paystack secret detection remains protected", () => {
+  const paystackSecret = ["sk", "live", "a".repeat(30)].join("_");
+  assert.equal(containsBackendSecret(paystackSecret), true);
+  assert.throws(() => validatePublicEnvironment({ VITE_SUPABASE_ANON_KEY: paystackSecret }), /Unsafe frontend/);
+  assert.throws(() => validatePublicEnvironment({ VITE_VERCEL_FAKE_TEST: paystackSecret }), /Unsafe frontend/);
   assert.throws(() => validatePublicEnvironment({ VITE_PAYSTACK_SECRET_KEY: "anything" }), /Unsafe frontend/);
-  assert.doesNotThrow(() => validatePublicEnvironment({ VITE_SUPABASE_ANON_KEY: "public-fixture", VITE_CONTACT_PHONE: "" }));
+});
+
+test("Cycle 18 other backend-secret formats remain protected", () => {
+  for (const value of [
+    ["sb", "secret", "x".repeat(30)].join("_"),
+    ["postgresql://test-user", "synthetic-password@db.example.invalid:5432/test"].join(":"),
+  ]) {
+    assert.equal(containsBackendSecret(value), true);
+    assert.throws(() => validatePublicEnvironment({ VITE_VERCEL_FAKE_TEST: value }), /Unsafe frontend/);
+  }
+});
+
+test("Cycle 18 production build guard rejects missing and placeholder Supabase configuration", () => {
   assert.throws(() => validatePublicEnvironment({}, { production: true }), /Production requires/);
+  for (const url of [
+    "http://test-project.supabase.co",
+    "https://localhost:54321",
+    "https://127.0.0.1:54321",
+    "https://your-project.supabase.co",
+    "not-a-url",
+    "https://test-user:synthetic-password@test-project.supabase.co",
+  ]) {
+    assert.throws(() => validatePublicEnvironment({
+      VITE_SUPABASE_URL: url,
+      VITE_SUPABASE_ANON_KEY: "public-anon-key-for-tests",
+    }, { production: true }), /Production requires the intended HTTPS Supabase URL/);
+  }
+  for (const key of ["", "your-public-key", "example-public-key", "placeholder-anon-key", "fixture-anon-key"]) {
+    assert.throws(() => validatePublicEnvironment({
+      VITE_SUPABASE_URL: "https://test-project.supabase.co",
+      VITE_SUPABASE_ANON_KEY: key,
+    }, { production: true }), /Production requires a Supabase public key/);
+  }
+});
+
+test("Cycle 18 production build guard accepts valid public Supabase configuration", () => {
+  assert.doesNotThrow(() => validatePublicEnvironment({
+    VITE_SUPABASE_URL: "https://test-project.supabase.co",
+    VITE_SUPABASE_ANON_KEY: "public-anon-key-for-tests",
+    VITE_VERCEL_ENV: "production",
+  }, { production: true }));
 });
 
 test("Cycle 18 app deployment contracts independently include SPA routing and privacy headers", async () => {
