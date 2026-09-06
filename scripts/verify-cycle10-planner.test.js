@@ -170,6 +170,24 @@ test("Cycle 10 persists only validated IDs and recovers malformed browser data b
   assert.deepEqual(getStoredPlan(storage, fallback), normalized);
 });
 
+test("Cycle 10 rolls saved planner dates forward from the real calendar", () => {
+  const stored = {
+    version: 1,
+    durationDays: 2,
+    startDate: "2026-09-04",
+    days: [
+      { date: "2026-09-04", slots: { breakfast: configuration() } },
+      { date: "2026-09-05", slots: { dinner: configuration({ addonIds: [addonId] }) } },
+    ],
+  };
+
+  const normalized = normalizeStoredPlan(stored, { startDate: "2026-09-07" });
+  assert.equal(normalized.startDate, "2026-09-07");
+  assert.deepEqual(normalized.days.map(({ date }) => date), ["2026-09-07", "2026-09-08"]);
+  assert.equal(normalized.days[0].slots.breakfast.productId, productId);
+  assert.deepEqual(normalized.days[1].slots.dinner.addonIds, [addonId]);
+});
+
 test("Cycle 10 hydrates current standard/grouped pricing, nutrition, and stale catalog states", () => {
   const standard = hydratePlannerMeal(configuration({ addonIds: [addonId] }), [standardProduct]);
   assert.equal(standard.status, PLANNER_MEAL_STATUS.valid);

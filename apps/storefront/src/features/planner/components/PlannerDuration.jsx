@@ -17,7 +17,7 @@ export function PlannerDuration({ durationDays, onChange }) {
           </button>
         ))}
       </div>
-      <p className="mt-3 text-xs leading-5 text-muted">Your plan starts tomorrow, and its dates won't change when you return.</p>
+      <p className="mt-3 text-xs leading-5 text-muted">Your plan starts tomorrow. Its dates update automatically to stay current.</p>
     </section>
   );
 }

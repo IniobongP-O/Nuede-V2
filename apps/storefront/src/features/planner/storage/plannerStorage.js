@@ -3,6 +3,7 @@ import { plannerConfigurationSchema, plannerDateSchema, plannerStorageEnvelopeSc
 import {
   createPlan,
   generatePlanDates,
+  getNextPlanStartDate,
   PLANNER_SLOT_KEYS,
   serializePlanForCheckout,
 } from "../utils/plannerModel.js";
@@ -21,14 +22,14 @@ function browserStorage(storage) {
 
 export function normalizeStoredPlan(value, fallbackOptions = {}) {
   // Browser storage may be stale or manually edited. Rebuild the canonical date
-  // grid and salvage only individually valid slots that belong to that grid.
+  // grid from the real calendar and salvage valid slots by their day position.
   const envelope = plannerStorageEnvelopeSchema.safeParse(value);
   if (!envelope.success) return createPlan(fallbackOptions);
   const { durationDays, startDate } = envelope.data;
-  const expectedDates = generatePlanDates(startDate, durationDays);
+  const storedDates = generatePlanDates(startDate, durationDays);
   const daysByDate = new Map();
   for (const candidate of envelope.data.days) {
-    if (!candidate || typeof candidate !== "object" || !plannerDateSchema.safeParse(candidate.date).success || !expectedDates.includes(candidate.date)) continue;
+    if (!candidate || typeof candidate !== "object" || !plannerDateSchema.safeParse(candidate.date).success || !storedDates.includes(candidate.date)) continue;
     const candidateSlots = candidate.slots && typeof candidate.slots === "object" ? candidate.slots : {};
     daysByDate.set(candidate.date, {
       date: candidate.date,
@@ -40,11 +41,12 @@ export function normalizeStoredPlan(value, fallbackOptions = {}) {
       })),
     });
   }
-  const plan = createPlan({ durationDays, startDate });
+  const currentStartDate = fallbackOptions.startDate || getNextPlanStartDate();
+  const plan = createPlan({ durationDays, startDate: currentStartDate });
   return {
     ...plan,
-    days: plan.days.map((day) => {
-      const storedDay = daysByDate.get(day.date);
+    days: plan.days.map((day, index) => {
+      const storedDay = daysByDate.get(storedDates[index]);
       if (!storedDay) return day;
       return {
         date: day.date,
