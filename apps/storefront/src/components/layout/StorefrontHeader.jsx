@@ -24,7 +24,7 @@ function NavigationLink({ item, onNavigate, mobile = false }) {
       to={item.path}
       end={item.end}
       onClick={onNavigate}
-      className={({ isActive }) => `${mobile ? "flex min-h-12 items-center border-b border-line text-lg" : "inline-flex min-h-11 items-center border-b-2 px-1 text-sm"} font-semibold transition-colors ${isActive ? "border-brand-700 text-brand-950" : "border-transparent text-muted hover:text-brand-950"}`}
+      className={({ isActive }) => `${mobile ? "flex min-h-12 items-center border-b border-line text-lg" : "relative inline-flex min-h-11 items-center px-1 text-sm after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-center after:bg-brand-700 after:transition-transform after:duration-200 after:ease-out"} font-semibold transition-colors ${isActive ? `text-brand-950 ${mobile ? "" : "after:scale-x-100"}` : `text-muted hover:text-brand-950 ${mobile ? "" : "after:scale-x-0"}`}`}
     >
       {item.label}
     </NavLink>
