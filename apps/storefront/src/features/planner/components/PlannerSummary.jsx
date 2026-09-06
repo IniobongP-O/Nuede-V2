@@ -13,6 +13,11 @@ function NutritionMetric({ label, field, value }) {
 export function PlannerSummary({ plan, summary, onClear }) {
   const hasMeals = summary.selectedMealCount > 0;
   const nutrition = summary.nutrition.averageDaily;
+  const checkoutMessage = !hasMeals
+    ? "Add a meal to continue"
+    : summary.invalidMealCount
+      ? `Update ${summary.invalidMealCount === 1 ? "an unavailable meal" : "unavailable meals"} to continue`
+      : "Review your meal plan to continue";
   return (
     <section className="rounded-card bg-brand-950 p-5 text-white shadow-card" aria-labelledby="planner-summary-title">
       <div className="flex items-start justify-between gap-4">
@@ -34,23 +39,23 @@ export function PlannerSummary({ plan, summary, onClear }) {
           <NutritionMetric label="Fat/day" field="fatG" value={nutrition.fatG} />
         </dl>
       ) : <p className="mt-5 text-sm leading-6 text-white/70">Choose at least one meal to see average daily nutrition.</p>}
-      {hasMeals && summary.nutrition.status !== NUTRITION_STATUS.complete ? <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-amber-200"><CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />Nutrition is incomplete for one or more selected meals; known values are estimates.</p> : null}
+      {hasMeals && summary.nutrition.status !== NUTRITION_STATUS.complete ? <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-amber-200"><CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />Some meals don't have complete nutrition information yet, so these daily totals are estimates.</p> : null}
       {summary.invalidMealCount ? <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-red-200"><CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />{summary.invalidMealCount} selected {summary.invalidMealCount === 1 ? "meal needs" : "meals need"} replacement or removal.</p> : null}
       <div className="mt-6 flex items-end justify-between gap-4">
-        <p className="text-sm text-white/60">Estimated food total</p>
-        <p className="font-display text-2xl">{!hasMeals ? "—" : summary.estimatedFoodTotalKobo === null ? "Incomplete" : formatKobo(summary.estimatedFoodTotalKobo)}</p>
+        <p className="text-sm text-white/60">Estimated total</p>
+        <p className="font-display text-2xl">{!hasMeals ? "—" : summary.estimatedFoodTotalKobo === null ? "Unavailable" : formatKobo(summary.estimatedFoodTotalKobo)}</p>
       </div>
-      {!summary.priceComplete && hasMeals ? <p className="mt-2 text-xs text-amber-200">The estimate excludes selections without a current valid price.</p> : null}
+      {!summary.priceComplete && hasMeals ? <p className="mt-2 text-xs text-amber-200">Some items don't currently have a price, so they aren't included in this estimate.</p> : null}
       {summary.checkoutReady ? (
         <Button to={`${storefrontPaths.checkout}?source=meal-plan`} variant="inverse" className="mt-6 w-full">
           <CircleCheck className="size-4" aria-hidden="true" />Continue to checkout
         </Button>
       ) : (
         <div className="mt-6 flex min-h-11 w-full items-center justify-center gap-2 rounded-control border border-white/30 text-sm font-semibold text-white/75" role="status" aria-describedby="planner-checkout-note">
-          <CircleCheck className="size-4" aria-hidden="true" />Plan not checkout-ready
+          <CircleCheck className="size-4" aria-hidden="true" />{checkoutMessage}
         </div>
       )}
-      <p id="planner-checkout-note" className="mt-3 text-xs leading-5 text-white/60">Checkout preserves this schedule and rechecks current availability. Displayed prices remain estimates.</p>
+      <p id="planner-checkout-note" className="mt-3 text-xs leading-5 text-white/60">We'll confirm availability and your final total at checkout.</p>
     </section>
   );
 }

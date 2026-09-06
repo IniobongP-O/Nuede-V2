@@ -25,7 +25,7 @@ const emptyList = Object.freeze([]);
 function persistMessage(result, successMessage) {
   return result.persisted
     ? { message: successMessage, tone: "success" }
-    : { message: `${successMessage} for this visit, but browser persistence is blocked.`, tone: "error" };
+    : { message: `${successMessage}, but we couldn't save the change for your next visit.`, tone: "error" };
 }
 
 function PriceDisplay({ item }) {
@@ -46,7 +46,7 @@ function LineNutrition({ nutrition }) {
   return (
     <div>
       <p className="text-xs leading-5 text-muted">{values.join(" · ")}</p>
-      {!nutrition.isComplete ? <p className="mt-1 text-xs font-medium text-warning">*Known values only</p> : null}
+      {!nutrition.isComplete ? <p className="mt-1 text-xs font-medium text-warning">*Some nutrition details are missing</p> : null}
     </div>
   );
 }
@@ -115,7 +115,7 @@ function CartSummary({ items, subtotal, nutrition, onCheckout }) {
         <span className="text-sm font-semibold text-brand-950">Estimated subtotal</span>
         <span className="font-display text-2xl text-brand-950">{subtotal.subtotalKobo === null ? "Unavailable" : formatKobo(subtotal.subtotalKobo)}</span>
       </div>
-      {!subtotal.complete ? <p className="mt-2 text-xs leading-5 text-warning">Unavailable configurations are excluded from this subtotal.</p> : null}
+      {!subtotal.complete ? <p className="mt-2 text-xs leading-5 text-warning">Unavailable items aren't included in this subtotal.</p> : null}
       <p className="mt-1 text-xs text-muted">Delivery is calculated at checkout.</p>
 
       <div className="mt-4 rounded-control bg-canvas p-4">
@@ -127,10 +127,10 @@ function CartSummary({ items, subtotal, nutrition, onCheckout }) {
             ))}
           </div>
         ) : <p className="mt-2 text-sm text-muted">Nutrition details are unavailable for this basket.</p>}
-        {nutrition.hasAny && !nutrition.isComplete ? <p className="mt-3 text-xs leading-5 text-warning">*Known values only. At least one selection has incomplete nutrition.</p> : null}
+        {nutrition.hasAny && !nutrition.isComplete ? <p className="mt-3 text-xs leading-5 text-warning">*Some nutrition information is missing, so these totals are estimates.</p> : null}
       </div>
 
-      <p className="mt-4 text-xs leading-5 text-muted">Prices are display estimates only. Nuede will recalculate current prices before an order can be created.</p>
+      <p className="mt-4 text-xs leading-5 text-muted">We'll confirm current prices and your final total at checkout.</p>
       <div className="mt-4">
         {ready ? <Button to={`${storefrontPaths.checkout}?source=cart`} size="large" className="w-full" onClick={onCheckout}>Continue to checkout</Button> : <Button size="large" className="w-full" disabled>Resolve basket issues to continue</Button>}
       </div>
@@ -184,17 +184,17 @@ export function CartDialog({ open, onClose }) {
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} title="Your basket" description={`${cart.itemCount} ${cart.itemCount === 1 ? "item" : "items"} on this device`} size="cart" contentClassName="p-0">
+      <Dialog open={open} onClose={onClose} title="Your basket" description={`${cart.itemCount} ${cart.itemCount === 1 ? "item" : "items"}`} size="cart" contentClassName="p-0">
         {!cart.items.length ? (
-          <div className="p-5 sm:p-6"><EmptyState title="Your basket is empty" message="Choose a meal from the live menu and tailor it to your taste." action={<Button to={storefrontPaths.menu} onClick={onClose}>Browse the menu</Button>} /></div>
+          <div className="p-5 sm:p-6"><EmptyState title="Your basket is empty" message="Choose a meal from the menu and make it your own." action={<Button to={storefrontPaths.menu} onClick={onClose}>Browse the menu</Button>} /></div>
         ) : menuQuery.isPending ? (
           <div className="p-5 sm:p-6"><LoadingState title="Checking your basket" message="Loading current meal details, prices, availability, and nutrition." /></div>
         ) : menuQuery.isError ? (
-          <div className="p-5 sm:p-6"><ErrorState title="We couldn't check your basket" message="Your selections remain saved on this device, but Nuede will not show stale product or price details." action={<Button onClick={() => menuQuery.refetch()}>Try again</Button>} /></div>
+          <div className="p-5 sm:p-6"><ErrorState title="We couldn't check your basket" message="Your selections are still here. Check your connection and try again." action={<Button onClick={() => menuQuery.refetch()}>Try again</Button>} /></div>
         ) : (
           <>
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4 sm:px-6">
-              <p className="text-sm text-muted">Current menu details are used for every line.</p>
+              <p className="text-sm text-muted">Prices and availability are up to date.</p>
               <Button variant="ghost" size="small" onClick={() => setClearOpen(true)}>Clear basket</Button>
             </div>
             <ul className="grid gap-4 p-5 sm:p-6">
@@ -209,7 +209,7 @@ export function CartDialog({ open, onClose }) {
         open={clearOpen}
         onClose={() => setClearOpen(false)}
         title="Clear your basket?"
-        description="This removes every configured meal from this device."
+        description="This removes every meal from your basket."
         footer={<><Button variant="ghost" onClick={() => setClearOpen(false)}>Keep basket</Button><Button variant="destructive" onClick={confirmClear}>Clear basket</Button></>}
       >
         <p className="text-sm leading-6 text-muted">Saved Meals are separate and will not be affected.</p>

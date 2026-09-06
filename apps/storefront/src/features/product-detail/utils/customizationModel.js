@@ -99,7 +99,7 @@ export function validateProductConfiguration({ product, variantId = null, addonI
       const duplicate = field === "addonIds" && schemaIssue.message.includes("unique");
       issues.push(issue(
         duplicate ? "duplicate_addon" : field === "quantity" ? "invalid_quantity" : "invalid_identity",
-        duplicate ? "Remove the duplicate add-on selection." : field === "quantity" ? "Choose a whole quantity of at least 1." : "This meal selection contains an invalid catalog reference.",
+        duplicate ? "Remove the duplicate add-on selection." : field === "quantity" ? "Choose a whole quantity of at least 1." : "We couldn't read this meal selection. Please choose it again.",
         field,
       ));
     }

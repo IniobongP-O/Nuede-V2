@@ -18,7 +18,7 @@ export function PaymentMethodsSection({ methods, register, error, disabled }) {
         ))}
       </fieldset>
       {error ? <p id="payment-method-error" className="mt-3 text-sm text-danger">{error}</p> : null}
-      <p className="mt-4 text-xs leading-5 text-muted">Both routes create a permanent, server-priced order first. Paystack card details stay on Paystack's hosted checkout.</p>
+      <p className="mt-4 text-xs leading-5 text-muted">We'll confirm your final total before you continue. Card details are entered securely on Paystack.</p>
     </Card>
   );
 }

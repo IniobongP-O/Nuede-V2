@@ -4,7 +4,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
 export const supabaseConfigurationError = !supabaseUrl || !supabaseAnonKey
-  ? "The live menu is not configured for this environment."
+  ? "We can't connect to Nuede right now. Please try again later."
   : null;
 
 export const supabase = supabaseConfigurationError

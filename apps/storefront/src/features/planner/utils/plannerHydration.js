@@ -19,7 +19,7 @@ export const PLANNER_MEAL_STATUS = Object.freeze({
 
 const statusDetails = Object.freeze({
   valid: { label: "Available", message: "This meal is available." },
-  stale: { label: "No longer available", message: "This saved selection is no longer in the public menu." },
+  stale: { label: "No longer available", message: "This saved meal is no longer on the menu." },
   sold_out: { label: "Sold out", message: "This selected meal is currently sold out." },
   price_pending: { label: "Price pending", message: "This selection cannot be ordered until its price is confirmed." },
   unavailable: { label: "Unavailable", message: "This selected meal is not currently available." },

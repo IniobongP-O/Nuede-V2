@@ -13,7 +13,7 @@ export function FavoriteButton({ productId, productName, className = "" }) {
     const result = saved ? removeMeal(productId) : saveMeal(productId);
     if (!result.changed) return;
     if (!result.persisted) {
-      notify("Your browser blocked Saved Meals persistence.", "error");
+      notify("We couldn't save this meal for your next visit.", "error");
       return;
     }
     notify(saved ? "Removed from saved meals" : "Meal saved");

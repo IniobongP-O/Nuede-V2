@@ -4,8 +4,8 @@ import { serializePlanForCheckout } from "../../planner/utils/plannerModel.js";
 
 export const CHECKOUT_SOURCE = Object.freeze({ cart: "cart", mealPlan: "meal-plan" });
 export const PAYMENT_METHODS = Object.freeze([
-  Object.freeze({ id: "paystack", label: "Pay with Paystack", description: "Continue to Paystack's secure hosted checkout. Nuede confirms payment on the server." }),
-  Object.freeze({ id: "whatsapp", label: "Continue on WhatsApp", description: "Record your order securely, then continue the conversation on WhatsApp." }),
+  Object.freeze({ id: "paystack", label: "Pay with Paystack", description: "Continue to Paystack to pay securely. We'll confirm your payment when you return." }),
+  Object.freeze({ id: "whatsapp", label: "Continue on WhatsApp", description: "We'll save your order, then open WhatsApp so you can continue with our team." }),
 ]);
 
 export function parseCheckoutSource(value) {

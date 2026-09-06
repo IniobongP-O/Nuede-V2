@@ -16,7 +16,7 @@ function NutritionReview({ nutrition }) {
           <div key={key}><dt className="text-xs text-muted">{label}</dt><dd className="mt-1 text-sm font-semibold text-brand-950">{formatNutritionValue(key, nutrition[key])}{nutrition[`${key}Complete`] ? "" : "*"}</dd></div>
         ))}
       </dl>
-      {!nutrition.isComplete ? <p className="mt-3 text-xs leading-5 text-warning">*Known values only. At least one selection has incomplete nutrition.</p> : null}
+      {!nutrition.isComplete ? <p className="mt-3 text-xs leading-5 text-warning">*Some nutrition information is missing, so these totals are estimates.</p> : null}
     </div>
   );
 }
@@ -75,7 +75,7 @@ export function CheckoutReview({ source, cartItems, plannerSummary, nutrition, s
         <div className="mt-3 flex justify-between gap-4"><dt className="text-muted">Delivery{selectedZone ? ` · ${selectedZone.name}` : ""}</dt><dd className="font-semibold text-brand-950">{selectedZone ? formatKobo(selectedZone.feeKobo) : "Choose an area"}</dd></div>
         <div className="mt-4 flex justify-between gap-4 border-t border-line pt-4 text-base"><dt className="font-semibold text-brand-950">Estimated total</dt><dd className="font-display text-2xl text-brand-950">{totalKobo === null ? "—" : formatKobo(totalKobo)}</dd></div>
       </dl>
-      <p className="mt-4 text-xs leading-5 text-muted">These are display estimates. The server will re-read current products, options, delivery fee, and settings before any future order or payment.</p>
+      <p className="mt-4 text-xs leading-5 text-muted">We'll confirm availability, the delivery fee, and your final total before your order is placed.</p>
     </Card>
   );
 }

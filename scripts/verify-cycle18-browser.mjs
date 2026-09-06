@@ -192,9 +192,9 @@ try {
     await page.getByRole("button", { name: "Choose QA grouped bowl", exact: true }).waitFor();
     assert.equal(await page.getByRole("button", { name: "Customize QA standard meal", exact: true }).count(), 0);
     await page.getByLabel("Search the menu", { exact: true }).fill("");
-    await page.getByRole("button", { name: "Grouped meals", exact: true }).click();
+    await page.getByRole("button", { name: "Meals with options", exact: true }).click();
     assert.equal(await page.getByRole("button", { name: "Customize QA standard meal", exact: true }).count(), 0);
-    await page.getByRole("button", { name: "Grouped meals", exact: true }).click();
+    await page.getByRole("button", { name: "Meals with options", exact: true }).click();
     await page.getByRole("button", { name: "QA kitchen", exact: true }).click();
     await page.getByRole("button", { name: "Customize QA standard meal", exact: true }).waitFor();
     await page.getByRole("button", { name: "Available only", exact: true }).click();
@@ -274,7 +274,7 @@ try {
       // Explicit fixture transition: this does NOT verify a real provider payment.
       order.payment_status = "paid"; Object.assign(order.payments[0], { status: "paid", verification_status: "verified", verified_at: new Date().toISOString() });
       await page.goto(`${storefront}/payment?reference=${order.payments[0].provider_reference}`);
-      await page.getByRole("heading", { name: "Payment successful", exact: true }).waitFor();
+      await page.getByRole("heading", { name: "Payment confirmed", exact: true }).waitFor();
     } else {
       await page.getByText(/NUE-QA\d+/).first().waitFor();
       assert.equal(orders.at(-1).payment_status, "unpaid");
@@ -299,8 +299,8 @@ try {
   assert.ok(payloads.every((p) => !JSON.stringify(p).includes("price")), "browser submits IDs, never pricing authority");
   if (!layoutOnly) assert.equal(analytics().summary.paid_orders, 3);
   if (!layoutOnly) assert.equal(analytics().summary.revenue_kobo, "4400000");
-  await page.goto(`${storefront}/payment?status=success&reference=fake`); await page.getByRole("heading", { name: "Use a valid payment link" }).waitFor();
-  assert.equal(await page.getByRole("heading", { name: "Payment successful" }).count(), 0);
+  await page.goto(`${storefront}/payment?status=success&reference=fake`); await page.getByRole("heading", { name: "This payment link isn't valid" }).waitFor();
+  assert.equal(await page.getByRole("heading", { name: "Payment confirmed" }).count(), 0);
   for (const width of [320, 390, 768, 1024, 1440]) {
     console.log(`Checking full route matrix at ${width}px`);
     await page.setViewportSize({ width, height: 900 }); await adminPage.setViewportSize({ width, height: 900 });

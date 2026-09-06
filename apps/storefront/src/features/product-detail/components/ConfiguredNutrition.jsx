@@ -23,7 +23,7 @@ export function ConfiguredNutrition({ nutrition, quantity }) {
       </dl>
       <p className="mt-2 text-xs leading-5 text-muted">
         Values shown are for {quantity} {quantity === 1 ? "meal" : "meals"}.
-        {!nutrition.isComplete ? " *Known values only; at least one selected component has incomplete nutrition." : ""}
+        {!nutrition.isComplete ? " *Some nutrition information is missing, so these values are estimates." : ""}
       </p>
     </div>
   );

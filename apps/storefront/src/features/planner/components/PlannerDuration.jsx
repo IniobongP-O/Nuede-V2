@@ -17,7 +17,7 @@ export function PlannerDuration({ durationDays, onChange }) {
           </button>
         ))}
       </div>
-      <p className="mt-3 text-xs leading-5 text-muted">Dates begin tomorrow and stay fixed when this plan is restored.</p>
+      <p className="mt-3 text-xs leading-5 text-muted">Your plan starts tomorrow, and its dates won't change when you return.</p>
     </section>
   );
 }

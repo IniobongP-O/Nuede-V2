@@ -10,7 +10,7 @@ import { filterPlannerProducts, PLANNER_FILTERS } from "../utils/plannerFilters.
 import { formatPlannerDate, PLANNER_SLOTS } from "../utils/plannerModel.js";
 
 function targetLabel(target) {
-  if (!target) return "No slot selected. Choose a slot or use Quick add.";
+  if (!target) return "Choose a slot, or use Quick add.";
   const slot = PLANNER_SLOTS.find(({ key }) => key === target.slot)?.label || target.slot;
   return `${slot}, ${formatPlannerDate(target.date, { weekday: "short", day: "numeric", month: "short" })} selected`;
 }
@@ -35,17 +35,17 @@ export function PlannerLibrary({ products, categories, activeTarget, onChoose, o
     <section className="rounded-card border border-line bg-surface p-5" aria-labelledby="planner-library-title">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 id="planner-library-title" className="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">Meal library</h2>
+          <h2 id="planner-library-title" className="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">Choose meals</h2>
           <p className="mt-2 text-xs font-medium text-muted" role="status">{targetLabel(activeTarget)}</p>
         </div>
-        <Badge tone={activeTarget ? "success" : "neutral"}>{activeTarget ? "Target active" : "Quick add ready"}</Badge>
+        <Badge tone={activeTarget ? "success" : "neutral"}>{activeTarget ? "Slot selected" : "Quick add"}</Badge>
       </div>
       <label className="relative mt-4 block" htmlFor="planner-meal-search">
-        <span className="sr-only">Search meal library</span>
+        <span className="sr-only">Search meals</span>
         <Search className="pointer-events-none absolute left-3 top-3.5 size-4 text-muted" aria-hidden="true" />
         <input id="planner-meal-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search meals..." className="min-h-11 w-full rounded-control border border-line bg-surface pl-10 pr-3 text-sm text-ink placeholder:text-muted/70 hover:border-muted focus:border-brand-700" />
       </label>
-      <div className="mt-3 flex flex-wrap gap-2" aria-label="Filter meal library">
+      <div className="mt-3 flex flex-wrap gap-2" aria-label="Filter meals">
         {PLANNER_FILTERS.map((item) => (
           <button key={item.id} type="button" aria-pressed={filter === item.id} onClick={() => setFilter(item.id)} className={`min-h-8 rounded-full border px-3 text-xs font-semibold ${filter === item.id ? "border-brand-950 bg-brand-950 text-white" : "border-line text-brand-950 hover:border-brand-700"}`}>{item.label}</button>
         ))}
@@ -77,9 +77,9 @@ export function PlannerLibrary({ products, categories, activeTarget, onChoose, o
             </div>
           </article>
         ))}
-        {!visibleProducts.length ? <p className="rounded-control bg-canvas p-4 text-sm text-muted">No live meals match this search and filter.</p> : null}
+        {!visibleProducts.length ? <p className="rounded-control bg-canvas p-4 text-sm text-muted">No meals match your search and filters.</p> : null}
       </div>
-      <p className="mt-4 text-xs leading-5 text-muted">On desktop, directly configurable meals can also be dragged into a slot. Click, tap, and keyboard controls remain available for every action.</p>
+      <p className="mt-4 text-xs leading-5 text-muted">On desktop, you can also drag meals into a slot. Every action is available by click, tap, or keyboard.</p>
     </section>
   );
 }

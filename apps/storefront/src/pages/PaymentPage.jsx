@@ -11,10 +11,10 @@ import { isSafeWhatsappUrl } from "../features/checkout/utils/whatsappHandoff.js
 import { isValidPaystackReference, paymentResultState } from "../features/checkout/utils/paymentResultModel.js";
 
 const presentations = Object.freeze({
-  confirming: { icon: LoaderCircle, tone: "neutral", badge: "Confirming", title: "Confirming payment", message: "Nuede is checking the trusted payment record and Paystack. This page will refresh a few times automatically." },
-  successful: { icon: CheckCircle2, tone: "success", badge: "Paid", title: "Payment successful", message: "Your payment is verified and attached to the permanent Nuede order below." },
-  pending: { icon: Clock3, tone: "warning", badge: "Pending", title: "Payment still pending", message: "Paystack has not conclusively confirmed or rejected this payment. You can check again safely." },
-  failed: { icon: CircleAlert, tone: "danger", badge: "Not paid", title: "Payment could not be confirmed", message: "This order has not been marked paid. Return to the menu when you are ready to try again." },
+  confirming: { icon: LoaderCircle, tone: "neutral", badge: "Confirming", title: "Confirming your payment", message: "We're confirming your payment with Paystack. This page will update automatically." },
+  successful: { icon: CheckCircle2, tone: "success", badge: "Paid", title: "Payment confirmed", message: "Your payment has been confirmed. Your order details are below." },
+  pending: { icon: Clock3, tone: "warning", badge: "Pending", title: "Payment pending", message: "We're still waiting for confirmation from Paystack. Please check again in a moment." },
+  failed: { icon: CircleAlert, tone: "danger", badge: "Not confirmed", title: "We couldn't confirm this payment", message: "You can return to the menu and try again when you're ready." },
 });
 
 export function PaymentPage() {
@@ -30,19 +30,19 @@ export function PaymentPage() {
 
   return (
     <Container className="py-12 sm:py-16 lg:py-20">
-      <PageHeader eyebrow="Payment result" title="Your payment status comes from Nuede." description="A browser redirect never marks an order paid. Nuede uses the saved payment attempt and server-to-server Paystack verification." />
+      <PageHeader eyebrow="Payment status" title="Let's check your payment." description="We're confirming your payment securely with Paystack. This may take a few moments." />
       <Card className="mt-8 grid min-h-[24rem] place-items-center p-6 text-center sm:p-10" aria-live="polite">
         <div className="max-w-2xl">
           <div className={`mx-auto grid size-16 place-items-center rounded-full bg-brand-100 text-brand-700 ${state === "confirming" ? "animate-spin" : ""}`}><Icon className="size-7" aria-hidden="true" /></div>
           <div className="mt-5"><Badge tone={presentation.tone}>{presentation.badge}</Badge></div>
-          <h2 className="mt-4 font-display text-4xl text-brand-950">{invalidReference ? "Use a valid payment link" : paymentQuery.isError ? "We couldn't check this payment" : presentation.title}</h2>
-          <p className="mt-4 text-base leading-7 text-muted">{invalidReference ? "The Paystack reference is missing or invalid. No order has been marked paid." : paymentQuery.isError ? paymentQuery.error.message : presentation.message}</p>
+          <h2 className="mt-4 font-display text-4xl text-brand-950">{invalidReference ? "This payment link isn't valid" : paymentQuery.isError ? "We couldn't check this payment" : presentation.title}</h2>
+          <p className="mt-4 text-base leading-7 text-muted">{invalidReference ? "This payment link is incomplete or no longer valid. Please return to the menu or use the link from your latest payment." : paymentQuery.isError ? paymentQuery.error.message : presentation.message}</p>
 
           {payment ? (
             <dl className="mt-7 grid gap-4 rounded-control bg-canvas p-5 text-left sm:grid-cols-3">
-              <div><dt className="text-xs uppercase tracking-[0.12em] text-muted">Order</dt><dd className="mt-1 break-words font-semibold text-brand-950">{payment.orderReference}</dd></div>
+              <div><dt className="text-xs uppercase tracking-[0.12em] text-muted">Order number</dt><dd className="mt-1 break-words font-semibold text-brand-950">{payment.orderReference}</dd></div>
               <div><dt className="text-xs uppercase tracking-[0.12em] text-muted">Amount</dt><dd className="mt-1 font-semibold text-brand-950">{formatKobo(payment.amountKobo)}</dd></div>
-              <div><dt className="text-xs uppercase tracking-[0.12em] text-muted">Paystack reference</dt><dd className="mt-1 break-all text-sm font-semibold text-brand-950">{payment.paymentReference}</dd></div>
+              <div><dt className="text-xs uppercase tracking-[0.12em] text-muted">Payment reference</dt><dd className="mt-1 break-all text-sm font-semibold text-brand-950">{payment.paymentReference}</dd></div>
             </dl>
           ) : null}
 
@@ -52,7 +52,7 @@ export function PaymentPage() {
             {state === "failed" ? <Button to={storefrontPaths.menu}>Return to menu</Button> : null}
             <Button to={storefrontPaths.home} variant="secondary">Go home</Button>
           </div>
-          {state === "successful" ? <p className="mt-7 flex items-start justify-center gap-2 border-t border-line pt-5 text-sm leading-6 text-muted"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-success" aria-hidden="true" />Fulfilment remains a separate Nuede process; verified payment does not mark the order delivered.</p> : null}
+          {state === "successful" ? <p className="mt-7 flex items-start justify-center gap-2 border-t border-line pt-5 text-sm leading-6 text-muted"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-success" aria-hidden="true" />Payment is confirmed. Preparation and delivery are handled separately.</p> : null}
         </div>
       </Card>
     </Container>

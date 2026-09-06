@@ -194,7 +194,7 @@ test("Cycle 9 architecture keeps selections local, display data live, and future
   const migrations = await read("supabase/migrations/README.md");
   assert.match(provider, /addEventListener\("storage"/);
   assert.match(dialog, /useMenu\(\)/);
-  assert.match(dialog, /display estimates only/);
+  assert.match(dialog, /confirm current prices and your final total at checkout/);
   assert.match(dialog, /Delivery is calculated at checkout/);
   assert.match(header, /itemCount/);
   assert.match(header, /Open basket/);

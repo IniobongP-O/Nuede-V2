@@ -1,7 +1,7 @@
 export function MenuSkeleton() {
   return (
-    <div className="mt-10" role="status" aria-label="Loading the live menu">
-      <span className="sr-only">Loading the live menu.</span>
+    <div className="mt-10" role="status" aria-label="Loading the menu">
+      <span className="sr-only">Loading the menu.</span>
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }, (_, index) => (
           <div key={index} className="overflow-hidden rounded-card border border-line bg-surface" aria-hidden="true">

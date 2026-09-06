@@ -66,16 +66,16 @@ export function MenuPage() {
     const message = result.merged
       ? `${configuredProduct?.name || "Meal"} quantity updated in your basket`
       : `${configuredProduct?.name || "Meal"} added to your basket`;
-    notify(result.persisted ? message : `${message} for this visit, but browser persistence is blocked.`, result.persisted ? "success" : "error");
+    notify(result.persisted ? message : `${message}, but we couldn't save the change for your next visit.`, result.persisted ? "success" : "error");
   };
 
   return (
     <Container className="py-10 sm:py-14 lg:py-18">
-      <PageHeader eyebrow="Our menu" title="Prepared meals, made for real life." description="Explore Nuede meals, current availability, pricing, and nutrition directly from our live kitchen menu." />
+      <PageHeader eyebrow="Our menu" title="Prepared meals, made for real life." description="Explore our meals, see what's available, and compare prices and nutrition." />
 
       {isLoading ? <MenuSkeleton /> : null}
       {!isLoading && hasError ? (
-        <ErrorState className="mt-8" title="We couldn't load the menu" message="Please check your connection and try again. The kitchen menu has not been replaced with placeholder meals." action={<Button onClick={retry}>Try again</Button>} />
+        <ErrorState className="mt-8" title="We couldn't load the menu" message="Please check your connection and try again." action={<Button onClick={retry}>Try again</Button>} />
       ) : null}
       {!isLoading && !hasError ? (
         <>
@@ -92,7 +92,7 @@ export function MenuPage() {
           />
 
           {!products.length ? (
-            <EmptyState className="mt-8" title="The menu is being prepared" message="There are no customer-visible meals right now. Please check back soon." />
+            <EmptyState className="mt-8" title="The menu is being prepared" message="There are no meals to show right now. Please check back soon." />
           ) : visibleProducts.length ? (
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3">
               {visibleProducts.map((product) => <MenuProductCard key={product.id} product={product} onOpenDetails={setDetailSelection} />)}

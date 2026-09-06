@@ -40,7 +40,7 @@ export function SavedPage() {
     const result = clearSavedMeals();
     setClearConfirmationOpen(false);
     setDetailProductId(null);
-    notify(result.persisted ? "All saved meals cleared" : "Saved meals were cleared for this visit, but browser persistence is blocked", result.persisted ? "success" : "error");
+    notify(result.persisted ? "All saved meals cleared" : "Saved meals were cleared, but we couldn't save the change for your next visit", result.persisted ? "success" : "error");
   }
 
   function handleConfigured(configuration) {
@@ -49,7 +49,7 @@ export function SavedPage() {
     const message = result.merged
       ? `${product?.name || "Meal"} quantity updated in your basket`
       : `${product?.name || "Meal"} added to your basket`;
-    notify(result.persisted ? message : `${message} for this visit, but browser persistence is blocked.`, result.persisted ? "success" : "error");
+    notify(result.persisted ? message : `${message}, but we couldn't save the change for your next visit.`, result.persisted ? "success" : "error");
   }
 
   const clearAction = savedMealIds.length ? (
@@ -61,7 +61,7 @@ export function SavedPage() {
       <PageHeader
         eyebrow="Saved meals"
         title="Good meals should be easy to find again."
-        description="Your saved meals stay on this device. Nuede always reloads their live price, nutrition, and availability from the current menu."
+        description="Keep your favourites close and see their latest price, nutrition, and availability whenever you return."
         actions={clearAction}
       />
 
@@ -72,12 +72,12 @@ export function SavedPage() {
       ) : menuQuery.isPending ? (
         <MenuSkeleton />
       ) : menuQuery.isError ? (
-        <ErrorState className="mt-8" title="We couldn't load your saved meals" message="Your saved meal IDs remain on this device. Try loading the live menu again." action={<Button onClick={() => menuQuery.refetch()}>Try again</Button>} />
+        <ErrorState className="mt-8" title="We couldn't load your saved meals" message="Your saved meals are still here. Check your connection and try again." action={<Button onClick={() => menuQuery.refetch()}>Try again</Button>} />
       ) : savedProducts.length ? (
         <section className="mt-8 sm:mt-10" aria-labelledby="saved-meal-list-heading">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2 id="saved-meal-list-heading" className="font-display text-2xl text-brand-950">Your saved meals</h2>
-            <p className="text-sm text-muted">{savedProducts.length} {savedProducts.length === 1 ? "meal" : "meals"} available on the live menu</p>
+            <p className="text-sm text-muted">{savedProducts.length} {savedProducts.length === 1 ? "meal" : "meals"} available</p>
           </div>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {savedProducts.map((product) => (
@@ -87,7 +87,7 @@ export function SavedPage() {
         </section>
       ) : (
         <div className="mt-8 sm:mt-10">
-          <EmptyState title="Your saved meals are no longer public" message="The meals saved on this device are currently hidden, archived, deleted, or outside the live menu. No private catalog details are shown." action={<Button to={storefrontPaths.menu}>Browse available meals</Button>} />
+          <EmptyState title="Your saved meals aren't available right now" message="These meals may have left the menu. Browse what's currently available and save new favourites." action={<Button to={storefrontPaths.menu}>Browse available meals</Button>} />
         </div>
       )}
 
@@ -105,7 +105,7 @@ export function SavedPage() {
         open={clearConfirmationOpen}
         onClose={() => setClearConfirmationOpen(false)}
         title="Clear all saved meals?"
-        description="This removes every saved meal from this device. You can save them again from the live menu."
+        description="This removes every meal from your saved list. You can save them again from the menu."
         footer={(
           <>
             <Button variant="ghost" onClick={() => setClearConfirmationOpen(false)}>Keep saved meals</Button>
@@ -113,7 +113,7 @@ export function SavedPage() {
           </>
         )}
       >
-        <p className="text-sm leading-6 text-muted">This action affects Saved Meals only. It does not change the Nuede catalog.</p>
+        <p className="text-sm leading-6 text-muted">Your basket and meal plan won't be affected.</p>
       </Dialog>
     </Container>
   );

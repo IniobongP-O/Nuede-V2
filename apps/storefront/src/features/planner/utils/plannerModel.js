@@ -193,16 +193,16 @@ export function validatePlanStructure(plan) {
   const duration = plannerDurationSchema.safeParse(plan?.durationDays);
   const startDate = plannerDateSchema.safeParse(plan?.startDate);
   if (!duration.success) issues.push({ code: "invalid_duration", message: "Choose a plan length from 2 to 7 days." });
-  if (!startDate.success) issues.push({ code: "invalid_start_date", message: "The plan start date is invalid." });
+  if (!startDate.success) issues.push({ code: "invalid_start_date", message: "We couldn't read your plan's start date. Please create a new plan." });
   if (!duration.success || !startDate.success || !Array.isArray(plan?.days)) return { valid: false, issues };
   const expectedDates = generatePlanDates(plan.startDate, plan.durationDays);
   if (plan.days.length !== plan.durationDays || plan.days.some((day, index) => day.date !== expectedDates[index])) {
-    issues.push({ code: "invalid_dates", message: "The plan dates do not match its duration." });
+    issues.push({ code: "invalid_dates", message: "The dates in this plan need to be reset. Please create a new plan." });
   }
   for (const day of plan.days) {
     for (const slot of PLANNER_SLOT_KEYS) {
       if (day.slots?.[slot] && !normalizePlannerConfiguration(day.slots[slot])) {
-        issues.push({ code: "invalid_configuration", message: `The ${slot} selection on ${day.date} is invalid.`, address: { date: day.date, slot } });
+        issues.push({ code: "invalid_configuration", message: `Please replace the saved ${slot} meal.`, address: { date: day.date, slot } });
       }
     }
   }

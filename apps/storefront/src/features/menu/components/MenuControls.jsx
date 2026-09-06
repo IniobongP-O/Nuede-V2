@@ -4,7 +4,7 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { TextInput } from "../../../components/ui/FormControls.jsx";
 
 const quickFilters = Object.freeze([
-  { id: "grouped", label: "Grouped meals" },
+  { id: "grouped", label: "Meals with options" },
   { id: "available", label: "Available only" },
   { id: "high-protein", label: "High protein" },
   { id: "complete-nutrition", label: "Complete nutrition" },

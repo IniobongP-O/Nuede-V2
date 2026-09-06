@@ -18,7 +18,7 @@ export function FeaturedMeals({ query }) {
   const configured = (configuration) => {
     const result = addItem(configuration);
     if (!result.changed) { notify("This quantity could not be added. Please review your basket.", "error"); return; }
-    notify(result.persisted ? "Meal added to your basket." : "Meal added for this visit. Browser storage is unavailable.", result.persisted ? "success" : "error");
+    notify(result.persisted ? "Meal added to your basket." : "Meal added, but we couldn't save the change for your next visit.", result.persisted ? "success" : "error");
   };
   const quickAdd = (product) => {
     if (product.isGrouped || product.addons.length) { setSelection(product); return; }

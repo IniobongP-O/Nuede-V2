@@ -43,7 +43,7 @@ function VariantSelector({ product, variants, selectedId, onChange }) {
     <fieldset>
       <legend className="font-semibold text-brand-950">Choose your meal option</legend>
       <p className="mt-1 text-sm text-muted">
-        {product.requiresVariantSelection ? "Select one option to continue." : "The configured default is selected when it is available."}
+        {product.requiresVariantSelection ? "Select one option to continue." : "We've selected the usual option when it's available."}
       </p>
       <div className="mt-3 grid gap-2">
         {variants.map((variant) => {
@@ -65,7 +65,7 @@ function VariantSelector({ product, variants, selectedId, onChange }) {
               <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-center gap-2">
                   <span className="font-semibold text-brand-950">{variant.name}</span>
-                  {product.defaultVariantId === variant.id ? <Badge tone="neutral">Default</Badge> : null}
+              {product.defaultVariantId === variant.id ? <Badge tone="neutral">Standard</Badge> : null}
                   {!orderable ? <Badge tone={status.tone}>{status.label}</Badge> : null}
                 </span>
                 <span className="mt-1 block text-sm text-muted">{priceLabel(variant.priceKobo)} · {nutritionPreview(variant.nutrition)}</span>
@@ -170,7 +170,7 @@ export function ProductDetailDialog({ product, open, onClose, onConfigured, init
           {allowQuantity ? <section className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-line p-4" aria-labelledby={`quantity-${product.id}`}>
             <div>
               <h3 id={`quantity-${product.id}`} className="font-semibold text-brand-950">Quantity</h3>
-              <p className="mt-1 text-sm text-muted">Whole prepared meals, minimum one.</p>
+              <p className="mt-1 text-sm text-muted">Choose how many meals you'd like.</p>
             </div>
             <div className="flex items-center gap-3" role="group" aria-label={`Quantity for ${product.name}`}>
               <IconButton label="Decrease quantity" disabled={customization.quantity <= 1} onClick={customization.decrementQuantity}><Minus className="size-4" aria-hidden="true" /></IconButton>
@@ -181,7 +181,7 @@ export function ProductDetailDialog({ product, open, onClose, onConfigured, init
 
           {customization.catalogNotice ? <p className="rounded-control bg-amber-50 p-3 text-sm text-warning" role="status">{customization.catalogNotice}</p> : null}
           {firstIssue ? <p className="rounded-control bg-canvas p-3 text-sm text-muted" role="status">{firstIssue.message}</p> : null}
-          <p className="text-xs leading-5 text-muted">Prices and nutrition are current display estimates. Final order values will be checked against the live menu.</p>
+          <p className="text-xs leading-5 text-muted">Prices and nutrition are estimates. We'll confirm availability and your final total at checkout.</p>
         </div>
       </div>
     </Dialog>

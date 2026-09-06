@@ -47,7 +47,7 @@ export function PlannerPage() {
   const hasError = categoriesQuery.isError || menuQuery.isError;
 
   function announcePersistence(result, successMessage) {
-    notify(result.persisted ? successMessage : `${successMessage}, but browser persistence is blocked for this visit.`, result.persisted ? "success" : "error");
+    notify(result.persisted ? successMessage : `${successMessage}, but we couldn't save the change for your next visit.`, result.persisted ? "success" : "error");
   }
 
   function selectTarget(address) {
@@ -155,11 +155,11 @@ export function PlannerPage() {
       <PageHeader
         eyebrow="Meal planner"
         title="Build your week without overthinking it."
-        description="Choose breakfast, lunch, dinner, and snacks across 2–7 days. Nuede keeps your schedule, estimated food total, and daily nutrition visible while you plan."
+        description="Choose breakfast, lunch, dinner, and snacks across 2–7 days. See your schedule, estimated total, and daily nutrition as you plan."
       />
 
       {isLoading ? <MenuSkeleton /> : null}
-      {!isLoading && hasError ? <ErrorState className="mt-8" title="We couldn't load the meal library" message="Your saved plan remains on this device. Reconnect to the live kitchen menu before adding or validating meals." action={<Button onClick={retry}>Try again</Button>} /> : null}
+      {!isLoading && hasError ? <ErrorState className="mt-8" title="We couldn't load meals for your plan" message="Your plan is still here. Check your connection and try again before adding more meals." action={<Button onClick={retry}>Try again</Button>} /> : null}
       {!isLoading && !hasError ? (
         <div className="mt-8 grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_23rem]">
           <section aria-labelledby="plan-schedule-title">
@@ -168,7 +168,7 @@ export function PlannerPage() {
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">Your {planner.plan.durationDays}-day plan</p>
                 <h2 id="plan-schedule-title" className="mt-2 font-display text-3xl text-brand-950">Plan one meal at a time.</h2>
               </div>
-              <p className="max-w-sm text-sm leading-6 text-muted">Select a slot, choose from the live library, or use Quick add. Dragging is an optional desktop shortcut.</p>
+              <p className="max-w-sm text-sm leading-6 text-muted">Choose a time slot, then pick a meal. You can also use Quick add or drag meals into place on desktop.</p>
             </div>
             <PlannerSchedule
               plan={summary.hydratedPlan}
@@ -188,7 +188,7 @@ export function PlannerPage() {
             <PlannerDuration durationDays={planner.plan.durationDays} onChange={requestDuration} />
             <PlannerLibrary products={products} categories={categories} activeTarget={activeTarget} onChoose={(product) => openProduct(product)} onQuickAdd={quickAddProduct} />
             <PlannerSummary plan={planner.plan} summary={summary} onClear={() => setClearConfirmationOpen(true)} />
-            {!planner.persistenceAvailable ? <p className="rounded-control bg-red-50 p-3 text-sm text-danger" role="alert">Browser persistence is blocked. This plan will last only for the current visit.</p> : null}
+            {!planner.persistenceAvailable ? <p className="rounded-control bg-red-50 p-3 text-sm text-danger" role="alert">We can't save this plan for your next visit. It will remain available while you keep this page open.</p> : null}
           </aside>
         </div>
       ) : null}
@@ -208,7 +208,7 @@ export function PlannerPage() {
       <PlannerConfirmationDialog
         open={pendingDuration !== null}
         title={`Shorten this plan to ${pendingDuration || "fewer"} days?`}
-        description="One or more meals in the removed days will be permanently cleared from this device."
+        description="Meals on the days you're removing will also be cleared from your plan."
         confirmLabel="Shorten plan"
         onCancel={() => setPendingDuration(null)}
         onConfirm={confirmDuration}

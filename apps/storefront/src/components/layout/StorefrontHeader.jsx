@@ -56,7 +56,7 @@ export function StorefrontHeader() {
           </IconButton>
         </div>
       </Container>
-      <Dialog open={mobileOpen} onClose={() => setMobileOpen(false)} title="Navigate Nuede" description="Customer application sections">
+      <Dialog open={mobileOpen} onClose={() => setMobileOpen(false)} title="Explore Nuede" description="Choose where you'd like to go">
         <nav className="grid" aria-label="Mobile navigation">
           {storefrontNavigation.map((item) => <NavigationLink key={item.path} item={item} mobile onNavigate={() => setMobileOpen(false)} />)}
           <a className="flex min-h-12 items-center border-b border-line text-lg font-semibold text-brand-950" href="/#about" onClick={() => setMobileOpen(false)}>About</a>

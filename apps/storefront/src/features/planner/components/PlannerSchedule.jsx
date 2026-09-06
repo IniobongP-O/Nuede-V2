@@ -58,7 +58,7 @@ function MealSlot({ date, definition, meal, activeTarget, onSelect, onReplace, o
             </div>
           </div>
           {!meal.orderable ? <div className="mt-3 flex items-start gap-2 text-xs text-danger"><TriangleAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" /><span>{meal.message}</span></div> : null}
-          {active ? <div className="mt-3"><Badge tone="success">Active target</Badge></div> : null}
+          {active ? <div className="mt-3"><Badge tone="success">Selected slot</Badge></div> : null}
           <div className="mt-3 flex flex-wrap gap-x-3 gap-y-2 text-xs font-semibold">
             <button type="button" className="text-brand-700 hover:text-brand-950" onClick={() => onReplace(address)}>Replace</button>
             <button type="button" className="text-danger hover:brightness-75" onClick={() => onRemove(address)}>Remove</button>

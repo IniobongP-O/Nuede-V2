@@ -3,12 +3,12 @@
 export const nutritionDisclaimer = "Displayed nutrition helps you make informed choices. Actual nutritional values may vary because of ingredient substitutions, preparation methods and portion differences.";
 export const faqs = Object.freeze([
   { question: "Where do you deliver?", answer: "Nuede serves Abuja. Choose an available delivery area at checkout to see its current delivery fee before placing your order." },
-  { question: "How does meal planning work?", answer: "Build a plan for 2–7 days, choosing meals for breakfast, lunch, dinner or snacks. Review your plan and nutrition summary, then continue to checkout. Saved plans stay in this browser." },
-  { question: "Can I customize my meal?", answer: "Open a meal to see its available options and compatible add-ons. Grouped meals may require a variant selection. The price and nutrition summary update with your choices." },
+  { question: "How does meal planning work?", answer: "Build a plan for 2–7 days, choosing meals for breakfast, lunch, dinner or snacks. Review your plan and nutrition summary, then continue to checkout. Your plan is saved automatically for your next visit." },
+  { question: "Can I customize my meal?", answer: "Open a meal to see its available options and add-ons. Some meals ask you to choose one option before continuing. The price and nutrition summary update with your choices." },
   { question: "How should I use the nutrition information?", answer: "Use the displayed calories and macros to compare meals and review your basket or plan. Missing values are shown as unavailable rather than zero. Actual prepared-food nutrition can vary; see our nutrition note below." },
   { question: "Which payment methods can I use?", answer: "Checkout shows the payment methods currently available for your order. Review the order summary and total before choosing a method." },
-  { question: "What happens when I pay with Paystack?", answer: "When Paystack is enabled, checkout takes you to its payment flow. Return to the payment result page to check the verified payment status. A pending result means confirmation is still in progress." },
-  { question: "How do WhatsApp orders work?", answer: "When WhatsApp checkout is enabled, your order is saved before you continue to WhatsApp with its reference and summary. Follow the team's payment instructions; opening WhatsApp does not mean the order is paid." },
+  { question: "What happens when I pay with Paystack?", answer: "You'll continue to Paystack to pay securely, then return to Nuede while we confirm your payment. If your payment is still pending, you can check again in a moment." },
+  { question: "How do WhatsApp orders work?", answer: "We'll save your order before opening WhatsApp with your order number and summary. Follow our team's payment instructions; continuing to WhatsApp does not mean the order is paid." },
 ]);
 
 export function getContactContent(env = {}) {

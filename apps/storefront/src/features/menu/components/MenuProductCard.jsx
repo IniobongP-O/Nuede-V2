@@ -12,7 +12,7 @@ const statusPresentation = {
   available: { label: "Available", tone: "success", message: "Ready to order" },
   sold_out: { label: "Sold out", tone: "warning", message: "Currently sold out" },
   price_pending: { label: "Price pending", tone: "warning", message: "Ordering opens when pricing is confirmed" },
-  unavailable: { label: "Unavailable", tone: "neutral", message: "Not currently orderable" },
+  unavailable: { label: "Unavailable", tone: "neutral", message: "Not available to order" },
 };
 
 function NutritionPreview({ nutrition, complete }) {
@@ -54,7 +54,7 @@ export const MenuProductCard = memo(function MenuProductCard({ product, onOpenDe
         <h2 id={`menu-product-${product.id}`} className="mt-3 font-display text-2xl leading-tight text-brand-950">{product.name}</h2>
         <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-muted">{product.description || "Description coming soon."}</p>
         {product.isGrouped ? (
-          <p className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-brand-700"><Layers3 className="size-4" aria-hidden="true" />Grouped meal · {product.variantCount} {product.variantCount === 1 ? "variant" : "variants"}</p>
+          <p className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-brand-700"><Layers3 className="size-4" aria-hidden="true" />Choose from {product.variantCount} {product.variantCount === 1 ? "option" : "options"}</p>
         ) : null}
         <div className="mt-4 border-y border-line py-3"><NutritionPreview nutrition={product.nutrition} complete={product.hasCompleteNutrition} /></div>
         <div className="mt-4 flex items-end justify-between gap-4">

@@ -18,7 +18,7 @@ export const CART_ITEM_STATUS = Object.freeze({
 });
 
 const statusDetails = Object.freeze({
-  [CART_ITEM_STATUS.valid]: { label: "Available", message: "This configuration is available." },
+  [CART_ITEM_STATUS.valid]: { label: "Available", message: "This meal is available." },
   [CART_ITEM_STATUS.stale]: { label: "No longer available", message: "This item is no longer available." },
   [CART_ITEM_STATUS.soldOut]: { label: "Sold out", message: "This selection is currently sold out." },
   [CART_ITEM_STATUS.pricePending]: { label: "Price pending", message: "This selection cannot be ordered until its price is confirmed." },

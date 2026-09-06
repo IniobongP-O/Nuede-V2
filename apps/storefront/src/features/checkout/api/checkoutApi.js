@@ -33,6 +33,24 @@ export class CheckoutApiError extends Error {
   }
 }
 
+const customerErrorMessages = Object.freeze({
+  PAYMENT_METHOD_DISABLED: "That payment method is no longer available. Please choose another option.",
+  WHATSAPP_DISABLED: "WhatsApp ordering is not available right now. Please choose another payment method.",
+  DELIVERY_ZONE_UNAVAILABLE: "That delivery area is no longer available. Please choose another area.",
+  PRODUCT_NOT_AVAILABLE: "One of your meals is no longer available. Please review your selections.",
+  INVALID_VARIANT: "One of your meal options has changed. Please choose it again.",
+  VARIANT_NOT_AVAILABLE: "One of your meal options is no longer available. Please choose another option.",
+  INVALID_ADDON: "One of your add-ons has changed. Please review your selections.",
+  ADDON_NOT_AVAILABLE: "One of your add-ons is no longer available. Please choose another option.",
+  ORDER_VALUE_OUT_OF_RANGE: "We couldn't calculate this order. Please review the quantities and try again.",
+  PAYMENT_NOT_FOUND: "We couldn't find this payment. Please check that you're using your latest payment link.",
+  INVALID_PAYMENT_REFERENCE: "This payment link is incomplete or no longer valid.",
+});
+
+function customerErrorMessage(code, fallback) {
+  return customerErrorMessages[code] || fallback;
+}
+
 async function functionErrorBody(error) {
   // Supabase exposes non-2xx function bodies on the response context. Clone it so
   // reading structured recovery data does not consume another caller's stream.
@@ -52,12 +70,12 @@ export async function createWhatsappOrder(contract) {
     // A network failure is ambiguous: the server may already have persisted the
     // order, so the message avoids encouraging an automatic duplicate retry.
     throw new CheckoutApiError(
-      body?.error?.message || "We couldn't confirm whether your order was recorded. Please check your connection before trying again.",
+      customerErrorMessage(body?.error?.code, "We couldn't confirm whether your order was saved. Please check your connection before trying again."),
       { code: body?.error?.code, order: body?.order || null, cause: error },
     );
   }
   if (!data?.order?.orderId || !data.order.orderReference || !data.order.whatsapp?.url || typeof data.order.whatsapp.message !== "string") {
-    throw new CheckoutApiError("The order response was incomplete. Please keep this page open and contact Nuede for help.");
+    throw new CheckoutApiError("We couldn't finish setting up your order. Please keep this page open and contact us for help.");
   }
   return data.order;
 }
@@ -67,13 +85,13 @@ export async function initializePaystackCheckout(contract) {
   if (error) {
     const body = await functionErrorBody(error);
     throw new CheckoutApiError(
-      body?.error?.message || "Paystack could not be initialized. Your payment has not been confirmed.",
+      customerErrorMessage(body?.error?.code, "We couldn't open Paystack. Your payment isn't confirmed yet."),
       { code: body?.error?.code || "PAYSTACK_INITIALIZATION_FAILED", order: body?.order || null, cause: error },
     );
   }
   const payment = data?.payment;
   if (!payment?.orderReference || !payment.paymentReference || !payment.authorizationUrl || !Number.isSafeInteger(payment.amountKobo)) {
-    throw new CheckoutApiError("The Paystack response was incomplete. Your payment has not been confirmed.");
+    throw new CheckoutApiError("We couldn't open Paystack. Your payment isn't confirmed yet.");
   }
   return payment;
 }
@@ -84,13 +102,13 @@ export async function verifyPaystackPayment(reference) {
   const { data, error } = await requireSupabase().functions.invoke("verify-paystack-payment", { body: { reference } });
   if (error) {
     const body = await functionErrorBody(error);
-    throw new CheckoutApiError(body?.error?.message || "The payment status could not be checked.", {
+    throw new CheckoutApiError(customerErrorMessage(body?.error?.code, "We couldn't check your payment right now. Please try again."), {
       code: body?.error?.code || "PAYMENT_VERIFICATION_FAILED",
       cause: error,
     });
   }
   if (!data?.payment?.status || !data.payment.orderReference || !data.payment.paymentReference) {
-    throw new CheckoutApiError("The payment status response was incomplete.");
+    throw new CheckoutApiError("We couldn't check your payment right now. Please try again.");
   }
   return data.payment;
 }

@@ -35,8 +35,8 @@ function SourceActions({ source }) {
 }
 
 function sourceProblem(source, cartCount, plannerCount) {
-  if (source === CHECKOUT_SOURCE.cart && cartCount === 0) return { title: "Your basket is empty", message: "Add at least one meal before starting basket checkout." };
-  if (source === CHECKOUT_SOURCE.mealPlan && plannerCount === 0) return { title: "Your meal plan is empty", message: "Choose at least one scheduled meal before starting meal-plan checkout." };
+  if (source === CHECKOUT_SOURCE.cart && cartCount === 0) return { title: "Your basket is empty", message: "Add at least one meal before continuing to checkout." };
+  if (source === CHECKOUT_SOURCE.mealPlan && plannerCount === 0) return { title: "Your meal plan is empty", message: "Choose at least one meal for your plan before continuing to checkout." };
   return null;
 }
 
@@ -136,7 +136,7 @@ export function CheckoutPage() {
         : livePlanner.issues;
       const liveEmpty = source === CHECKOUT_SOURCE.cart ? cart.items.length === 0 : livePlanner.selectedMealCount === 0;
       if (liveEmpty || liveSourceIssues.length) {
-        setDomainIssues(liveEmpty ? [{ code: "empty_source", message: "This checkout source is now empty." }] : liveSourceIssues);
+        setDomainIssues(liveEmpty ? [{ code: "empty_source", message: source === CHECKOUT_SOURCE.cart ? "Your basket is now empty. Add a meal before trying again." : "Your meal plan is now empty. Add a meal before trying again." }] : liveSourceIssues);
         return;
       }
       const contract = buildCheckoutSubmission({ source, customer: values, deliveryZoneId: liveZone.id, paymentMethod: values.paymentMethod, cartItems: cart.items, plan: planner.plan });
@@ -188,7 +188,7 @@ export function CheckoutPage() {
       }
       setDomainIssues([{
         code: error instanceof CheckoutApiError ? error.code : "checkout_failure",
-        message: error instanceof CheckoutApiError ? error.message : "Checkout could not be completed. Your details and selections are unchanged; please try again.",
+        message: error instanceof CheckoutApiError ? error.message : "We couldn't complete checkout. Your details and selections are still here, so please try again.",
       }]);
       requestAnimationFrame(() => document.getElementById("checkout-issues-title")?.focus());
     } finally {
@@ -198,34 +198,34 @@ export function CheckoutPage() {
   }
 
   if (paystackReady) return <Container className="py-10 sm:py-14 lg:py-18"><PaystackCheckoutReady payment={paystackReady} priceChanged={paystackReady.priceChanged} /></Container>;
-  if (paystackFailure) return <Container className="py-10 sm:py-14 lg:py-18"><section id="paystack-initialization-failed" tabIndex="-1" className="rounded-card border border-red-200 bg-red-50 p-6 outline-none sm:p-8" role="alert"><h1 className="font-display text-4xl text-brand-950">Paystack could not be opened.</h1><p className="mt-4 max-w-2xl leading-7 text-danger">Order <strong>{paystackFailure.orderReference}</strong> was recorded, but payment was not confirmed. Check the trusted status before taking another action.</p><Button className="mt-6" to={`${storefrontPaths.payment}?reference=${encodeURIComponent(paystackFailure.paymentReference)}`} variant="secondary">View payment status</Button></section></Container>;
+  if (paystackFailure) return <Container className="py-10 sm:py-14 lg:py-18"><section id="paystack-initialization-failed" tabIndex="-1" className="rounded-card border border-red-200 bg-red-50 p-6 outline-none sm:p-8" role="alert"><h1 className="font-display text-4xl text-brand-950">We couldn't open Paystack.</h1><p className="mt-4 max-w-2xl leading-7 text-danger">We saved order <strong>{paystackFailure.orderReference}</strong>, but your payment isn't confirmed yet. Check your payment status before trying again.</p><Button className="mt-6" to={`${storefrontPaths.payment}?reference=${encodeURIComponent(paystackFailure.paymentReference)}`} variant="secondary">Check payment status</Button></section></Container>;
   if (handoff) return <Container className="py-10 sm:py-14 lg:py-18"><WhatsappOrderCreated order={handoff} /></Container>;
-  if (!source) return <Container className="py-12 sm:py-16"><EmptyState title="Choose what to check out" message="This page needs an explicit basket or meal-plan source so your saved selections are never mixed." action={<SourceActions source={null} />} /></Container>;
-  if (menuQuery.isPending) return <Container className="py-12 sm:py-16"><LoadingState title="Checking your order" message="Loading current meal details, availability, prices, and nutrition." /></Container>;
-  if (menuQuery.isError) return <Container className="py-12 sm:py-16"><ErrorState title="We couldn't review your order" message="Your saved selections are unchanged. Reconnect to the live menu before checkout." action={<Button onClick={() => menuQuery.refetch()}>Try again</Button>} /></Container>;
+  if (!source) return <Container className="py-12 sm:py-16"><EmptyState title="Choose what you'd like to check out" message="Continue with your basket, or review your meal plan before placing your order." action={<SourceActions source={null} />} /></Container>;
+  if (menuQuery.isPending) return <Container className="py-12 sm:py-16"><LoadingState title="Checking your order" message="We're checking your meals, prices, availability, and nutrition." /></Container>;
+  if (menuQuery.isError) return <Container className="py-12 sm:py-16"><ErrorState title="We couldn't review your order" message="Your selections are still here. Check your connection and try again." action={<Button onClick={() => menuQuery.refetch()}>Try again</Button>} /></Container>;
   const emptyProblem = sourceProblem(source, cart.items.length, plannerSummary.selectedMealCount);
   if (emptyProblem) return <Container className="py-12 sm:py-16"><EmptyState {...emptyProblem} action={<SourceActions source={source} />} /></Container>;
 
   return (
     <Container className="py-10 pb-44 sm:py-14 sm:pb-36 lg:pb-20 lg:py-18">
-      <PageHeader eyebrow="Checkout" title="Review it. Then choose how to continue." description={`You are checking out ${source === CHECKOUT_SOURCE.cart ? "your basket" : "your meal plan"}. Delivery and payment availability stay live while you review.`} />
+      <PageHeader eyebrow="Checkout" title="Review your order." description={`Check ${source === CHECKOUT_SOURCE.cart ? "your basket" : "your meal plan"}, add your delivery details, and choose how you'd like to pay.`} />
       {notice ? <p className="mt-6 flex gap-2 rounded-control border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-warning" role="alert"><AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />{notice}</p> : null}
       {domainIssues.length ? <section className="mt-6 rounded-control border border-red-200 bg-red-50 p-4" role="alert" aria-labelledby="checkout-issues-title"><h2 id="checkout-issues-title" tabIndex="-1" className="font-semibold text-danger outline-none">Checkout needs attention</h2><ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-danger">{domainIssues.map((issue, index) => <li key={`${issue.code}-${index}`}>{issue.message}</li>)}</ul></section> : null}
       <form className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_26rem]" noValidate onSubmit={handleSubmit(submit)}>
         <div className="grid gap-6">
-          {deliveryQuery.isPending ? <LoadingState title="Loading delivery areas" message="Checking the active areas and current delivery fees." /> : null}
-          {deliveryQuery.isError ? <ErrorState title="Delivery areas are unavailable" message="Checkout cannot continue until active delivery areas can be loaded." action={<Button onClick={() => deliveryQuery.refetch()}>Retry delivery areas</Button>} /> : null}
-          {deliveryQuery.isSuccess && zones.length === 0 ? <EmptyState title="Delivery is temporarily unavailable" message="There are no active delivery areas. Nuede will not assume a free or generic delivery option." /> : null}
+          {deliveryQuery.isPending ? <LoadingState title="Loading delivery areas" message="We're checking where we can deliver and the current fees." /> : null}
+          {deliveryQuery.isError ? <ErrorState title="We couldn't load delivery areas" message="Please try again before continuing to checkout." action={<Button onClick={() => deliveryQuery.refetch()}>Try again</Button>} /> : null}
+          {deliveryQuery.isSuccess && zones.length === 0 ? <EmptyState title="Delivery is temporarily unavailable" message="We don't have any delivery areas available right now. Please check back later." /> : null}
           {deliveryQuery.isSuccess && zones.length > 0 ? <DeliveryDetailsSection register={register} errors={errors} zones={zones} disabled={isSubmitting} /> : null}
-          {settingsQuery.isPending ? <LoadingState title="Loading payment options" message="Checking which checkout routes are currently available." /> : null}
-          {settingsQuery.isError ? <ErrorState title="Payment options are unavailable" message="Nuede will not guess which checkout route is enabled." action={<Button onClick={() => settingsQuery.refetch()}>Retry payment options</Button>} /> : null}
-          {settingsQuery.isSuccess && enabledMethods.length === 0 ? <EmptyState title="Checkout is temporarily unavailable" message="No payment method is currently enabled. Your selections remain saved." /> : null}
+          {settingsQuery.isPending ? <LoadingState title="Loading payment options" message="We're checking the payment methods available for your order." /> : null}
+          {settingsQuery.isError ? <ErrorState title="We couldn't load payment options" message="Please try again before continuing to checkout." action={<Button onClick={() => settingsQuery.refetch()}>Try again</Button>} /> : null}
+          {settingsQuery.isSuccess && enabledMethods.length === 0 ? <EmptyState title="Checkout is temporarily unavailable" message="There are no payment methods available right now. Your selections are still here." /> : null}
           {settingsQuery.isSuccess && enabledMethods.length > 0 ? <PaymentMethodsSection methods={enabledMethods} register={register} error={errors.paymentMethod?.message} disabled={isSubmitting} /> : null}
         </div>
         <aside className="grid gap-4 lg:sticky lg:top-24 lg:self-start" aria-label="Order summary and checkout action">
           <CheckoutReview source={source} cartItems={hydratedCart} plannerSummary={plannerSummary} nutrition={nutrition} subtotalKobo={subtotalKobo} selectedZone={selectedZone} totalKobo={totalKobo} />
           {sourceIssues.length ? <p className="rounded-control bg-red-50 p-4 text-sm leading-6 text-danger" role="alert">Return to your {source === CHECKOUT_SOURCE.cart ? "basket" : "meal planner"} to resolve {sourceIssues.length} unavailable {sourceIssues.length === 1 ? "selection" : "selections"}.</p> : null}
-          <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0"><div className="mx-auto grid max-w-7xl gap-2 sm:flex sm:items-center sm:gap-3 lg:block"><p className="min-w-0 text-sm sm:flex-1 lg:mb-3"><span className="block text-xs text-muted">Estimated total</span><span className="font-semibold text-brand-950">{totalKobo === null ? "Choose delivery" : formatKobo(totalKobo)}</span></p><Button type="submit" size="large" busy={isSubmitting || submissionLocked} disabled={!readiness.ready || isSubmitting || submissionLocked} className="w-full sm:w-auto lg:w-full"><LockKeyhole className="size-4" aria-hidden="true" />{isSubmitting ? selectedPaymentMethod === "paystack" ? "Initializing secure payment..." : "Creating your order..." : selectedPaymentMethod === "whatsapp" ? "Continue on WhatsApp" : selectedPaymentMethod === "paystack" ? "Pay with Paystack" : "Choose a payment method"}</Button></div><p className="mt-2 text-center text-xs text-muted">{selectedPaymentMethod === "whatsapp" ? "Your order will be recorded before WhatsApp opens." : "Nuede rechecks the amount, then Paystack securely handles payment."}</p></div>
+          <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0"><div className="mx-auto grid max-w-7xl gap-2 sm:flex sm:items-center sm:gap-3 lg:block"><p className="min-w-0 text-sm sm:flex-1 lg:mb-3"><span className="block text-xs text-muted">Estimated total</span><span className="font-semibold text-brand-950">{totalKobo === null ? "Choose delivery" : formatKobo(totalKobo)}</span></p><Button type="submit" size="large" busy={isSubmitting || submissionLocked} disabled={!readiness.ready || isSubmitting || submissionLocked} className="w-full sm:w-auto lg:w-full"><LockKeyhole className="size-4" aria-hidden="true" />{isSubmitting ? selectedPaymentMethod === "paystack" ? "Opening secure payment..." : "Creating your order..." : selectedPaymentMethod === "whatsapp" ? "Continue on WhatsApp" : selectedPaymentMethod === "paystack" ? "Pay with Paystack" : "Choose a payment method"}</Button></div><p className="mt-2 text-center text-xs text-muted">{selectedPaymentMethod === "whatsapp" ? "We'll save your order before opening WhatsApp." : "We'll confirm your final total before Paystack opens."}</p></div>
         </aside>
       </form>
     </Container>

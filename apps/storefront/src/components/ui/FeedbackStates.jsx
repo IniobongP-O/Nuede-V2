@@ -14,11 +14,11 @@ function FeedbackShell({ icon, eyebrow, title, message, action, className = "" }
   );
 }
 
-export function LoadingState({ title = "Loading", message = "Preparing this view.", className = "" }) {
+export function LoadingState({ title = "Loading", message = "This will only take a moment.", className = "" }) {
   return <FeedbackShell icon={<LoaderCircle className="size-5 animate-spin" />} eyebrow="Loading" title={title} message={message} className={className} />;
 }
 
-export function ErrorState({ title = "Something went wrong", message = "This demo shows how a useful error and recovery action will appear.", action, className = "" }) {
+export function ErrorState({ title = "Something went wrong", message = "Please try again in a moment.", action, className = "" }) {
   return <FeedbackShell icon={<AlertTriangle className="size-5" />} eyebrow="Error" title={title} message={message} action={action} className={className} />;
 }
 
