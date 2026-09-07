@@ -6,6 +6,7 @@ import { ErrorState } from "../components/ui/FeedbackStates.jsx";
 import { PageHeader } from "../components/ui/Surface.jsx";
 import { useToast } from "../components/ui/toastContext.js";
 import { MenuSkeleton } from "../features/menu/components/MenuSkeleton.jsx";
+import { DietitianConsultation } from "../features/planner/components/DietitianConsultation.jsx";
 import { useCategories, useMenu } from "../features/menu/hooks/useMenu.js";
 import { PlannerConfirmationDialog } from "../features/planner/components/PlannerConfirmationDialog.jsx";
 import { PlannerDuration } from "../features/planner/components/PlannerDuration.jsx";
@@ -188,6 +189,7 @@ export function PlannerPage() {
             <PlannerDuration durationDays={planner.plan.durationDays} onChange={requestDuration} />
             <PlannerLibrary products={products} categories={categories} activeTarget={activeTarget} onChoose={(product) => openProduct(product)} onQuickAdd={quickAddProduct} />
             <PlannerSummary plan={planner.plan} summary={summary} onClear={() => setClearConfirmationOpen(true)} />
+            <DietitianConsultation />
             {!planner.persistenceAvailable ? <p className="rounded-control bg-red-50 p-3 text-sm text-danger" role="alert">We can't save this plan for your next visit. It will remain available while you keep this page open.</p> : null}
           </aside>
         </div>
