@@ -179,6 +179,24 @@ try {
   await adminPage.getByRole("button", { name: "Sign in", exact: true }).click();
   await adminPage.getByRole("heading", { name: "Settings", exact: true }).waitFor();
 
+  await adminPage.goto(`${admin}/menu`);
+  await adminPage.getByRole("button", { name: "Add-ons", exact: true }).click();
+  const addonDialog = adminPage.getByRole("dialog", { name: "Manage add-ons", exact: true });
+  await addonDialog.getByRole("heading", { name: "Manage add-ons", exact: true }).waitFor();
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await adminPage.setViewportSize({ width, height: 900 });
+    const bounds = await addonDialog.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return { clientWidth: element.clientWidth, scrollWidth: element.scrollWidth, left: rect.left, right: rect.right, viewportWidth: window.innerWidth };
+    });
+    assert.ok(bounds.scrollWidth <= bounds.clientWidth, `add-on dialog overflows horizontally at ${width}px`);
+    assert.ok(bounds.left >= 0 && bounds.right <= bounds.viewportWidth, `add-on dialog is clipped at ${width}px`);
+    await check(adminPage, `admin add-on dialog ${width}`, { axe: width === 320 || width === 1440 });
+  }
+  await adminPage.screenshot({ path: path.join(output, "admin-add-on-dialog-1440.png") });
+  await addonDialog.getByRole("button", { name: "Close dialog", exact: true }).click();
+  await adminPage.setViewportSize({ width: 1440, height: 1000 });
+
   if (!layoutOnly) {
     await adminPage.goto(`${admin}/delivery`);
     await adminPage.getByRole("button", { name: "Add delivery area", exact: true }).first().click();

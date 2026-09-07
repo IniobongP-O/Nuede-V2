@@ -181,7 +181,7 @@ export function PlannerPage() {
             />
             <aside className="mt-10 grid gap-3 border-t border-line pt-6 sm:grid-cols-[10rem_minmax(0,1fr)]" aria-label="Planning tip">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">Planning tip</p>
-              <p className="text-base leading-7 text-muted">Mix heavier and lighter meals across the week. The numbers stay visible, but planning should still feel like choosing food—not filling a spreadsheet.</p>
+              <p className="text-base leading-7 text-muted">Mix heavier and lighter meals across the week. The numbers stay visible, but planning should still feel like choosing food, not filling a spreadsheet.</p>
             </aside>
           </section>
           <aside className="grid gap-5 xl:sticky xl:top-6" aria-label="Planner controls and summary">
