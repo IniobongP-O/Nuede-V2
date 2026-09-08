@@ -24,9 +24,10 @@ test("the shared logo preserves the supplied photo's original artwork without re
   }
   const login = await readFile(new URL("../apps/admin/src/pages/LoginPage.jsx", import.meta.url), "utf8");
   const adminLogo = await readFile(new URL("../apps/admin/src/components/layout/AdminLogo.jsx", import.meta.url), "utf8");
-  assert.ok(login.includes('<AdminLogo className="h-auto w-48 shrink-0 brightness-125 saturate-150"'));
+  assert.ok(login.includes('<AdminLogo className="h-auto w-48 shrink-0"'));
   assert.ok(adminLogo.includes('nuede-admin-logo-source.png'));
-  assert.ok(adminLogo.includes('filter="url(#admin-logo-background-key)"'));
+  assert.ok(adminLogo.includes('filter="url(#admin-logo-flat-color)"'));
+  assert.ok(adminLogo.includes('<feFlood floodColor="#096E21" result="brand-green"'));
 });
 
 test("wider Poppins table labels remain contained by the existing scroll region", async () => {
