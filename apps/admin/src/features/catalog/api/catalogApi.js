@@ -13,15 +13,18 @@ const productFields = [
 
 const addonFields = "id,name,price_kobo,calories,protein_g,carbohydrates_g,fat_g,is_available,updated_at";
 
+/** Returns the configured Supabase client or fails with the setup error. */
 function requireSupabase() {
   if (!supabase) throw new Error(supabaseConfigurationError);
   return supabase;
 }
 
+/** Throws the original Supabase failure so callers retain its structured code. */
 function throwIfError(error) {
   if (error) throw error;
 }
 
+/** Normalizes embedded catalog relationships and ordering for admin consumers. */
 function normalizeProduct(product) {
   if (!product) return product;
   return {
@@ -35,6 +38,7 @@ function normalizeProduct(product) {
   };
 }
 
+/** Finds a unique slug while preserving an existing record's own slug when editing. */
 async function uniqueSlug(table, name, excludeId) {
   const client = requireSupabase();
   const base = slugify(name);
@@ -49,12 +53,14 @@ async function uniqueSlug(table, name, excludeId) {
   return `${base}-${suffix}`;
 }
 
+/** Reloads one product with the same relationships returned by catalog lists. */
 async function readProduct(id) {
   const { data, error } = await requireSupabase().from("products").select(productFields).eq("id", id).single();
   throwIfError(error);
   return normalizeProduct(data);
 }
 
+/** Replaces a product's complete ordered add-on assignment set. */
 async function replaceAssignments(productId, addonIds) {
   // The RPC replaces the exact compatible set atomically, avoiding a transient
   // partially updated assignment list from separate delete/insert requests.
@@ -65,6 +71,11 @@ async function replaceAssignments(productId, addonIds) {
   throwIfError(error);
 }
 
+/** Coordinates product data, assignments, and image replacement for create/update. */
+/**
+ * Saves product fields, add-on assignments, and optional image changes.
+ * Database mutations finish before obsolete Storage objects are removed.
+ */
 async function saveProduct({ id, record, addonIds = [], imageFile, previousImagePath, removeImage = false }) {
   const client = requireSupabase();
   const entityId = id || crypto.randomUUID();
@@ -108,6 +119,8 @@ async function saveProduct({ id, record, addonIds = [], imageFile, previousImage
   return readProduct(entityId);
 }
 
+/** Lists catalog categories in configured display order. */
+/** Lists enabled and disabled categories in configured display order. */
 export async function listCategories() {
   const { data, error } = await requireSupabase().from("categories")
     .select("id,name,slug,is_enabled,sort_order,updated_at").order("sort_order").order("name");
@@ -115,6 +128,8 @@ export async function listCategories() {
   return data;
 }
 
+/** Validates and creates a new category with a unique slug. */
+/** Creates a category after deriving a unique URL slug. */
 export async function createCategory(values) {
   const slug = await uniqueSlug("categories", values.name);
   const { data, error } = await requireSupabase().from("categories")
@@ -124,6 +139,8 @@ export async function createCategory(values) {
   return data;
 }
 
+/** Updates a category's editable identity and ordering fields. */
+/** Updates category identity and ordering fields. */
 export async function updateCategory({ id, name, sortOrder }) {
   const slug = await uniqueSlug("categories", name, id);
   const { data, error } = await requireSupabase().from("categories")
@@ -133,6 +150,8 @@ export async function updateCategory({ id, name, sortOrder }) {
   return data;
 }
 
+/** Enables or disables a category through the audited admin RPC. */
+/** Enables or disables a category and its public catalog visibility. */
 export async function setCategoryEnabled({ id, isEnabled }) {
   const { data, error } = await requireSupabase().from("categories")
     .update({ is_enabled: isEnabled }).eq("id", id)
@@ -141,6 +160,8 @@ export async function setCategoryEnabled({ id, isEnabled }) {
   return data;
 }
 
+/** Lists all products with variants and add-on assignments for catalog administration. */
+/** Lists all admin products with categories, variants, and add-on assignments. */
 export async function listProducts() {
   const { data, error } = await requireSupabase().from("products").select(productFields)
     .order("updated_at", { ascending: false });
@@ -148,30 +169,42 @@ export async function listProducts() {
   return data.map(normalizeProduct);
 }
 
+/** Lists standard products for add-on administration choices. */
+/** Returns standard products only for standard-product editor workflows. */
 export async function listStandardProducts() {
   const products = await listProducts();
   return products.filter((product) => product.product_type === "standard");
 }
 
+/** Creates a standard product through the shared save workflow. */
+/** Creates a standard product through the shared save pipeline. */
 export function createStandardProduct(payload) {
   if (payload.record) return saveProduct(payload);
   return saveProduct({ record: payload, addonIds: [] });
 }
 
+/** Updates a standard product through the shared save workflow. */
+/** Updates a standard product through the shared save pipeline. */
 export function updateStandardProduct(payload) {
   return saveProduct(payload.record ? payload : { ...payload, addonIds: [] });
 }
 
+/** Creates or updates a grouped product through the shared save workflow. */
+/** Creates or updates a grouped product through the shared save pipeline. */
 export function saveGroupedProduct(payload) {
   return saveProduct(payload);
 }
 
+/** Changes product availability through the database's audited transition RPC. */
+/** Changes a product's operational availability status. */
 export async function updateProductStatus({ id, status }) {
   const { error } = await requireSupabase().from("products").update({ status }).eq("id", id).select("id").single();
   throwIfError(error);
   return readProduct(id);
 }
 
+/** Deletes an eligible product and then removes its no-longer-referenced image. */
+/** Deletes a product through the audited RPC, then removes unreferenced images. */
 export async function deleteProduct(product) {
   const imagePaths = [...new Set([
     product.image_path,
@@ -187,18 +220,24 @@ export async function deleteProduct(product) {
   return data;
 }
 
+/** Lists add-ons in stable name order. */
+/** Lists all product add-ons in stable name order. */
 export async function listAddons() {
   const { data, error } = await requireSupabase().from("product_addons").select(addonFields).order("name");
   throwIfError(error);
   return data;
 }
 
+/** Creates a catalog add-on from a validated database record. */
+/** Creates a product add-on from a validated database record. */
 export async function createAddon(record) {
   const { data, error } = await requireSupabase().from("product_addons").insert(record).select(addonFields).single();
   throwIfError(error);
   return data;
 }
 
+/** Updates one catalog add-on's editable fields. */
+/** Updates one existing product add-on. */
 export async function updateAddon({ id, record }) {
   const { data, error } = await requireSupabase().from("product_addons").update(record).eq("id", id)
     .select(addonFields).single();
@@ -206,6 +245,8 @@ export async function updateAddon({ id, record }) {
   return data;
 }
 
+/** Deletes an add-on after database constraints confirm it is safe. */
+/** Deletes an add-on when assignment/history constraints permit it. */
 export async function deleteAddon(id) {
   const { data, error } = await requireSupabase().from("product_addons").delete().eq("id", id)
     .select(addonFields).single();
@@ -213,6 +254,8 @@ export async function deleteAddon(id) {
   return data;
 }
 
+/** Creates or updates a variant and coordinates optional image replacement. */
+/** Creates or updates a variant and coordinates its optional image replacement. */
 export async function saveVariant({ productId, id, record, imageFile, previousImagePath, removeImage = false }) {
   const client = requireSupabase();
   const variantId = id || crypto.randomUUID();
@@ -236,6 +279,8 @@ export async function saveVariant({ productId, id, record, imageFile, previousIm
   }
 }
 
+/** Deletes a variant and removes its image only after the row deletion succeeds. */
+/** Deletes a grouped variant and removes its image after the database mutation. */
 export async function deleteVariant({ productId, variant }) {
   const { data, error } = await requireSupabase().from("product_variants").delete()
     .eq("id", variant.id).eq("product_id", productId).select("id").single();
@@ -244,6 +289,8 @@ export async function deleteVariant({ productId, variant }) {
   return data;
 }
 
+/** Persists the complete variant order using the database's exact-set RPC. */
+/** Applies the complete ordered variant ID set through the database RPC. */
 export async function reorderVariants({ productId, variantIds }) {
   // The database validates the full stable child set and applies ordering in one
   // operation, preventing partial or cross-product reorders.

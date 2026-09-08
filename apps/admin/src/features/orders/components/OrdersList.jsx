@@ -8,10 +8,12 @@ import { DeleteOrderAction } from "./DeleteOrderAction.jsx";
 import { OrderStatusBadge } from "./OrderStatusBadge.jsx";
 import { formatOrderDate, orderValueLabel } from "../utils/orderUtils.js";
 
+/** Links to an order while preserving the current list location for return navigation. */
 function DetailLink({ order, returnTo }) {
   return <Link to={`/orders/${encodeURIComponent(order.order_reference)}`} state={{ returnTo }} className="inline-flex items-center gap-1 font-semibold text-brand-700 underline-offset-4 hover:underline" aria-label={`Open order ${order.order_reference}`}>{order.order_reference}<ExternalLink className="size-3.5" aria-hidden="true" /></Link>;
 }
 
+/** Renders order results in desktop table and mobile card layouts. */
 export function OrdersList({ orders, returnTo }) {
   const { admin } = useAuth();
   const canDelete = admin?.role === "owner";

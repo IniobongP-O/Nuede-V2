@@ -27,6 +27,7 @@ const presentations = {
   },
 };
 
+/** Renders a reusable full-page authentication loading, error, or denied state. */
 export function AuthStatusPage({ type, message, actionLabel, onAction }) {
   const presentation = presentations[type];
   const [actionBusy, setActionBusy] = useState(false);

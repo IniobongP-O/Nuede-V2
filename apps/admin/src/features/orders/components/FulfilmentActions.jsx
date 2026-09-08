@@ -6,6 +6,7 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { Dialog } from "../../../components/ui/Dialog.jsx";
 import { OrderStatusBadge } from "./OrderStatusBadge.jsx";
 
+/** Renders only the forward/cancel fulfilment actions valid for the current state. */
 export function FulfilmentActions({ order, mutation, onUpdate }) {
   const [confirmCancellation, setConfirmCancellation] = useState(false);
   const next = nextFulfilmentAction(order.fulfilment_status);

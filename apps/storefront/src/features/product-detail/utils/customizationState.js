@@ -1,5 +1,6 @@
 import { getCompatibleAddons, getDefaultVariant, getVisibleVariants, isVariantOrderableForProduct } from "./customizationModel.js";
 
+/** Creates editable customization state from current catalog data and an optional saved choice. */
 export function createCustomizationState({ product, initialConfiguration }) {
   const initial = initialConfiguration?.productId === product.id ? initialConfiguration : null;
   return {
@@ -11,6 +12,7 @@ export function createCustomizationState({ product, initialConfiguration }) {
   };
 }
 
+/** Removes selections invalidated by a newer catalog snapshot and explains the change. */
 export function reconcileCustomization(state, product) {
   if (state.catalogProduct === product) return state;
   const selectedVariant = getVisibleVariants(product).find((variant) => variant.id === state.variantId);
@@ -25,6 +27,7 @@ export function reconcileCustomization(state, product) {
   };
 }
 
+/** Applies user customization actions after reconciling them with the latest product. */
 export function customizationReducer(previous, action) {
   const state = reconcileCustomization(previous, action.product);
   switch (action.type) {

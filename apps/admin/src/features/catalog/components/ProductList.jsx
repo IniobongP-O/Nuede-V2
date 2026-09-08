@@ -8,11 +8,13 @@ import { ProductActions } from "./ProductActions.jsx";
 import { ProductStatusBadge } from "./ProductStatusBadge.jsx";
 import { catalogImageUrl } from "../api/imageApi.js";
 
+/** Renders the current product image or a consistent catalog placeholder. */
 function ProductImage({ product }) {
   const [failed, setFailed] = useState(false);
   return <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-control border border-line bg-canvas">{product.image_path && !failed ? <img src={catalogImageUrl(product.image_path)} alt="" className="size-full object-cover" onError={() => setFailed(true)} /> : <ImageOff className="size-4 text-muted" aria-hidden="true" />}</div>;
 }
 
+/** Renders compact calories and macro values for a product row. */
 function NutritionSummary({ product }) {
   if (product.product_type === "grouped") return <span className="text-xs text-muted">Variant-specific</span>;
   const values = [product.calories, product.protein_g, product.carbohydrates_g, product.fat_g];
@@ -21,7 +23,7 @@ function NutritionSummary({ product }) {
   return <span className="text-xs text-muted">{label}</span>;
 }
 
-// Opening an editor must not rebuild both responsive copies of the catalog.
+/** Renders memoized desktop and mobile catalog lists with row-level actions. */
 export const ProductList = memo(function ProductList({ products, statusPendingId, onEdit, onStatusAction, onArchive }) {
   const renderActions = (product) => <div className="flex flex-wrap items-center justify-end gap-2"><Button size="small" variant="ghost" onClick={() => onEdit(product)}><Pencil className="size-3.5" aria-hidden="true" />{product.product_type === "grouped" ? "Manage" : "Edit"}</Button><ProductActions product={product} pending={statusPendingId === product.id} onAction={onStatusAction} onArchive={onArchive} /></div>;
   const price = (product) => product.product_type === "grouped"

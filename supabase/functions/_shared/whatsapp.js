@@ -17,6 +17,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-NG", {
   timeZone: "UTC",
 });
 
+/** Creates a consistently staged failure for WhatsApp handoff generation. */
 function handoffFailure(message, cause) {
   return new OrderError("WHATSAPP_HANDOFF_FAILED", message, {
     status: 500,
@@ -25,6 +26,7 @@ function handoffFailure(message, cause) {
   });
 }
 
+/** Normalizes and validates the configured recipient as an international digit string. */
 export function normalizeWhatsappRecipient(value) {
   const compact = typeof value === "string" ? value.trim().replace(/[\s()-]/g, "") : "";
   const digits = compact.startsWith("+") ? compact.slice(1) : compact;
@@ -37,10 +39,12 @@ export function normalizeWhatsappRecipient(value) {
   return digits;
 }
 
+/** Formats the purchased product and optional variant as one readable label. */
 function itemLabel(item) {
   return item.variantName ? `${item.productName} — ${item.variantName}` : item.productName;
 }
 
+/** Formats quantity and selected add-ons beneath a WhatsApp order line. */
 function itemDetails(item, indent = "   ") {
   return [
     `${indent}Quantity: ${item.quantity}`,
@@ -48,6 +52,7 @@ function itemDetails(item, indent = "   ") {
   ];
 }
 
+/** Formats direct-order items as a numbered WhatsApp section. */
 function cartLines(order) {
   return [
     "Items",
@@ -58,12 +63,14 @@ function cartLines(order) {
   ];
 }
 
+/** Formats a schedule-only date in UTC so its calendar day cannot shift. */
 function formatScheduleDate(calendarDate) {
   const date = new Date(`${calendarDate}T00:00:00.000Z`);
   if (Number.isNaN(date.getTime())) throw handoffFailure("The saved meal-plan schedule could not be formatted.");
   return dateFormatter.format(date);
 }
 
+/** Formats a meal plan into dated, slot-labelled WhatsApp lines. */
 function mealPlanLines(order) {
   if (!order.schedule?.days?.length) throw handoffFailure("The saved meal-plan schedule could not be formatted.");
   return [
@@ -79,6 +86,7 @@ function mealPlanLines(order) {
   ];
 }
 
+/** Builds the customer-facing WhatsApp message from an authoritative order response. */
 export function buildWhatsappMessage(order) {
   try {
     // Build exclusively from the authoritative response/snapshots. The customer
@@ -107,6 +115,7 @@ export function buildWhatsappMessage(order) {
   }
 }
 
+/** Returns the encoded wa.me URL and its readable message for a saved order. */
 export function buildWhatsappHandoff(order, recipient) {
   const normalizedRecipient = normalizeWhatsappRecipient(recipient);
   const message = buildWhatsappMessage(order);

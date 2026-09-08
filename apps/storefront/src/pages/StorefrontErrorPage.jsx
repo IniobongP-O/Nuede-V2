@@ -2,6 +2,7 @@ import nuedeLogo from "@nuede/config/nuede-logo.svg";
 import { AlertTriangle, Home, RotateCcw } from "lucide-react";
 import { Component } from "react";
 
+/** Renders route failures with a safe reset and navigation path. */
 export function StorefrontErrorPage() {
   return (
     <main className="relative grid min-h-screen place-items-center overflow-hidden bg-canvas px-5 py-10">

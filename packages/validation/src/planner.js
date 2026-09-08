@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const stableCatalogIdSchema = z.string().uuid("Use a valid catalog ID.");
 
+/** Validates both the shape and the real calendar meaning of YYYY-MM-DD text. */
 function isCalendarDate(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return false;

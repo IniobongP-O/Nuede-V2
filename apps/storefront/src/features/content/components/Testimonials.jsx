@@ -4,6 +4,7 @@ import { EmptyState, ErrorState, LoadingState } from "../../../components/ui/Fee
 import { useTestimonials } from "../hooks/useContent.js";
 import { ScrollCarousel } from "./ScrollCarousel.jsx";
 
+/** Loads and renders published customer testimonials with explicit feedback states. */
 export function Testimonials() {
   const query = useTestimonials();
   if (query.isPending) return <LoadingState title="Loading testimonials" message="Getting the latest published customer stories." />;

@@ -4,18 +4,22 @@ import { supabase } from "../../../lib/supabaseClient.js";
 export const contentPageSize = 20;
 const testimonialFields = "id,customer_name,message,rating,is_published,source_feedback_id,created_at,updated_at";
 const feedbackFields = "id,customer_name,email,subject,rating,message,created_at,testimonials(id,is_published)";
+/** Returns the configured Supabase client for content administration. */
 function client() {
   if (!supabase) throw new Error("Content management is not configured.");
   return supabase;
 }
+/** Normalizes Supabase list results into the content screen's data envelope. */
 function result({ data, error, count }) {
   if (error) throw new Error("The request failed. Please retry or check your admin access.");
   return { rows: data || [], count: count || 0 };
 }
 // Bound and escape user search text before it enters PostgREST filter grammar.
+/** Escapes and wraps admin search text for a safe case-insensitive `ilike`. */
 export function searchPattern(search) {
   return `%${search.trim().slice(0, 120).replace(/[%,()."\\_*]/g, " ")}%`;
 }
+/** Lists feedback or testimonials with server-side filters and pagination. */
 export async function listContent({ kind, search = "", subject = "", rating = "", publication = "", page = 0 }) {
   if (!["feedback", "testimonials"].includes(kind)) throw new Error("Invalid content collection.");
   let query = client().from(kind).select(kind === "feedback" ? feedbackFields : testimonialFields, { count: "exact" });
@@ -28,6 +32,7 @@ export async function listContent({ kind, search = "", subject = "", rating = ""
   if (kind === "testimonials" && publication) query = query.eq("is_published", publication === "published");
   return result(await query.order("created_at", { ascending: false }).order("id").range(page * contentPageSize, (page + 1) * contentPageSize - 1));
 }
+/** Creates or updates a testimonial, optionally linking its source feedback. */
 export async function saveTestimonial({ id, values, sourceFeedbackId }) {
   const record = testimonialSchema.parse(values);
   const query = id ? client().from("testimonials").update(record).eq("id", id)
@@ -36,11 +41,13 @@ export async function saveTestimonial({ id, values, sourceFeedbackId }) {
   if (error) throw new Error("The testimonial could not be saved. Please try again.");
   return data;
 }
+/** Publishes or unpublishes a testimonial without changing its editorial content. */
 export async function setTestimonialPublication({ id, published }) {
   const { data, error } = await client().from("testimonials").update({ is_published: published }).eq("id", id).select(testimonialFields).single();
   if (error) throw new Error("Publication could not be changed. Please try again.");
   return data;
 }
+/** Permanently deletes a testimonial through the authenticated admin client. */
 export async function deleteTestimonial(id) {
   const { data, error } = await client().from("testimonials").delete().eq("id", id).select("id").single();
   if (error) throw new Error("The testimonial could not be deleted. Please try again.");

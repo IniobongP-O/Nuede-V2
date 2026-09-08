@@ -8,6 +8,7 @@ const dialogWidths = {
   wide: "w-[min(64rem,calc(100%-2rem))]",
 };
 
+/** Renders an accessible modal with focus handling and background scroll locking. */
 export function Dialog({ open, onClose, title, description, children, footer, size = "default" }) {
   const ref = useRef(null); const opener = useRef(null); const titleId = useId(); const descriptionId = useId();
   useEffect(() => {

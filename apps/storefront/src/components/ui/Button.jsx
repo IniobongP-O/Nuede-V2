@@ -15,10 +15,12 @@ const sizes = {
   large: "min-h-12 px-6 text-base",
 };
 
+/** Builds the shared visual classes for button variants and sizes. */
 function buttonClasses({ variant = "primary", size = "medium", className = "" }) {
   return `inline-flex items-center justify-center gap-2 rounded-control font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`;
 }
 
+/** Renders a consistent native button, internal link, or external link. */
 export function Button({ to, href, type = "button", busy = false, variant = "primary", size = "medium", className = "", disabled, children, ...rest }) {
   const classes = buttonClasses({ variant, size, className });
   const content = (
@@ -43,6 +45,7 @@ export function Button({ to, href, type = "button", busy = false, variant = "pri
   );
 }
 
+/** Renders an accessible icon-only button with a required text label. */
 export function IconButton({ label, children, className = "", ...props }) {
   return (
     <button

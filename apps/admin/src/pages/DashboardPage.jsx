@@ -14,6 +14,7 @@ import { rangeForPreset } from "../features/analytics/utils/analyticsUtils.js";
 
 const dashboardRange = rangeForPreset("30d");
 
+/** Renders the operational overview from current sales and recent-order queries. */
 export function DashboardPage() {
   const query = useSalesAnalytics(dashboardRange);
   return <>

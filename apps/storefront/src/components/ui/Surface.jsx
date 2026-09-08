@@ -1,7 +1,9 @@
+/** Renders the standard bordered storefront content surface. */
 export function Card({ as: Component = "article", className = "", children, ...props }) {
   return <Component className={`rounded-card border border-line bg-surface ${className}`} {...props}>{children}</Component>;
 }
 
+/** Renders a compact semantic status or metadata label. */
 export function Badge({ tone = "neutral", children }) {
   const tones = {
     neutral: "bg-line/60 text-brand-950",
@@ -12,6 +14,7 @@ export function Badge({ tone = "neutral", children }) {
   return <span className={`inline-flex min-h-6 items-center rounded-full px-2.5 text-xs font-semibold ${tones[tone]}`}>{children}</span>;
 }
 
+/** Renders a consistent heading block for page sections. */
 export function SectionHeading({ eyebrow, title, description, align = "left" }) {
   return (
     <div className={`${align === "center" ? "mx-auto text-center" : ""} max-w-3xl`}>
@@ -22,6 +25,7 @@ export function SectionHeading({ eyebrow, title, description, align = "left" }) 
   );
 }
 
+/** Renders a page-level title block with optional actions. */
 export function PageHeader({ eyebrow, title, description, actions }) {
   return (
     <header className="grid gap-6 border-b border-line pb-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">

@@ -4,6 +4,7 @@ import { OrderError } from "./errors.js";
 
 export { checkoutSubmissionSchema };
 
+/** Parses the untrusted browser payload into the strict shared checkout contract. */
 export function parseCheckoutRequest(candidate) {
   const result = checkoutSubmissionSchema.safeParse(candidate);
   if (result.success) return result.data;

@@ -9,6 +9,7 @@ export class OrderError extends Error {
   }
 }
 
+/** Converts internal failures to the allowlisted error envelope safe for clients. */
 export function publicErrorBody(error) {
   if (error instanceof OrderError) {
     return {

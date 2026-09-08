@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { businessDate, rangeForPreset, validateCustomRange } from "../utils/analyticsUtils.js";
 
+/** Owns preset/custom analytics dates and exposes only validated active ranges. */
 export function useAnalyticsRange(defaultPreset = "30d") {
   const today = businessDate();
   const initial = rangeForPreset(defaultPreset, today);
@@ -35,4 +36,3 @@ export function useAnalyticsRange(defaultPreset = "30d") {
 
   return { preset, range, draft, validationError, selectPreset, updateDraft, applyCustomRange };
 }
-

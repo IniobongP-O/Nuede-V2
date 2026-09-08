@@ -18,11 +18,15 @@ export const feedbackSchema = testimonialSchema.extend({
   subject: z.enum(feedbackSubjects.map((subject) => subject.value), { error: "Choose a feedback subject." }),
 });
 
-// An allowlist: private email, timestamps and publication state never enter the editor.
+/**
+ * Copies only public testimonial fields from private feedback into an editor draft.
+ * The allowlist prevents email, timestamps, and publication state from leaking in.
+ */
 export function feedbackToTestimonialDraft(feedback) {
   return { customer_name: feedback.customer_name, message: feedback.message, rating: feedback.rating };
 }
 
+/** Resolves a stored feedback subject to its display label with a safe fallback. */
 export function subjectLabel(value) {
   return feedbackSubjects.find((subject) => subject.value === value)?.label || value || "Other";
 }

@@ -24,10 +24,12 @@ const statusPresentation = {
   archived: { label: "Unavailable", tone: "neutral" },
 };
 
+/** Formats a selected price or its pending fallback. */
 function priceLabel(priceKobo) {
   return priceKobo === null ? "Price unavailable" : formatKobo(priceKobo);
 }
 
+/** Produces the concise nutrition line shown beside a customization choice. */
 function nutritionPreview(nutrition) {
   const values = [
     nutrition?.calories == null ? null : formatNutritionValue("calories", nutrition.calories, { includeLabel: true }),
@@ -36,6 +38,7 @@ function nutritionPreview(nutrition) {
   return values.length ? values.join(" · ") : "Nutrition unavailable";
 }
 
+/** Renders the grouped-product variant choices and their availability. */
 function VariantSelector({ product, variants, selectedId, onChange }) {
   if (!product.isGrouped) return null;
   const firstOrderableId = variants.find((variant) => isVariantOrderableForProduct(product, variant))?.id;
@@ -79,6 +82,7 @@ function VariantSelector({ product, variants, selectedId, onChange }) {
   );
 }
 
+/** Renders compatible add-ons as toggleable price/nutrition choices. */
 function AddonSelector({ addons, selectedIds, onToggle }) {
   if (!addons.length) return null;
   return (
@@ -106,6 +110,7 @@ function AddonSelector({ addons, selectedIds, onToggle }) {
   );
 }
 
+/** Coordinates variant, add-on, quantity, price, and nutrition customization. */
 export function ProductDetailDialog({ product, open, onClose, onConfigured, initialConfiguration = null, submitLabel = "Add to basket", allowQuantity = true }) {
   const customization = useProductCustomization(product, (configuration) => {
     onConfigured?.(configuration);

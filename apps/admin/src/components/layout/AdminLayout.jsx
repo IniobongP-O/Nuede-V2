@@ -31,10 +31,12 @@ const icons = {
   settings: Settings,
 };
 
+/** Renders route-aware admin navigation for desktop or mobile placement. */
 function AdminNav({ onNavigate, mobile = false }) {
   return <nav className="grid gap-1" aria-label={mobile ? "Mobile admin navigation" : "Admin navigation"}>{adminNavigation.map((item) => { const Icon = icons[item.icon]; return <NavLink key={item.path} to={item.path} onClick={onNavigate} className={({ isActive }) => `flex min-h-11 items-center gap-3 rounded-control px-3 text-sm font-semibold transition-colors ${isActive ? "bg-brand-950 text-white" : "text-muted hover:bg-brand-100 hover:text-brand-950"}`}><Icon className="size-4" aria-hidden="true" />{item.label}</NavLink>; })}</nav>;
 }
 
+/** Derives a short avatar label from the current administrator's identity. */
 function adminInitials(admin) {
   const source = admin.display_name || admin.email;
   return source
@@ -45,6 +47,7 @@ function adminInitials(admin) {
     .join("");
 }
 
+/** Wraps protected admin routes in responsive navigation and session controls. */
 export function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoutBusy, setLogoutBusy] = useState(false);

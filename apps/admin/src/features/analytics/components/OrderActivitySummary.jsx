@@ -2,6 +2,7 @@ import { formatKobo } from "@nuede/domain/currency";
 import { MetricCard, Panel } from "../../../components/ui/AdminPrimitives.jsx";
 import { humanizeOrderValue } from "@nuede/domain/orders";
 
+/** Summarizes current order volume by fulfilment and payment status. */
 export function OrderActivitySummary({ data }) {
   if (!data?.order_activity || !Array.isArray(data.order_type_sales)) return <p className="mt-6 text-sm text-muted" role="status">Order activity breakdown is unavailable.</p>;
   const activity = data.order_activity;

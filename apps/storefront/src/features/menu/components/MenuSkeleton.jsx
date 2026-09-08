@@ -1,3 +1,4 @@
+/** Renders the accessible loading skeleton used while menu products resolve. */
 export function MenuSkeleton() {
   return (
     <div className="mt-10" role="status" aria-label="Loading the menu">

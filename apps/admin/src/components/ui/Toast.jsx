@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 
 import { ToastContext } from "./toastContext.js";
 
+/** Owns transient admin notifications and exposes the toast API to descendants. */
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]); const nextId = useRef(0);
   const dismiss = useCallback((id) => setToasts((current) => current.filter((toast) => toast.id !== id)), []);

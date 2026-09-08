@@ -5,6 +5,7 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { Dialog } from "../../../components/ui/Dialog.jsx";
 import { SelectInput, TextArea, TextInput } from "../../../components/ui/FormControls.jsx";
 
+/** Edits a testimonial directly or promotes allowlisted fields from feedback. */
 export function TestimonialEditor({ testimonial, feedback, mutation, onClose, onSaved }) {
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(testimonialSchema),

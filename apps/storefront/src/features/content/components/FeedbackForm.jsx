@@ -6,6 +6,7 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { SelectInput, TextArea, TextInput } from "../../../components/ui/FormControls.jsx";
 import { useFeedbackSubmission } from "../hooks/useContent.js";
 
+/** Owns validation, submission, and success/error feedback for customer messages. */
 export function FeedbackForm() {
   const mutation = useFeedbackSubmission();
   const inFlight = useRef(false);

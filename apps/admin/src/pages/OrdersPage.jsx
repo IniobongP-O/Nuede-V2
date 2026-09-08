@@ -13,6 +13,7 @@ import { orderErrorMessage, pageCount } from "../features/orders/utils/orderUtil
 
 const pageSize = 20;
 
+/** Parses URL parameters into the normalized order-list filter model. */
 function filtersFromParams(params) {
   return {
     search: params.get("search") || "",
@@ -35,6 +36,7 @@ const filterParamNames = {
   dateTo: "to",
 };
 
+/** Coordinates URL-backed order filtering, pagination, and list feedback states. */
 export function OrdersPage() {
   const location = useLocation();
   const [params, setParams] = useSearchParams();

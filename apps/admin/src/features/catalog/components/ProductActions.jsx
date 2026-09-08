@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Button } from "../../../components/ui/Button.jsx";
 
+/** Derives the status actions currently permitted for a product. */
 function actionsFor(product) {
   if (product.status === "archived") return [
     { value: "restore", label: "Restore as hidden" },
@@ -17,6 +18,7 @@ function actionsFor(product) {
   return actions;
 }
 
+/** Renders status transitions and archive/delete controls for one product. */
 export function ProductActions({ product, pending, onAction, onArchive }) {
   const actions = actionsFor(product);
   const [action, setAction] = useState(actions[0]?.value || "");

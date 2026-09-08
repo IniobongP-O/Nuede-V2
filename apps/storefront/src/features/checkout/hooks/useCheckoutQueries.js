@@ -16,14 +16,20 @@ const liveOptions = {
   refetchOnWindowFocus: true,
 };
 
+/** Loads active delivery zones while allowing callers to defer the request. */
+/** Provides the active delivery-zone query when checkout has a valid source. */
 export function useDeliveryZones(enabled = true) {
   return useQuery({ ...liveOptions, enabled, queryKey: checkoutQueryKeys.deliveryZones, queryFn: getDeliveryZones });
 }
 
+/** Loads the currently enabled checkout methods. */
+/** Provides the public payment availability settings query. */
 export function useCheckoutSettings(enabled = true) {
   return useQuery({ ...liveOptions, enabled, queryKey: checkoutQueryKeys.settings, queryFn: getCheckoutSettings });
 }
 
+/** Refreshes delivery-zone queries when the database broadcasts a change. */
+/** Subscribes to delivery-zone changes and refreshes checkout availability. */
 export function useCheckoutRealtime(enabled = true) {
   const queryClient = useQueryClient();
 

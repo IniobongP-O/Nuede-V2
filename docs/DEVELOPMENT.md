@@ -238,6 +238,13 @@ A cycle is not complete merely because implementation stopped or automated check
 ## Engineering rules
 
 - Use JavaScript and JSX only.
+- Put a short JSDoc comment above every named function and component. State what
+  the function returns, renders, changes, or coordinates; include fallback and
+  side-effect behavior when it is part of the contract.
+- Keep deeper inline comments for the reason behind non-obvious decisions such
+  as trust boundaries, exact-money arithmetic, state transitions, race handling,
+  timezone behavior, and graceful recovery. Do not narrate self-evident syntax.
+- Update a function's comment when its observable behavior or guarantees change.
 - Keep the storefront and admin independently runnable and buildable.
 - Do not import application code into shared packages.
 - Keep backend code out of browser bundles.

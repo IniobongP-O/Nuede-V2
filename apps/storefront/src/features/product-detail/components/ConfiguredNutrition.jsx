@@ -1,5 +1,6 @@
 import { formatNutritionValue, NUTRITION_FIELDS } from "@nuede/domain/nutrition";
 
+/** Renders configured calories/macros and clearly marks partial nutrition data. */
 export function ConfiguredNutrition({ nutrition, quantity }) {
   if (!nutrition.hasAny) {
     return <p className="rounded-control bg-canvas p-4 text-sm text-muted">Nutrition details are not available for this selection.</p>;

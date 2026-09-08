@@ -7,12 +7,14 @@ import { chartMoneyValue, formatChartKobo, paymentMethodLabel } from "../utils/a
 
 const COLORS = ["#096e21", "#956515", "#173323", "#667369"];
 
+/** Renders order count and revenue split by payment method. */
 export function PaymentMixChart({ rows = [] }) {
   if (!rows.length) return <EmptyState title="No payment mix in this period" message="Payment shares will appear after an eligible payment is verified." />;
   const data = rows.map((row) => ({ ...row, label: paymentMethodLabel(row.payment_method), value: chartMoneyValue(row.revenue_kobo) }));
   return <Panel className="min-w-0 p-5 sm:p-6" aria-labelledby="payment-mix-title"><h2 id="payment-mix-title" className="text-lg font-semibold text-brand-950">Payment method mix</h2><p className="mt-1 text-sm text-muted">Share of verified revenue by canonical payment method.</p><div className="mt-3 h-52"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={data} dataKey="value" nameKey="label" innerRadius="55%" outerRadius="82%" paddingAngle={2}>{data.map((row, index) => <Cell key={row.payment_method} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip formatter={(value) => formatChartKobo(value)} /></PieChart></ResponsiveContainer></div><ul className="grid gap-3" aria-label="Payment method revenue breakdown">{data.map((row, index) => <li key={row.payment_method} className="flex items-center justify-between gap-4 text-sm"><span className="flex items-center gap-2 font-semibold text-brand-950"><span className="size-3 rounded-sm" style={{ backgroundColor: COLORS[index % COLORS.length] }} aria-hidden="true" />{row.label}</span><span className="text-right"><span className="font-semibold">{formatKobo(row.revenue_kobo)}</span><span className="ml-2 text-muted">{Number(row.revenue_share_percent || 0).toLocaleString("en-NG", { maximumFractionDigits: 1 })}%</span></span></li>)}</ul></Panel>;
 }
 
+/** Renders order count and revenue split by delivery zone. */
 export function DeliveryZoneChart({ rows = [] }) {
   if (!rows.length) return <EmptyState title="No delivery-zone sales in this period" message="Zone performance will appear after an eligible paid order." />;
   const data = rows.slice(0, 8).map((row) => ({ ...row, value: chartMoneyValue(row.revenue_kobo) }));

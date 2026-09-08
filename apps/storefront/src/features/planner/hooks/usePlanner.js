@@ -15,17 +15,23 @@ import {
   setSlotMeal,
 } from "../utils/plannerModel.js";
 
+/**
+ * Owns the editable meal plan and persists every successful transition locally.
+ * Returned actions always operate on the latest ref so rapid updates do not use stale React state.
+ */
 export function usePlanner() {
   const [plan, setPlanState] = useState(getStoredPlan);
   const [persistenceAvailable, setPersistenceAvailable] = useState(true);
   const planRef = useRef(plan);
 
+  /** Replaces the synchronous ref and rendered state as one transition. */
   const replaceState = useCallback((nextPlan) => {
     planRef.current = nextPlan;
     setPlanState(nextPlan);
     return nextPlan;
   }, []);
 
+  /** Applies a plan transition, persists it, and exposes storage availability. */
   const commit = useCallback((nextPlan) => {
     const next = replaceState(nextPlan);
     const persisted = setStoredPlan(next);
@@ -36,6 +42,7 @@ export function usePlanner() {
   useEffect(() => {
     // Cross-tab updates replace local state; same-tab commits update both the ref
     // and React state because storage events are not fired in the originating tab.
+    /** Reconciles plan changes written by another browser tab. */
     function handleStorage(event) {
       if (event.key !== PLANNER_STORAGE_KEY) return;
       replaceState(parseStoredPlan(event.newValue));

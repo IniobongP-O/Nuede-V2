@@ -3,10 +3,12 @@ import { paystackInitializeResponseSchema, paystackVerifyResponseSchema } from "
 
 const PAYSTACK_API_URL = "https://api.paystack.co";
 
+/** Wraps Paystack transport/protocol failures in a safe provider-stage error. */
 function providerError(message, cause) {
   return new OrderError("PAYSTACK_PROVIDER_ERROR", message, { status: 502, stage: "paystack_provider", cause });
 }
 
+/** Performs a bounded authenticated Paystack API request and validates base success. */
 async function paystackRequest(path, { secretKey, fetchImpl = fetch, method = "GET", body, timeoutMs = 12_000 } = {}) {
   // The secret is accepted only by this Edge-runtime module and is never part of
   // the Vite contract. A timeout bounds ambiguous provider/network failures.
@@ -33,10 +35,12 @@ async function paystackRequest(path, { secretKey, fetchImpl = fetch, method = "G
   return payload;
 }
 
+/** Generates a Nuede-namespaced, provider-safe payment reference. */
 export function createPaystackReference(randomUUID = () => crypto.randomUUID()) {
   return `NUE-${randomUUID().replaceAll("-", "")}`;
 }
 
+/** Validates the configured storefront origin used for payment return URLs. */
 export function normalizeStorefrontUrl(value) {
   try {
     const url = new URL(value);
@@ -48,6 +52,7 @@ export function normalizeStorefrontUrl(value) {
   }
 }
 
+/** Initializes hosted checkout with the server-calculated amount and permanent order reference. */
 export async function initializePaystackTransaction({ email, amountKobo, reference, orderReference, storefrontUrl }, dependencies = {}) {
   const baseUrl = normalizeStorefrontUrl(storefrontUrl);
   const callbackUrl = new URL("payment", baseUrl);
@@ -77,6 +82,7 @@ export async function initializePaystackTransaction({ email, amountKobo, referen
   return parsed.data.data;
 }
 
+/** Loads and schema-validates Paystack's current transaction for one exact reference. */
 export async function verifyPaystackTransaction(reference, dependencies = {}) {
   const payload = await paystackRequest(`/transaction/verify/${encodeURIComponent(reference)}`, dependencies);
   const parsed = paystackVerifyResponseSchema.safeParse(payload);

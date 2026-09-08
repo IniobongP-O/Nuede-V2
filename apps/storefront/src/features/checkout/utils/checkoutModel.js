@@ -8,16 +8,19 @@ export const PAYMENT_METHODS = Object.freeze([
   Object.freeze({ id: "whatsapp", label: "Continue on WhatsApp", description: "We'll save your order, then open WhatsApp so you can continue with our team." }),
 ]);
 
+/** Accepts only the supported checkout-source query-string values. */
 export function parseCheckoutSource(value) {
   return Object.values(CHECKOUT_SOURCE).includes(value) ? value : null;
 }
 
+/** Converts database integer-kobo values to safe client numbers. */
 function asSafeKobo(value) {
   const numeric = typeof value === "string" ? Number(value) : value;
   if (!Number.isSafeInteger(numeric) || numeric < 0) throw new TypeError("Delivery fees must be non-negative integer kobo values.");
   return numeric;
 }
 
+/** Maps a delivery-zone row to the checkout model and validates its fee. */
 export function normalizeDeliveryZone(row) {
   return Object.freeze({
     id: row.id,
@@ -27,6 +30,7 @@ export function normalizeDeliveryZone(row) {
   });
 }
 
+/** Maps nullable checkout settings to explicit payment-method flags. */
 export function normalizeCheckoutSettings(row) {
   return Object.freeze({
     paystackEnabled: row?.paystack_enabled === true,
@@ -34,11 +38,13 @@ export function normalizeCheckoutSettings(row) {
   });
 }
 
+/** Returns the payment choices currently enabled by backend settings. */
 export function getEnabledPaymentMethods(settings) {
   if (!settings) return [];
   return PAYMENT_METHODS.filter((method) => settings[`${method.id}Enabled`] === true);
 }
 
+/** Adds the client-visible subtotal and delivery fee when both remain safe integers. */
 export function calculateEstimatedTotal(subtotalKobo, deliveryFeeKobo) {
   // Review totals are intentionally non-authoritative; the Edge Function reloads
   // the delivery fee and catalog prices before creating either kind of order.
@@ -47,6 +53,7 @@ export function calculateEstimatedTotal(subtotalKobo, deliveryFeeKobo) {
   return Number.isSafeInteger(totalKobo) ? totalKobo : null;
 }
 
+/** Copies only the stable catalog identity fields accepted by checkout. */
 function copyConfiguration(configuration) {
   return {
     productId: configuration.productId,
@@ -56,6 +63,7 @@ function copyConfiguration(configuration) {
   };
 }
 
+/** Builds and validates the minimal server checkout contract for cart or plan orders. */
 export function buildCheckoutSubmission({ source, customer, deliveryZoneId, paymentMethod, cartItems = [], plan }) {
   const shared = {
     customer: {
@@ -76,6 +84,7 @@ export function buildCheckoutSubmission({ source, customer, deliveryZoneId, paym
   return checkoutSubmissionSchema.parse(candidate);
 }
 
+/** Collects every client-side condition that currently blocks checkout submission. */
 export function getCheckoutReadiness({ source, sourcePending, sourceError, sourceEmpty, sourceIssues = [], zonesPending, zonesError, zone, settingsPending, settingsError, enabledMethods = [], paymentMethod }) {
   // Readiness is a UX guard, not authorization. The server repeats all mutable
   // catalog, delivery-zone, and payment-method checks at order creation time.

@@ -5,10 +5,12 @@ import { OrderError, publicErrorBody } from "../_shared/order/errors.js";
 import { createPaystackReference, initializePaystackTransaction, normalizeStorefrontUrl } from "../_shared/paystack/client.js";
 import { failPaystackInitialization, persistPaystackOrderAtomically } from "../_shared/paystack/persistence.js";
 
+/** Serializes a CORS-enabled JSON response for the Paystack initialization endpoint. */
 function json(body, status) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 }
 
+/** Creates the business error returned for a non-Paystack checkout contract. */
 function methodError() {
   return new OrderError("INVALID_PAYMENT_METHOD", "Use the Paystack checkout route only for Paystack orders.", { status: 422, stage: "payment_method" });
 }
@@ -32,6 +34,10 @@ export class PaystackInitializationError extends OrderError {
   }
 }
 
+/**
+ * Persists the order/payment attempt before asking Paystack for hosted checkout.
+ * A provider failure therefore remains diagnosable by permanent references.
+ */
 export async function createPaystackCheckout(candidate, client, {
   secretKey,
   storefrontUrl,
@@ -79,6 +85,7 @@ export async function createPaystackCheckout(candidate, client, {
   }
 }
 
+/** Handles Paystack initialization requests and returns safe partial-order recovery data. */
 export async function handleInitializePaystackRequest(request, {
   client,
   secretKey,

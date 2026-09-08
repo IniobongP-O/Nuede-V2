@@ -4,6 +4,7 @@ import { adminPaths } from "../../../app/routePaths.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { AuthStatusPage } from "./AuthStatusPage.jsx";
 
+/** Allows active administrators into protected routes and handles all auth gates. */
 export function ProtectedRoute() {
   const location = useLocation();
   const { status, error, retry, signOut } = useAuth();

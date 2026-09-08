@@ -1,3 +1,4 @@
+/** Maps domain nutrition to the stable public API response shape. */
 function responseNutrition(nutrition) {
   return {
     status: nutrition.status,
@@ -8,6 +9,7 @@ function responseNutrition(nutrition) {
   };
 }
 
+/** Maps one immutable item snapshot and its add-ons to the public API shape. */
 function responseItem(item) {
   return {
     productId: item.product_id,
@@ -35,6 +37,7 @@ function responseItem(item) {
   };
 }
 
+/** Reconstructs a sparse meal-plan schedule from flattened snapshot items. */
 function scheduleFor(request, items) {
   if (request.orderType !== "meal_plan") return null;
   // Reconstruct the sparse schedule from persisted item coordinates so the
@@ -54,6 +57,7 @@ function scheduleFor(request, items) {
   };
 }
 
+/** Builds the complete customer-safe response for a newly persisted order. */
 export function buildSuccessResponse(request, snapshot, persisted) {
   const items = snapshot.items.map(responseItem);
   return {

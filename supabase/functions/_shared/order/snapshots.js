@@ -1,6 +1,7 @@
 import { calculateAuthoritativeItemNutrition, calculateAuthoritativeOrderNutrition, nutritionColumns, nutritionFromRow } from "./nutrition.js";
 import { addKobo, calculateItemPrice } from "./pricing.js";
 
+/** Captures the purchased add-on's immutable identity, price, and nutrition. */
 function addonSnapshot(addon) {
   return {
     addon_id: addon.id,
@@ -10,6 +11,7 @@ function addonSnapshot(addon) {
   };
 }
 
+/** Builds the immutable order header and item snapshots from validated live rows. */
 export function buildOrderSnapshot(request, validated) {
   // Names, prices, nutrition, and delivery details are copied at purchase time.
   // Historical orders must not change when the live catalog or zones are edited.

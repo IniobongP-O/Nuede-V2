@@ -3,11 +3,13 @@ import { Heart } from "lucide-react";
 import { useToast } from "../../../components/ui/toastContext.js";
 import { useSavedMeals } from "../context/savedMealsContext.js";
 
+/** Toggles one product in local saved meals with accessible state and feedback. */
 export function FavoriteButton({ productId, productName, className = "" }) {
   const { isSaved, saveMeal, removeMeal } = useSavedMeals();
   const { notify } = useToast();
   const saved = isSaved(productId);
 
+  /** Prevents parent-card activation, toggles saved state, and announces the result. */
   function toggleSaved(event) {
     event.stopPropagation();
     const result = saved ? removeMeal(productId) : saveMeal(productId);

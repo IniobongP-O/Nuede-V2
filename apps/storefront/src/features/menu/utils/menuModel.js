@@ -4,25 +4,30 @@ export const HIGH_PROTEIN_MINIMUM_GRAMS = 30;
 
 const visibleVariantStatuses = new Set(["available", "sold_out", "unavailable"]);
 
+/** Converts nullable database numeric values into finite numbers or `null`. */
 function numberOrNull(value) {
   if (value === null || value === undefined || value === "") return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
 
+/** Accepts only non-negative, safely representable integer-kobo values. */
 function koboOrNull(value) {
   const price = numberOrNull(value);
   return Number.isSafeInteger(price) && price >= 0 ? price : null;
 }
 
+/** Reports whether a raw catalog variant carries a usable display price. */
 function isPriced(variant) {
   return koboOrNull(variant?.price_kobo) !== null;
 }
 
+/** Reports whether a raw variant is both available and priced. */
 function isOrderableVariant(variant) {
   return variant?.status === "available" && isPriced(variant);
 }
 
+/** Maps database macro columns into the shared nutrition result shape. */
 function normalizedNutrition(source) {
   return calculateNutrition([{
     calories: numberOrNull(source?.calories),
@@ -32,6 +37,7 @@ function normalizedNutrition(source) {
   }]);
 }
 
+/** Converts one embedded variant row to the storefront model. */
 function normalizeVariant(variant, imageUrlForPath) {
   const imagePath = variant.image_path || null;
   return {
@@ -49,6 +55,7 @@ function normalizeVariant(variant, imageUrlForPath) {
   };
 }
 
+/** Sorts and unwraps embedded product/add-on assignment rows for display. */
 function normalizeAddons(assignments) {
   return [...(assignments || [])]
     .sort((left, right) => left.sort_order - right.sort_order || left.addon_id.localeCompare(right.addon_id))
@@ -66,10 +73,12 @@ function normalizeAddons(assignments) {
     });
 }
 
+/** Reports whether all supported nutrition fields are known. */
 export function hasCompleteNutrition(nutrition) {
   return calculateNutrition([nutrition]).status === NUTRITION_STATUS.complete;
 }
 
+/** Derives a grouped product's customer-visible status from its child variants. */
 function deriveGroupedStatus(product, variants) {
   // Group availability is derived from its children: an available parent is not
   // orderable when every currently public variant is sold out or unavailable.
@@ -79,6 +88,7 @@ function deriveGroupedStatus(product, variants) {
   return "unavailable";
 }
 
+/** Chooses the variant used for a grouped product's card preview. */
 function representativeVariant(product, variants) {
   // Cards need one preview only; prefer configured intent, then an orderable or
   // at least priced variant, while the detail view still exposes every option.
@@ -86,6 +96,7 @@ function representativeVariant(product, variants) {
   return defaultVariant || variants.find(isOrderableVariant) || variants.find(isPriced) || variants[0] || null;
 }
 
+/** Derives a grouped product's displayed price and whether it needs a “From” prefix. */
 function groupedPrice(product, variants, menuStatus) {
   if (menuStatus === "price_pending") return { priceKobo: null, pricePrefix: "" };
   const defaultVariant = variants.find((variant) => variant.id === product.default_variant_id && isPriced(variant));
@@ -100,6 +111,10 @@ function groupedPrice(product, variants, menuStatus) {
   return { priceKobo: candidates.length ? Math.min(...candidates) : null, pricePrefix: candidates.length ? "From " : "" };
 }
 
+/**
+ * Converts a public product query row into the UI's catalog model.
+ * Derived fields centralize orderability, preview, image, and nutrition decisions.
+ */
 export function normalizeMenuProduct(product, imageUrlForPath = () => "") {
   const rawVariants = [...(product.product_variants || [])]
     .filter((variant) => visibleVariantStatuses.has(variant.status))
@@ -144,6 +159,7 @@ export function normalizeMenuProduct(product, imageUrlForPath = () => "") {
   };
 }
 
+/** Applies text, category, availability, type, and nutrition menu filters. */
 export function filterMenuProducts(products, { search = "", categoryId = "all", filters = [] } = {}) {
   const normalizedSearch = search.trim().toLocaleLowerCase();
   const enabledFilters = new Set(filters);

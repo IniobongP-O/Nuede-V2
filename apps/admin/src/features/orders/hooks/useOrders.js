@@ -4,6 +4,7 @@ import { deleteOrder, getOrderByReference, getOrdersPage, markWhatsappOrderPaid,
 
 export const ordersQueryKey = ["admin", "orders"];
 
+/** Provides the filtered admin order-list query. */
 export function useOrders(filters) {
   return useQuery({
     queryKey: [...ordersQueryKey, "list", filters],
@@ -13,6 +14,7 @@ export function useOrders(filters) {
   });
 }
 
+/** Provides one complete order-detail query by public reference. */
 export function useOrder(orderReference) {
   return useQuery({
     queryKey: [...ordersQueryKey, "detail", orderReference],
@@ -22,6 +24,7 @@ export function useOrder(orderReference) {
   });
 }
 
+/** Updates fulfilment and refreshes both the detail and list caches. */
 export function useUpdateFulfilmentStatus(orderReference) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -35,6 +38,7 @@ export function useUpdateFulfilmentStatus(orderReference) {
   });
 }
 
+/** Confirms a WhatsApp payment and refreshes affected order caches. */
 export function useMarkWhatsappOrderPaid(orderReference) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -49,6 +53,7 @@ export function useMarkWhatsappOrderPaid(orderReference) {
   });
 }
 
+/** Deletes an eligible order and removes stale detail/list cache state. */
 export function useDeleteOrder(orderReference) {
   const queryClient = useQueryClient();
   return useMutation({

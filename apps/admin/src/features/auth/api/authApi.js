@@ -1,5 +1,6 @@
 import { supabase, supabaseConfigurationError } from "../../../lib/supabaseClient.js";
 
+/** Returns the configured Supabase client or fails with the setup error. */
 function requireSupabase() {
   if (!supabase) {
     throw new Error(supabaseConfigurationError);
@@ -8,6 +9,7 @@ function requireSupabase() {
   return supabase;
 }
 
+/** Signs an administrator in with password credentials through Supabase Auth. */
 export async function signInWithPassword(credentials) {
   const client = requireSupabase();
   const { data, error } = await client.auth.signInWithPassword(credentials);
@@ -16,6 +18,7 @@ export async function signInWithPassword(credentials) {
   return data.user;
 }
 
+/** Ends the current browser session and propagates sign-out failures. */
 export async function signOutCurrentSession() {
   const client = requireSupabase();
   const { error } = await client.auth.signOut({ scope: "local" });
@@ -23,6 +26,7 @@ export async function signOutCurrentSession() {
   if (error) throw error;
 }
 
+/** Returns the authenticated user, or `null` when no session exists. */
 export async function getCurrentUser() {
   const client = requireSupabase();
   const { data, error } = await client.auth.getUser();
@@ -36,6 +40,7 @@ export async function getCurrentUser() {
   return data.user;
 }
 
+/** Loads the signed-in user's own active admin profile through RLS. */
 export async function getOwnAdminProfile(userId) {
   const client = requireSupabase();
   const { data, error } = await client
@@ -48,6 +53,7 @@ export async function getOwnAdminProfile(userId) {
   return data;
 }
 
+/** Subscribes to Auth session changes and returns the provider unsubscribe handle. */
 export function subscribeToAuthChanges(callback) {
   const client = requireSupabase();
   const { data } = client.auth.onAuthStateChange(callback);

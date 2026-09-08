@@ -30,16 +30,19 @@ import { calculatePlannerSummary } from "../features/planner/utils/plannerHydrat
 const emptyList = Object.freeze([]);
 const defaultValues = Object.freeze({ fullName: "", phone: "", email: "", address: "", landmark: "", deliveryZoneId: "", paymentMethod: "" });
 
+/** Renders navigation back to the cart or planner that initiated checkout. */
 function SourceActions({ source }) {
   return <div className="flex flex-wrap justify-center gap-3"><Button to={source === CHECKOUT_SOURCE.mealPlan ? storefrontPaths.planner : storefrontPaths.menu}>{source === CHECKOUT_SOURCE.mealPlan ? "Return to meal planner" : "Return to menu"}</Button>{!source ? <Button variant="secondary" to={`${storefrontPaths.checkout}?source=meal-plan`}>Review meal plan</Button> : null}</div>;
 }
 
+/** Chooses the most useful source-level checkout blocking message. */
 function sourceProblem(source, cartCount, plannerCount) {
   if (source === CHECKOUT_SOURCE.cart && cartCount === 0) return { title: "Your basket is empty", message: "Add at least one meal before continuing to checkout." };
   if (source === CHECKOUT_SOURCE.mealPlan && plannerCount === 0) return { title: "Your meal plan is empty", message: "Choose at least one meal for your plan before continuing to checkout." };
   return null;
 }
 
+/** Coordinates source hydration, delivery details, payment choice, and order creation. */
 export function CheckoutPage() {
   const [searchParams] = useSearchParams();
   const source = parseCheckoutSource(searchParams.get("source"));
@@ -98,6 +101,7 @@ export function CheckoutPage() {
     return () => window.clearTimeout(timeout);
   }, [enabledMethods, selectedPaymentMethod, setValue, settingsQuery.isSuccess]);
 
+  /** Builds the authoritative contract, creates the chosen order, and routes handoff. */
   async function submit(values, event) {
     // Lock both React state and the form node before awaiting. This narrows the
     // double-submit window that exists before React commits a disabled state.

@@ -9,6 +9,7 @@ import { ProductDetailDialog } from "../../product-detail/components/ProductDeta
 import { buildProductConfiguration } from "../../product-detail/utils/customizationModel.js";
 import { ScrollCarousel } from "./ScrollCarousel.jsx";
 
+/** Renders a bounded selection of featured menu products for the home page. */
 export function FeaturedMeals({ query }) {
   const [selection, setSelection] = useState(null);
   const { addItem } = useCart();

@@ -1,5 +1,6 @@
 import { Card } from "../../../components/ui/Surface.jsx";
 
+/** Renders currently enabled payment methods as an accessible radio group. */
 export function PaymentMethodsSection({ methods, register, error, disabled }) {
   return (
     <Card as="section" className="p-5 sm:p-7" aria-labelledby="payment-method-title">

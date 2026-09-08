@@ -14,6 +14,7 @@ import { useSalesAnalytics } from "../features/analytics/hooks/useAnalytics.js";
 import { useAnalyticsRange } from "../features/analytics/hooks/useAnalyticsRange.js";
 import { analyticsErrorMessage, analyticsRangeLabel } from "../features/analytics/utils/analyticsUtils.js";
 
+/** Coordinates analytics ranges, loading states, summaries, charts, and rankings. */
 export function AnalyticsPage() {
   const rangeController = useAnalyticsRange("30d");
   const query = useSalesAnalytics(rangeController.range);

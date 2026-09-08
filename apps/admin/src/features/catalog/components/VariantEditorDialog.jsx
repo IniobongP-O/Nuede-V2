@@ -9,10 +9,14 @@ import { SelectInput, TextArea, TextInput } from "../../../components/ui/FormCon
 import { catalogErrorMessage, variantFormToRecord, variantToFormValues } from "../utils/catalogUtils.js";
 import { CatalogImageField } from "./CatalogImageField.jsx";
 
+/** Mounts a keyed variant editor so form state resets between variants. */
+/** Mounts a keyed variant editor so form state resets between variants. */
 export function VariantEditorDialog(props) {
   return props.open ? <VariantEditorDialogContent {...props} /> : null;
 }
 
+/** Coordinates grouped-variant validation, image changes, and persistence. */
+/** Coordinates variant validation, image changes, persistence, and feedback. */
 function VariantEditorDialogContent({ open, onClose, group, variant, mutation, onSaved }) {
   const nextSortOrder = Math.max(0, ...(group?.product_variants || []).map((item) => item.sort_order)) + 10;
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm({

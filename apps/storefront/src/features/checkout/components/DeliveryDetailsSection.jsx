@@ -3,6 +3,7 @@ import { formatKobo } from "@nuede/domain/currency";
 import { SelectInput, TextArea, TextInput } from "../../../components/ui/FormControls.jsx";
 import { Card } from "../../../components/ui/Surface.jsx";
 
+/** Renders customer contact/address fields and current delivery-zone choices. */
 export function DeliveryDetailsSection({ register, errors, zones, disabled }) {
   return (
     <Card as="section" className="p-5 sm:p-7" aria-labelledby="delivery-details-title">

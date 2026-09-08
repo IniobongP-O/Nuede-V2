@@ -10,6 +10,7 @@ export const analyticsPresetOptions = Object.freeze([
   { value: "custom", label: "Custom range", days: null },
 ]);
 
+/** Extracts calendar parts in Nuede's reporting timezone. */
 function datePartsInBusinessTimezone(now = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: BUSINESS_TIME_ZONE,
@@ -20,11 +21,13 @@ function datePartsInBusinessTimezone(now = new Date()) {
   return Object.fromEntries(parts.map((part) => [part.type, part.value]));
 }
 
+/** Returns today's reporting date as timezone-independent YYYY-MM-DD text. */
 export function businessDate(now = new Date()) {
   const { year, month, day } = datePartsInBusinessTimezone(now);
   return `${year}-${month}-${day}`;
 }
 
+/** Shifts a report date by a whole number of calendar days. */
 export function shiftDate(dateText, days) {
   const [year, month, day] = dateText.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
@@ -32,12 +35,14 @@ export function shiftDate(dateText, days) {
   return date.toISOString().slice(0, 10);
 }
 
+/** Resolves a supported reporting preset to inclusive from/to dates. */
 export function rangeForPreset(preset, today = businessDate()) {
   const option = analyticsPresetOptions.find((item) => item.value === preset);
   if (!option || option.days === null) return null;
   return { from: shiftDate(today, -(option.days - 1)), to: today, preset };
 }
 
+/** Validates a custom analytics interval and returns its user-facing issue. */
 export function validateCustomRange(from, to) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(from || "") || !/^\d{4}-\d{2}-\d{2}$/.test(to || "")) {
     return "Choose both a start and end date.";
@@ -46,6 +51,7 @@ export function validateCustomRange(from, to) {
   return "";
 }
 
+/** Formats an analytics date without allowing browser timezone drift. */
 export function formatAnalyticsDate(value, options = {}) {
   if (!value) return "Not recorded";
   const date = new Date(`${value}T12:00:00Z`);
@@ -57,21 +63,25 @@ export function formatAnalyticsDate(value, options = {}) {
   }).format(date);
 }
 
+/** Produces the concise date-range label shown on analytics views. */
 export function analyticsRangeLabel(range) {
   if (!range) return "Selected period";
   if (range.from === range.to) return formatAnalyticsDate(range.from);
   return `${formatAnalyticsDate(range.from, { short: true })} – ${formatAnalyticsDate(range.to, { short: true })}`;
 }
 
+/** Converts integer kobo to the numeric naira value expected by chart axes. */
 export function chartMoneyValue(value) {
   const amount = Number(value || 0);
   return Number.isFinite(amount) ? amount : 0;
 }
 
+/** Formats a chart tooltip's integer-kobo value as currency. */
 export function formatChartKobo(value) {
   return formatKobo(String(Math.round(Number(value) || 0)));
 }
 
+/** Maps analytics RPC failures to actionable admin-facing copy. */
 export function analyticsErrorMessage(error) {
   const message = String(error?.message || "");
   if (/ADMIN_ACCESS_REQUIRED|permission denied|42501/i.test(message)) return "Your session is not authorized to access private sales analytics.";
@@ -80,6 +90,7 @@ export function analyticsErrorMessage(error) {
   return "Sales analytics are temporarily unavailable. Source orders and payments were not changed.";
 }
 
+/** Builds the ordered summary-card definitions for one analytics response. */
 export function analyticsMetricCards(data, range) {
   const summary = data?.summary || {};
   const detail = analyticsRangeLabel(range);
@@ -91,6 +102,7 @@ export function analyticsMetricCards(data, range) {
   ];
 }
 
+/** Returns the highest-volume product, using revenue as the tie-breaker. */
 export function getMostOrderedMeal(productSales) {
   if (!Array.isArray(productSales)) return null;
   const meals = productSales.filter((product) => Number.isFinite(Number(product?.quantity_sold)) && Number(product.quantity_sold) > 0);
@@ -106,6 +118,7 @@ export function getMostOrderedMeal(productSales) {
   }, null);
 }
 
+/** Converts stored payment-method codes to admin-facing labels. */
 export function paymentMethodLabel(value) {
   return value === "paystack" ? "Paystack" : humanizeOrderValue(value);
 }

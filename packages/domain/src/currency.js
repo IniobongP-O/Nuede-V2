@@ -1,5 +1,6 @@
 const numberFormatter = new Intl.NumberFormat("en-NG");
 
+/** Converts supported integer-kobo inputs to an exact BigInt representation. */
 function asKobo(value) {
   if (typeof value === "bigint") return value;
   if (typeof value === "number" && Number.isSafeInteger(value)) return BigInt(value);

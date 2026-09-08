@@ -15,6 +15,8 @@ const statusPresentation = {
   unavailable: { label: "Unavailable", tone: "neutral", message: "Not available to order" },
 };
 
+/** Renders the card's compact calorie/protein preview and completeness state. */
+/** Renders the compact nutrition preview shown on a menu card. */
 function NutritionPreview({ nutrition, complete }) {
   const values = [
     nutrition.calories === null ? null : formatNutritionValue("calories", nutrition.calories, { includeLabel: true }),
@@ -34,6 +36,7 @@ function NutritionPreview({ nutrition, complete }) {
 
 // Catalog objects and the menu's state setter are stable across dialog updates.
 // Keep unchanged card work out of opening, closing and basket context commits.
+/** Renders one memoized catalog product card and its save/customize actions. */
 export const MenuProductCard = memo(function MenuProductCard({ product, onOpenDetails }) {
   const status = statusPresentation[product.menuStatus] || statusPresentation.unavailable;
   const price = product.priceKobo === null

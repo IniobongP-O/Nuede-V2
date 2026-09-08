@@ -1,5 +1,6 @@
 import logoSource from "../../assets/nuede-admin-logo-source.png";
 
+/** Renders the Nuede administration logo at a caller-controlled size. */
 export function AdminLogo({ className = "" }) {
   return (
     <svg

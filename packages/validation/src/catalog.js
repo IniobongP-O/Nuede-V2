@@ -38,6 +38,10 @@ const caloriesInputSchema = z.string().trim().refine(
 );
 const addonIdsSchema = z.array(uuidSchema).max(100, "Select no more than 100 add-ons.").default([]);
 
+/**
+ * Converts an admin-entered NGN decimal to exact integer kobo.
+ * Throws when the text is malformed or cannot be represented safely.
+ */
 export function parseNairaToKobo(value) {
   const normalized = String(value ?? "").trim();
   if (!moneyPattern.test(normalized)) {
@@ -149,6 +153,7 @@ export const addonFormSchema = z.object({
   isAvailable: z.boolean(),
 });
 
+/** Returns the customer-facing rejection reason for an image, or `null` if valid. */
 export function catalogImageValidationMessage(file) {
   if (!file) return null;
   if (!catalogImageTypes.includes(file.type)) {
@@ -163,6 +168,7 @@ export function catalogImageValidationMessage(file) {
   return null;
 }
 
+/** Converts an optional numeric form field to a number while preserving blank as null. */
 export function optionalNumber(value) {
   return value === "" ? null : Number(value);
 }

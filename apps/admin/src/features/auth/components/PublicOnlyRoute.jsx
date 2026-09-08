@@ -4,12 +4,14 @@ import { adminPaths, adminRouteList } from "../../../app/routePaths.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { AuthStatusPage } from "./AuthStatusPage.jsx";
 
+/** Accepts only same-origin relative return paths after authentication. */
 function safeReturnPath(candidate) {
   return adminRouteList.includes(candidate) && candidate !== adminPaths.login
     ? candidate
     : adminPaths.dashboard;
 }
 
+/** Keeps authenticated administrators out of public-only routes such as login. */
 export function PublicOnlyRoute() {
   const location = useLocation();
   const { status, error, retry, signOut } = useAuth();

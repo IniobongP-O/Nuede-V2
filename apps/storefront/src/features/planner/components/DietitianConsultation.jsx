@@ -1,5 +1,6 @@
 import { PhoneCall } from "lucide-react";
 
+/** Renders the non-clinical prompt for customers who need professional plan advice. */
 export function DietitianConsultation() {
   return (
     <section

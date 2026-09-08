@@ -4,6 +4,7 @@ import { cartItemStorageSchema, cartStorageSchema } from "@nuede/validation/cart
 export const CART_STORAGE_KEY = "nuede:v2:cart";
 export const CART_STORAGE_VERSION = 1;
 
+/** Resolves an injected storage adapter or the browser's accessible localStorage. */
 function browserStorage(storage) {
   if (storage !== undefined) return storage;
   try {
@@ -13,6 +14,7 @@ function browserStorage(storage) {
   }
 }
 
+/** Validates untrusted stored entries and applies the domain's cart merge rules. */
 export function normalizeStoredCartItems(value) {
   // localStorage is an anonymous convenience, not a catalog snapshot. Invalid
   // entries are discarded and valid entries are canonicalized/merged before use.
@@ -25,6 +27,7 @@ export function normalizeStoredCartItems(value) {
   return normalizeCartItems(validItems);
 }
 
+/** Parses serialized cart data, falling back to an empty cart on corruption. */
 export function parseCartItems(serialized) {
   if (serialized === null || serialized === undefined || serialized === "") return [];
   try {
@@ -34,6 +37,7 @@ export function parseCartItems(serialized) {
   }
 }
 
+/** Reads the current browser cart without exposing storage exceptions to the UI. */
 export function getCartItems(storage) {
   const target = browserStorage(storage);
   if (!target) return [];
@@ -44,6 +48,7 @@ export function getCartItems(storage) {
   }
 }
 
+/** Persists a canonical, versioned cart and reports whether the write succeeded. */
 export function setCartItems(items, storage) {
   const target = browserStorage(storage);
   if (!target) return false;
@@ -57,6 +62,7 @@ export function setCartItems(items, storage) {
   }
 }
 
+/** Removes the stored cart and reports whether browser persistence was updated. */
 export function clearCartItems(storage) {
   const target = browserStorage(storage);
   if (!target) return { items: [], persisted: false };

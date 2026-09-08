@@ -5,6 +5,7 @@ import { supabase } from "../../../lib/supabaseClient.js";
 import { menuQueryKeys } from "./useMenu.js";
 import { createCatalogInvalidator } from "../utils/catalogInvalidation.js";
 
+/** Subscribes to catalog changes and invalidates the affected public queries. */
 export function useMenuRealtime() {
   const queryClient = useQueryClient();
 

@@ -1,6 +1,7 @@
 import { ImageOff } from "lucide-react";
 import { useState } from "react";
 
+/** Renders a catalog image with a consistent placeholder fallback on absence/error. */
 export function ProductImage({ src, alt, className = "", eager = false }) {
   const [state, setState] = useState(src ? "loading" : "missing");
   const showImage = src && state !== "broken";

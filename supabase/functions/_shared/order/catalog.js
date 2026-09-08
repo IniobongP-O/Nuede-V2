@@ -5,10 +5,12 @@ const PRODUCT_COLUMNS = "id,name,product_type,price_kobo,calories,protein_g,carb
 const VARIANT_COLUMNS = "id,product_id,name,price_kobo,calories,protein_g,carbohydrates_g,fat_g,status";
 const ADDON_COLUMNS = "id,name,price_kobo,calories,protein_g,carbohydrates_g,fat_g,is_available";
 
+/** Provides an empty query-shaped result when an ID batch has no members. */
 function noRows() {
   return Promise.resolve({ data: [], error: null });
 }
 
+/** Converts an internal catalog query error to a safe staged order error. */
 function throwCatalogFailure(error) {
   throw new OrderError("ORDER_CREATION_FAILED", "Current menu details could not be checked. Please try again.", {
     status: 500,
@@ -17,6 +19,7 @@ function throwCatalogFailure(error) {
   });
 }
 
+/** Batch-loads every catalog, delivery, and payment row needed to validate an order. */
 export async function loadOrderContext(client, request, items) {
   const { productIds, variantIds, addonIds } = collectSelectionIds(items);
   // The Edge Function uses a service-role client so it can distinguish missing,
@@ -57,15 +60,21 @@ export async function loadOrderContext(client, request, items) {
   };
 }
 
+/** Converts database integer-kobo representations to a safe number or `null`. */
 function safeKobo(value) {
   const number = typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value;
   return Number.isSafeInteger(number) && number >= 0 ? number : null;
 }
 
+/** Creates a customer-correctable business-validation error. */
 function selectionError(code, message) {
   return new OrderError(code, message, { status: 422, stage: "business_validation" });
 }
 
+/**
+ * Binds submitted IDs to current database rows and enforces orderability rules.
+ * The returned items contain only server-loaded products, variants, add-ons, and prices.
+ */
 export function validateOrderContext(request, items, context) {
   // Payment availability and delivery fees are checked from the same current
   // backend snapshot used for pricing; the browser's checkout screen is only a

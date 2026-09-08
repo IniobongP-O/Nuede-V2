@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../../components/ui/Button.jsx";
 import { pageCount } from "../utils/orderUtils.js";
 
+/** Renders bounded previous/next controls and current page position. */
 export function OrdersPagination({ page, pageSize, total, onPageChange, busy }) {
   const pages = pageCount(total, pageSize);
   const first = total ? (page - 1) * pageSize + 1 : 0;

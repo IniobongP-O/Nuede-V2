@@ -9,6 +9,7 @@ const dialogSizes = {
   cart: "h-dvh w-full max-w-none rounded-none sm:h-[min(52rem,calc(100dvh-2rem))] sm:w-[min(48rem,calc(100%-2rem))] sm:rounded-dialog",
 };
 
+/** Renders a modal dialog with focus containment, escape handling, and scroll locking. */
 export function Dialog({ open, onClose, title, description, children, footer, size = "default", contentClassName = "", footerClassName = "" }) {
   const dialogRef = useRef(null);
   const openerRef = useRef(null);
@@ -48,11 +49,13 @@ export function Dialog({ open, onClose, title, description, children, footer, si
     };
   }, []);
 
+  /** Converts the native escape/cancel event into the controlled close action. */
   function handleCancel(event) {
     event.preventDefault();
     onClose();
   }
 
+  /** Closes only when the pointer targets the backdrop rather than dialog content. */
   function handleBackdrop(event) {
     if (event.target === event.currentTarget) onClose();
   }

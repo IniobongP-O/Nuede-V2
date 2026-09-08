@@ -5,10 +5,12 @@ import { loadPaystackPayment, normalizePaymentResult, reconcilePaystackPayment }
 import { paymentVerificationRequestSchema } from "../_shared/paystack/schema.js";
 import { verifyPaystackTransaction } from "../_shared/paystack/client.js";
 
+/** Serializes a CORS-enabled JSON response for browser-triggered payment checks. */
 function json(body, status) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 }
 
+/** Reconciles a non-terminal local attempt with Paystack and returns public state. */
 export async function verifyKnownPaystackPayment(reference, client, {
   secretKey,
   whatsappRecipient,
@@ -38,6 +40,7 @@ export async function verifyKnownPaystackPayment(reference, client, {
   }
 }
 
+/** Validates and handles the public payment-verification HTTP request. */
 export async function handleVerifyPaystackPaymentRequest(request, {
   client,
   secretKey,

@@ -11,10 +11,12 @@ import { Dialog } from "../../../components/ui/Dialog.jsx";
 import { useCreateAddon, useDeleteAddon, useUpdateAddon } from "../hooks/useCatalog.js";
 import { addonFormToRecord, addonToFormValues, catalogErrorMessage } from "../utils/catalogUtils.js";
 
+/** Mounts a keyed add-on editor so dialog form state resets between records. */
 export function AddonManagerDialog(props) {
   return props.open ? <AddonManagerDialogContent {...props} /> : null;
 }
 
+/** Coordinates add-on selection, validation, creation, editing, and deletion. */
 function AddonManagerDialogContent({ open, onClose, addons, onSaved }) {
   const createMutation = useCreateAddon();
   const updateMutation = useUpdateAddon();

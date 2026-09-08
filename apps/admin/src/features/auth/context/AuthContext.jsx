@@ -13,10 +13,12 @@ import { AuthContext } from "./authContext.js";
 
 const recognizedRoles = new Set(["owner", "admin", "editor"]);
 
+/** Creates the canonical anonymous auth state used on startup and sign-out. */
 function signedOutState() {
   return { status: "signed_out", user: null, admin: null, error: null };
 }
 
+/** Owns session/profile resolution and exposes authenticated admin actions. */
 export function AuthProvider({ children }) {
   const [authState, setAuthState] = useState(() => supabaseConfigurationError
     ? { status: "error", user: null, admin: null, error: supabaseConfigurationError }

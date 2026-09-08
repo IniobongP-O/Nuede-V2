@@ -4,6 +4,7 @@ import { getSalesAnalytics } from "../api/analyticsApi.js";
 
 export const analyticsQueryKey = ["admin", "sales-analytics"];
 
+/** Provides the sales analytics snapshot for the selected inclusive range. */
 export function useSalesAnalytics(range) {
   return useQuery({
     queryKey: [...analyticsQueryKey, range.from, range.to],
@@ -13,4 +14,3 @@ export function useSalesAnalytics(range) {
     retry: 1,
   });
 }
-

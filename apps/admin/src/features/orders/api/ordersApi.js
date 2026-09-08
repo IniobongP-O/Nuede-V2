@@ -1,15 +1,18 @@
 import { supabase, supabaseConfigurationError } from "../../../lib/supabaseClient.js";
 
+/** Returns the configured Supabase client or fails with the setup error. */
 function requireSupabase() {
   if (!supabase) throw new Error(supabaseConfigurationError);
   return supabase;
 }
 
+/** Converts the UI's empty filter values to database null parameters. */
 function nullable(value) {
   const normalized = String(value || "").trim();
   return normalized || null;
 }
 
+/** Loads one filtered, paginated order page from the admin RPC. */
 export async function getOrdersPage(filters) {
   const client = requireSupabase();
   const { data, error } = await client.rpc("list_admin_orders", {
@@ -31,6 +34,7 @@ export async function getOrdersPage(filters) {
   };
 }
 
+/** Loads a complete order and its immutable item snapshots by public reference. */
 export async function getOrderByReference(orderReference) {
   const client = requireSupabase();
   const { data, error } = await client
@@ -70,6 +74,7 @@ export async function getOrderByReference(orderReference) {
   };
 }
 
+/** Advances or cancels fulfilment through the database-enforced state machine. */
 export async function updateFulfilmentStatus({ orderId, nextFulfilmentStatus }) {
   const client = requireSupabase();
   const { data, error } = await client.rpc("update_order_fulfilment_status", {
@@ -81,6 +86,7 @@ export async function updateFulfilmentStatus({ orderId, nextFulfilmentStatus }) 
   return data;
 }
 
+/** Records an administrator's explicit confirmation of a WhatsApp payment. */
 export async function markWhatsappOrderPaid({ orderId }) {
   const client = requireSupabase();
   const { data, error } = await client.rpc("mark_whatsapp_order_paid", {
@@ -91,6 +97,7 @@ export async function markWhatsappOrderPaid({ orderId }) {
   return data;
 }
 
+/** Deletes an eligible order through the confirmation-gated owner RPC. */
 export async function deleteOrder({ orderId, confirmation }) {
   const client = requireSupabase();
   const { data, error } = await client.rpc("delete_admin_order", {

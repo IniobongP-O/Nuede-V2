@@ -6,20 +6,24 @@ import { formatPlannerDate, PLANNER_SLOTS } from "../utils/plannerModel.js";
 
 const dragType = "application/x-nuede-planner-slot";
 
+/** Compares two optional planner slot addresses. */
 function sameAddress(left, right) {
   return left?.date === right?.date && left?.slot === right?.slot;
 }
 
+/** Renders one selectable, replaceable, removable, and drag/drop meal slot. */
 function MealSlot({ date, definition, meal, activeTarget, onSelect, onReplace, onRemove, onDropProduct, onMoveMeal }) {
   const address = { date, slot: definition.key };
   const active = sameAddress(activeTarget, address);
 
+  /** Publishes this occupied slot's address as the drag payload. */
   function handleDragStart(event) {
     if (!meal) return;
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData(dragType, JSON.stringify(address));
   }
 
+  /** Routes a dropped catalog product or existing meal to the correct transition. */
   function handleDrop(event) {
     event.preventDefault();
     const source = event.dataTransfer.getData(dragType);
@@ -69,6 +73,7 @@ function MealSlot({ date, definition, meal, activeTarget, onSelect, onReplace, o
   );
 }
 
+/** Renders the dated planner grid and routes slot interactions to its owner. */
 export function PlannerSchedule({ plan, activeTarget, onSelect, onReplace, onRemove, onDropProduct, onMoveMeal }) {
   return (
     <div className="grid gap-4" aria-label="Meal plan schedule">

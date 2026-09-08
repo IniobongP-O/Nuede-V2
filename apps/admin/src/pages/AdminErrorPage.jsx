@@ -2,6 +2,7 @@ import nuedeLogo from "@nuede/config/nuede-logo.svg";
 import { AlertTriangle, LogIn, RotateCcw } from "lucide-react";
 import { Component } from "react";
 
+/** Renders the protected admin error boundary with recovery and sign-out actions. */
 export function AdminErrorPage() {
   return (
     <main className="grid min-h-screen bg-canvas lg:grid-cols-[0.8fr_1.2fr]">

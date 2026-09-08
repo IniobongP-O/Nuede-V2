@@ -3,6 +3,7 @@ import { useEffect, useMemo, useReducer } from "react";
 import { buildProductConfiguration, getCompatibleAddons, getVisibleVariants, validateProductConfiguration } from "../utils/customizationModel.js";
 import { createCustomizationState, customizationReducer, reconcileCustomization } from "../utils/customizationState.js";
 
+/** Owns a product dialog's reconciled selection state and validated submission. */
 export function useProductCustomization(product, onConfigured, initialConfiguration = null) {
   const [storedState, dispatch] = useReducer(customizationReducer, { product, initialConfiguration }, createCustomizationState);
   // Derive valid selections before effects, so no stale configuration can be
@@ -21,6 +22,7 @@ export function useProductCustomization(product, onConfigured, initialConfigurat
   );
   const selectedVariant = visibleVariants.find((variant) => variant.id === variantId) || null;
 
+  /** Validates the current selection and forwards only a canonical configuration. */
   function submit() {
     const result = buildProductConfiguration({ product, variantId, addonIds, quantity });
     dispatch({ type: "submission", product, issues: result.issues });

@@ -1,3 +1,4 @@
+/** Accepts only HTTPS wa.me handoffs with a phone path and prefilled message. */
 export function isSafeWhatsappUrl(value) {
   try {
     const url = new URL(value);
@@ -12,6 +13,7 @@ export function isSafeWhatsappUrl(value) {
   }
 }
 
+/** Opens a validated WhatsApp handoff in an isolated tab and reports success. */
 export function openWhatsappHandoff(url, opener = globalThis.window?.open?.bind(globalThis.window)) {
   if (!isSafeWhatsappUrl(url) || typeof opener !== "function") return false;
   try {

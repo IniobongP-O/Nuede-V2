@@ -3,6 +3,7 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { SelectInput, TextInput } from "../../../components/ui/FormControls.jsx";
 import { contentPageSize } from "../api/contentApi.js";
 
+/** Renders filters appropriate to private feedback or public testimonials. */
 export function ContentFilters({ kind, filters, onChange, onReset }) {
   return <div className="my-6 grid items-end gap-4 sm:grid-cols-2 xl:grid-cols-4">
     <TextInput label="Search" type="search" maxLength={120} placeholder={kind === "feedback" ? "Name, email or message" : "Name or testimonial"} value={filters.search} onChange={(event) => onChange("search", event.target.value)} />
@@ -13,6 +14,7 @@ export function ContentFilters({ kind, filters, onChange, onReset }) {
   </div>;
 }
 
+/** Renders simple previous/next navigation for paginated editorial content. */
 export function ContentPagination({ page, count, onPage }) {
   return <nav aria-label="Content pages" className="mt-6 flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-muted">{count} results · Page {page + 1} of {Math.max(1, Math.ceil(count / contentPageSize))}</p><div className="flex gap-2"><Button variant="secondary" disabled={page === 0} onClick={() => onPage(page - 1)}>Previous</Button><Button variant="secondary" disabled={(page + 1) * contentPageSize >= count} onClick={() => onPage(page + 1)}>Next</Button></div></nav>;
 }

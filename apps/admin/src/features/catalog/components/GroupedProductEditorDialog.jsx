@@ -25,10 +25,12 @@ import { CatalogImageField } from "./CatalogImageField.jsx";
 import { ProductStatusBadge } from "./ProductStatusBadge.jsx";
 import { VariantEditorDialog } from "./VariantEditorDialog.jsx";
 
+/** Mounts a keyed grouped-product editor so form state resets between products. */
 export function GroupedProductEditorDialog(props) {
   return props.open ? <GroupedProductEditorDialogContent {...props} /> : null;
 }
 
+/** Coordinates grouped product fields, variants, add-ons, image, and save rules. */
 function GroupedProductEditorDialogContent({ open, onClose, product, categories, addons, onSaved }) {
   const defaultCategoryId = categories.find((category) => category.is_enabled)?.id || categories[0]?.id || "";
   const saveGroupMutation = useSaveGroupedProduct();

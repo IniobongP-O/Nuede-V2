@@ -12,6 +12,7 @@ export const catalogStatusOptions = Object.freeze([
   { value: "unavailable", label: "Unavailable" },
 ]);
 
+/** Converts editable text to the lowercase hyphenated base used for catalog slugs. */
 export function slugify(value) {
   return String(value)
     .normalize("NFKD")
@@ -21,6 +22,7 @@ export function slugify(value) {
     .replace(/^-+|-+$/g, "") || "item";
 }
 
+/** Maps a standard-product form to database columns and exact integer-kobo values. */
 export function productFormToRecord(values) {
   const status = values.visibility === "shown" ? values.availability : values.visibility;
   return {
@@ -39,6 +41,7 @@ export function productFormToRecord(values) {
   };
 }
 
+/** Maps a grouped-product form to database columns and variant-selection rules. */
 export function groupedProductFormToRecord(values) {
   return {
     category_id: values.categoryId,
@@ -56,6 +59,7 @@ export function groupedProductFormToRecord(values) {
   };
 }
 
+/** Maps a standard product row into stable editor defaults. */
 export function productToFormValues(product, defaultCategoryId = "") {
   const visibility = ["hidden", "archived"].includes(product?.status) ? product.status : "shown";
   const availability = visibility === "shown"
@@ -79,6 +83,7 @@ export function productToFormValues(product, defaultCategoryId = "") {
   };
 }
 
+/** Maps a grouped product row into editor defaults, including selection mode. */
 export function groupedProductToFormValues(product, defaultCategoryId = "") {
   const visibility = ["hidden", "archived"].includes(product?.status) ? product.status : "shown";
   const availability = visibility === "shown" ? product?.status || "unavailable" : "unavailable";
@@ -94,6 +99,7 @@ export function groupedProductToFormValues(product, defaultCategoryId = "") {
   };
 }
 
+/** Maps a variant form to database columns and exact integer-kobo values. */
 export function variantFormToRecord(values) {
   return {
     name: values.name.trim(),
@@ -108,6 +114,7 @@ export function variantFormToRecord(values) {
   };
 }
 
+/** Maps an optional variant row into editor defaults for create or update. */
 export function variantToFormValues(variant, nextSortOrder = 10) {
   const visibility = variant?.status === "hidden" ? "hidden" : "shown";
   return {
@@ -124,6 +131,7 @@ export function variantToFormValues(variant, nextSortOrder = 10) {
   };
 }
 
+/** Maps an add-on form to database columns and exact integer-kobo values. */
 export function addonFormToRecord(values) {
   return {
     name: values.name.trim(),
@@ -136,6 +144,7 @@ export function addonFormToRecord(values) {
   };
 }
 
+/** Maps an optional add-on row into editor defaults for create or update. */
 export function addonToFormValues(addon) {
   return {
     name: addon?.name || "",
@@ -148,6 +157,7 @@ export function addonToFormValues(addon) {
   };
 }
 
+/** Applies admin catalog search, category, status, and product-type filters. */
 export function filterProducts(products, { search = "", category = "all", status = "all", type = "all" }) {
   const normalizedSearch = search.trim().toLocaleLowerCase();
   return products.filter((product) => {
@@ -160,6 +170,7 @@ export function filterProducts(products, { search = "", category = "all", status
   });
 }
 
+/** Resolves a requested admin action to the next permitted product status. */
 export function nextProductStatus(product, action) {
   if (action === "mark_available") {
     if (product.product_type === "grouped") {
@@ -192,6 +203,7 @@ export function nextProductStatus(product, action) {
   throw new Error("Choose a valid status action.");
 }
 
+/** Translates database/catalog failures into actionable admin-facing copy. */
 export function catalogErrorMessage(error) {
   if (error?.code === "23505") return "That name is already in use. Choose a different name.";
   if (error?.code === "23503") return "This change is blocked because related catalog records still reference it.";

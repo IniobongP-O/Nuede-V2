@@ -1,5 +1,6 @@
 import { OrderError } from "./errors.js";
 
+/** Removes calculation-only fields and shapes snapshots for the atomic order RPC. */
 export function persistenceItems(items) {
   return items.map((item) => ({
     product_id: item.product_id,
@@ -19,6 +20,7 @@ export function persistenceItems(items) {
   }));
 }
 
+/** Persists an order header and all child snapshots in one database transaction. */
 export async function persistOrderAtomically(client, snapshot) {
   // The RPC is persistence-only: all pricing decisions were made from current
   // database rows above. One transaction prevents an order header surviving

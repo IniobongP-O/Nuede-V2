@@ -10,10 +10,12 @@ import { catalogErrorMessage, productFormToRecord, productToFormValues } from ".
 import { AddonPicker } from "./AddonPicker.jsx";
 import { CatalogImageField } from "./CatalogImageField.jsx";
 
+/** Mounts a keyed standard-product editor so state resets between products. */
 export function ProductEditorDialog(props) {
   return props.open ? <ProductEditorDialogContent {...props} /> : null;
 }
 
+/** Coordinates standard product validation, add-ons, image changes, and saving. */
 function ProductEditorDialogContent({ open, onClose, product, categories, addons, mutation, onSaved }) {
   const defaultCategoryId = categories.find((category) => category.is_enabled)?.id || categories[0]?.id || "";
   const {

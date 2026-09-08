@@ -20,6 +20,7 @@ import {
   setCartItems,
 } from "../storage/cartStorage.js";
 
+/** Owns canonical cart state, local persistence, cross-tab sync, and cart actions. */
 export function CartProvider({ children }) {
   const [items, setItemsState] = useState(getCartItems);
   const itemsRef = useRef(items);
@@ -39,6 +40,7 @@ export function CartProvider({ children }) {
   useEffect(() => {
     // The storage event synchronizes other tabs; same-tab writes update React
     // state through commit because browsers do not echo this event to the writer.
+    /** Replaces local cart state when another browser tab updates storage. */
     function handleStorage(event) {
       if (event.key !== CART_STORAGE_KEY) return;
       replaceState(parseCartItems(event.newValue));

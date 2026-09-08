@@ -16,15 +16,18 @@ const nutritionNumberFormatter = new Intl.NumberFormat("en-NG", {
   maximumFractionDigits: 2,
 });
 
+/** Returns whether a nutrition value is known, finite, and non-negative. */
 function isKnownNutritionValue(value) {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
 
+/** Accepts either a nutrition record or an object carrying one under `nutrition`. */
 function nutritionSource(entry) {
   if (entry && typeof entry === "object" && "nutrition" in entry) return entry.nutrition;
   return entry;
 }
 
+/** Builds the shared immutable result shape and derives its completeness status. */
 function buildNutritionResult(values, completeness) {
   const result = {};
   for (const { key } of NUTRITION_FIELDS) {
@@ -43,10 +46,12 @@ function buildNutritionResult(values, completeness) {
   return Object.freeze(result);
 }
 
+/** Creates a nutrition result in which every nutrient is explicitly unavailable. */
 function unavailableNutrition() {
   return buildNutritionResult({}, {});
 }
 
+/** Scales known nutrient values while preserving each field's completeness flag. */
 function scaleNutrition(nutrition, multiplier) {
   const values = {};
   const completeness = {};
@@ -57,6 +62,7 @@ function scaleNutrition(nutrition, multiplier) {
   return buildNutritionResult(values, completeness);
 }
 
+/** Validates quantities used to scale a configured meal or plan. */
 function requirePositiveQuantity(quantity) {
   if (!Number.isSafeInteger(quantity) || quantity < 1) {
     throw new RangeError("Nutrition quantity must be a positive whole number.");
@@ -64,6 +70,10 @@ function requirePositiveQuantity(quantity) {
   return quantity;
 }
 
+/**
+ * Sums nutrition across entries without treating unknown values as zero.
+ * Each field records whether every input contributed a complete value.
+ */
 export function calculateNutrition(entries = []) {
   if (!Array.isArray(entries)) throw new TypeError("Nutrition entries must be an array.");
   if (!entries.length) return unavailableNutrition();
@@ -112,6 +122,7 @@ export function calculateItemNutrition({ product, variant = null, addons = [], q
   return scaleNutrition(perUnit, quantity);
 }
 
+/** Returns whether a value already has the domain's calculated-nutrition shape. */
 function isCalculatedNutrition(value) {
   return value
     && typeof value === "object"
@@ -119,6 +130,7 @@ function isCalculatedNutrition(value) {
     && NUTRITION_FIELDS.every(({ key }) => key in value);
 }
 
+/** Calculates aggregate nutrition for configured cart lines or precomputed results. */
 export function calculateCartNutrition(items = []) {
   if (!Array.isArray(items)) throw new TypeError("Cart nutrition items must be an array.");
   const itemNutrition = items.map((item) => (
@@ -127,6 +139,7 @@ export function calculateCartNutrition(items = []) {
   return calculateNutrition(itemNutrition);
 }
 
+/** Normalizes the supported slot shapes into a flat list of configured items. */
 function slotItems(slot) {
   if (!slot) return [];
   if (Array.isArray(slot)) return slot;
@@ -134,6 +147,7 @@ function slotItems(slot) {
   return slot.product ? [slot] : [];
 }
 
+/** Normalizes a plan day, including named slots, into configured items. */
 function dayItems(day) {
   if (!day) return [];
   if (Array.isArray(day)) return day;
@@ -145,6 +159,7 @@ function dayItems(day) {
   return [];
 }
 
+/** Calculates total and per-day nutrition for a meal-plan schedule. */
 export function calculateMealPlanNutrition({ days = [], durationDays = days.length } = {}) {
   if (!Array.isArray(days)) throw new TypeError("Meal-plan days must be an array.");
   requirePositiveQuantity(durationDays);
@@ -159,10 +174,12 @@ export function calculateMealPlanNutrition({ days = [], durationDays = days.leng
   });
 }
 
+/** Formats a known nutrition number for the Nigerian storefront locale. */
 export function formatNutritionNumber(value) {
   return isKnownNutritionValue(value) ? nutritionNumberFormatter.format(value) : null;
 }
 
+/** Formats one nutrient with its unit and optional human-readable label. */
 export function formatNutritionValue(key, value, { includeLabel = false, unknownLabel = "Unknown" } = {}) {
   const field = fieldByKey.get(key);
   if (!field) throw new RangeError(`Unknown nutrition field: ${key}`);
@@ -174,6 +191,7 @@ export function formatNutritionValue(key, value, { includeLabel = false, unknown
     : measurement;
 }
 
+/** Formats every field in a calculated nutrition record for display. */
 export function formatNutrition(nutrition, options) {
   return Object.freeze(Object.fromEntries(
     NUTRITION_FIELDS.map(({ key }) => [key, formatNutritionValue(key, nutrition?.[key], options)]),

@@ -1,6 +1,7 @@
 import { AlertTriangle, Inbox, LoaderCircle } from "lucide-react";
 import { useId } from "react";
 
+/** Provides the common layout for loading, error, and empty-state feedback. */
 function FeedbackShell({ icon, eyebrow, title, message, action, className = "" }) {
   const titleId = useId();
   return (
@@ -14,18 +15,22 @@ function FeedbackShell({ icon, eyebrow, title, message, action, className = "" }
   );
 }
 
+/** Renders the standard page or panel loading state. */
 export function LoadingState({ title = "Loading", message = "This will only take a moment.", className = "" }) {
   return <FeedbackShell icon={<LoaderCircle className="size-5 animate-spin" />} eyebrow="Loading" title={title} message={message} className={className} />;
 }
 
+/** Renders a recoverable error state with an optional action. */
 export function ErrorState({ title = "Something went wrong", message = "Please try again in a moment.", action, className = "" }) {
   return <FeedbackShell icon={<AlertTriangle className="size-5" />} eyebrow="Error" title={title} message={message} action={action} className={className} />;
 }
 
+/** Renders an empty-result state with an optional next action. */
 export function EmptyState({ title, message, action, className = "" }) {
   return <FeedbackShell icon={<Inbox className="size-5" />} eyebrow="Empty" title={title} message={message} action={action} className={className} />;
 }
 
+/** Renders a compact inline busy indicator for local operations. */
 export function InlineLoading({ label = "Loading" }) {
   return <span className="inline-flex items-center gap-2 text-sm text-muted" role="status"><LoaderCircle className="size-4 animate-spin" aria-hidden="true" />{label}</span>;
 }

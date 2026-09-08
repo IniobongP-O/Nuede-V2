@@ -11,6 +11,7 @@ import {
 export const PLANNER_STORAGE_KEY = "nuede:v2:meal-plan";
 export const PLANNER_STORAGE_VERSION = 1;
 
+/** Resolves an injected storage adapter or the browser's accessible localStorage. */
 function browserStorage(storage) {
   if (storage !== undefined) return storage;
   try {
@@ -20,6 +21,7 @@ function browserStorage(storage) {
   }
 }
 
+/** Rebuilds a canonical current-date plan while salvaging valid persisted slots. */
 export function normalizeStoredPlan(value, fallbackOptions = {}) {
   // Browser storage may be stale or manually edited. Rebuild the canonical date
   // grid from the real calendar and salvage valid slots by their day position.
@@ -56,6 +58,7 @@ export function normalizeStoredPlan(value, fallbackOptions = {}) {
   };
 }
 
+/** Parses serialized plan state and falls back to a new plan when corrupted. */
 export function parseStoredPlan(serialized, fallbackOptions = {}) {
   if (serialized === null || serialized === undefined || serialized === "") return createPlan(fallbackOptions);
   try {
@@ -65,6 +68,7 @@ export function parseStoredPlan(serialized, fallbackOptions = {}) {
   }
 }
 
+/** Reads a plan without allowing browser storage failures to break the planner. */
 export function getStoredPlan(storage, fallbackOptions = {}) {
   const target = browserStorage(storage);
   if (!target) return createPlan(fallbackOptions);
@@ -75,6 +79,7 @@ export function getStoredPlan(storage, fallbackOptions = {}) {
   }
 }
 
+/** Persists the canonical plan envelope and reports whether the write succeeded. */
 export function setStoredPlan(plan, storage) {
   const target = browserStorage(storage);
   if (!target) return false;

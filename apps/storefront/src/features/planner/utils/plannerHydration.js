@@ -27,10 +27,12 @@ const statusDetails = Object.freeze({
   invalid_addon: { label: "Add-on changed", message: "A selected add-on is unavailable or no longer compatible." },
 });
 
+/** Creates explicit unavailable nutrition for a missing catalog selection. */
 function unavailableNutrition() {
   return calculateNutrition([{}]);
 }
 
+/** Classifies a resolved planner meal against current catalog rules. */
 function statusFor(configuration, product, variant, addons, missingAddonIds) {
   if (product.menuStatus === "sold_out") return PLANNER_MEAL_STATUS.soldOut;
   if (product.menuStatus === "price_pending") return PLANNER_MEAL_STATUS.pricePending;
@@ -46,6 +48,7 @@ function statusFor(configuration, product, variant, addons, missingAddonIds) {
   return validation.valid ? PLANNER_MEAL_STATUS.valid : PLANNER_MEAL_STATUS.unavailable;
 }
 
+/** Resolves one persisted planner configuration against current catalog data. */
 export function hydratePlannerMeal(configuration, products = []) {
   // Plans persist stable IDs only. Re-resolving them keeps availability and
   // compatibility current while preserving stale slots for customer correction.
@@ -89,6 +92,7 @@ export function hydratePlannerMeal(configuration, products = []) {
   };
 }
 
+/** Hydrates every occupied slot in a plan against one public catalog snapshot. */
 export function hydratePlan(plan, products = []) {
   return {
     ...plan,
@@ -102,6 +106,7 @@ export function hydratePlan(plan, products = []) {
   };
 }
 
+/** Builds planner totals, validation issues, and checkout readiness from live catalog data. */
 export function calculatePlannerSummary(plan, products = []) {
   const hydratedPlan = hydratePlan(plan, products);
   const meals = hydratedPlan.days.flatMap((day) => PLANNER_SLOT_KEYS.flatMap((slot) => day.slots[slot] || []));

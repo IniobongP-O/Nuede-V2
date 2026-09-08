@@ -10,6 +10,7 @@ import { Testimonials } from "../features/content/components/Testimonials.jsx";
 import { faqs, nutritionDisclaimer } from "../features/content/config/storefrontContent.js";
 import { useMenu } from "../features/menu/hooks/useMenu.js";
 
+/** Renders the storefront landing page from live menu and editorial sections. */
 export function HomePage() {
   const menu = useMenu();
   return <>

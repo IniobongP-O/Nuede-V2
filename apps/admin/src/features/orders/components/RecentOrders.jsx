@@ -5,6 +5,7 @@ import { OrdersList } from "./OrdersList.jsx";
 
 const recentFilters = Object.freeze({ page: 1, pageSize: 5 });
 
+/** Loads and renders the most recent orders for the admin dashboard. */
 export function RecentOrders() {
   const query = useOrders(recentFilters);
   return <section className="mt-6 min-w-0" aria-labelledby="recent-orders-heading">

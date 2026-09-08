@@ -26,10 +26,12 @@ import { buildProductConfiguration } from "../features/product-detail/utils/cust
 
 const emptyList = Object.freeze([]);
 
+/** Converts a planner address into a readable date-and-slot label. */
 function slotLabel(address) {
   return PLANNER_SLOTS.find(({ key }) => key === address?.slot)?.label || "meal";
 }
 
+/** Coordinates meal-plan library filtering, slot editing, persistence, and checkout. */
 export function PlannerPage() {
   const planner = usePlanner();
   const { notify } = useToast();
@@ -47,15 +49,18 @@ export function PlannerPage() {
   const isLoading = categoriesQuery.isPending || menuQuery.isPending;
   const hasError = categoriesQuery.isError || menuQuery.isError;
 
+  /** Announces whether a successful plan transition also reached local storage. */
   function announcePersistence(result, successMessage) {
     notify(result.persisted ? successMessage : `${successMessage}, but we couldn't save the change for your next visit.`, result.persisted ? "success" : "error");
   }
 
+  /** Selects a destination slot and scrolls the meal library into view. */
   function selectTarget(address) {
     setActiveTarget(address);
     requestAnimationFrame(() => document.getElementById("planner-meal-search")?.focus());
   }
 
+  /** Applies an expansion immediately or asks before discarding populated days. */
   function requestDuration(durationDays) {
     if (durationDays === planner.plan.durationDays) return;
     if (populatedDaysRemovedByResize(planner.plan, durationDays).length) {
@@ -66,6 +71,7 @@ export function PlannerPage() {
     if (activeTarget && !result.plan.days.some((day) => day.date === activeTarget.date)) setActiveTarget(null);
   }
 
+  /** Applies the pending duration reduction after customer confirmation. */
   function confirmDuration() {
     const result = planner.changeDuration(pendingDuration);
     if (activeTarget && !result.plan.days.some((day) => day.date === activeTarget.date)) setActiveTarget(null);
@@ -73,6 +79,7 @@ export function PlannerPage() {
     setPendingDuration(null);
   }
 
+  /** Opens a product for target assignment, quick add, or slot replacement. */
   function openProduct(product, mode = "target", target = activeTarget) {
     if (!product.isOrderable) {
       setDetail({ productId: product.id, mode: "view", target: null });
@@ -86,6 +93,7 @@ export function PlannerPage() {
     setDetail({ productId: product.id, mode, target: resolvedTarget });
   }
 
+  /** Routes a completed customization through the requested planner action. */
   function handleConfigured(configuration) {
     if (detail?.mode === "target" && detail.target) {
       const result = planner.assignMeal(detail.target, configuration);
@@ -101,6 +109,7 @@ export function PlannerPage() {
     announcePersistence(result, `${selectedProduct?.name || "Meal"} placed in the next empty slot`);
   }
 
+  /** Adds an orderable product or opens customization when required. */
   function quickAddProduct(product) {
     if (!getNextEmptySlot(planner.plan)) {
       notify("Every planner slot is already filled.", "error");
@@ -120,6 +129,7 @@ export function PlannerPage() {
     announcePersistence(result, `${product.name} placed in the next empty slot`);
   }
 
+  /** Resolves a dragged catalog ID and assigns it to the addressed slot. */
   function dropProduct(productId, address) {
     const product = products.find((candidate) => candidate.id === productId);
     if (!product?.isOrderable) {
@@ -136,17 +146,20 @@ export function PlannerPage() {
     announcePersistence(planner.assignMeal(address, built.configuration), `${product.name} placed in ${slotLabel(address)}`);
   }
 
+  /** Removes one meal and reports local-persistence availability. */
   function removeMeal(address) {
     announcePersistence(planner.removeMeal(address), `${slotLabel(address)} cleared`);
     if (activeTarget?.date === address.date && activeTarget.slot === address.slot) setActiveTarget(null);
   }
 
+  /** Moves or swaps a scheduled meal and reports local persistence. */
   function moveMeal(source, target) {
     if (!getSlotMeal(planner.plan, source)) return;
     announcePersistence(planner.moveMeal(source, target), "Meal moved to its new slot");
     setActiveTarget(null);
   }
 
+  /** Refetches both catalog queries after a planner loading failure. */
   function retry() {
     return Promise.all([categoriesQuery.refetch(), menuQuery.refetch()]);
   }

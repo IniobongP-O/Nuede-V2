@@ -10,6 +10,7 @@ import { Dialog } from "../ui/Dialog.jsx";
 import { IconButton } from "../ui/Button.jsx";
 import { Container } from "./Container.jsx";
 
+/** Renders the linked Nuede wordmark. */
 function Brand() {
   return (
     <Link className="inline-flex min-h-11 items-center gap-2 rounded text-brand-950" to={storefrontPaths.home} aria-label="Nuede home">
@@ -18,6 +19,7 @@ function Brand() {
   );
 }
 
+/** Renders a route-aware link and closes mobile navigation after selection. */
 function NavigationLink({ item, onNavigate, mobile = false }) {
   return (
     <NavLink
@@ -31,6 +33,7 @@ function NavigationLink({ item, onNavigate, mobile = false }) {
   );
 }
 
+/** Renders responsive storefront navigation, saved count, and cart controls. */
 export function StorefrontHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);

@@ -1,5 +1,6 @@
 import { checkoutSubmissionSchema } from "@nuede/validation/checkout";
 
+/** Simulates checkout latency and returns a deterministic local development result. */
 export async function submitCheckoutMock(contract) {
   const parsed = checkoutSubmissionSchema.parse(contract);
   await Promise.resolve();

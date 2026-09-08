@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useId, useRef } from "react";
 import { IconButton } from "../../../components/ui/Button.jsx";
 
+/** Renders horizontally scrollable content with labelled previous/next controls. */
 export function ScrollCarousel({ label, children }) {
   const ref = useRef(null);
   const drag = useRef(null);

@@ -5,6 +5,10 @@ import { buildSuccessResponse } from "./response.js";
 import { parseCheckoutRequest } from "./schema.js";
 import { buildOrderSnapshot } from "./snapshots.js";
 
+/**
+ * Runs the authoritative order pipeline from untrusted checkout input to persistence.
+ * Dependencies are injectable so each trust-boundary stage can be tested in isolation.
+ */
 export async function createAuthoritativeOrder(candidate, client, dependencies = {}) {
   const loadContext = dependencies.loadContext || loadOrderContext;
   const persist = dependencies.persist || persistOrderAtomically;

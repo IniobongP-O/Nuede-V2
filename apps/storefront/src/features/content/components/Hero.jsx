@@ -10,6 +10,7 @@ const slides = [
   { title: "A little planning. A week of good food.", text: "Bring your next 2–7 days into focus. Build a meal plan and review the nutrition of your choices before you order.", cta: "Build a meal plan", to: storefrontPaths.planner },
 ];
 
+/** Renders the home-page value proposition with a live catalog preview. */
 export function Hero({ products = [] }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);

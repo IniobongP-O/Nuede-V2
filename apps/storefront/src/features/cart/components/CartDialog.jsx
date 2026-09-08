@@ -22,12 +22,14 @@ import {
 
 const emptyList = Object.freeze([]);
 
+/** Returns persistence-aware toast copy for a completed cart action. */
 function persistMessage(result, successMessage) {
   return result.persisted
     ? { message: successMessage, tone: "success" }
     : { message: `${successMessage}, but we couldn't save the change for your next visit.`, tone: "error" };
 }
 
+/** Renders a line's current price or its explicit unavailable state. */
 function PriceDisplay({ item }) {
   if (!item.price.complete) return <p className="text-sm font-semibold text-warning">Current price unavailable</p>;
   return (
@@ -38,6 +40,7 @@ function PriceDisplay({ item }) {
   );
 }
 
+/** Renders the compact macro summary for one configured cart line. */
 function LineNutrition({ nutrition }) {
   if (!nutrition.hasAny) return <p className="text-xs text-muted">Nutrition unavailable</p>;
   const values = NUTRITION_FIELDS.map(({ key, shortLabel }) => (
@@ -51,12 +54,14 @@ function LineNutrition({ nutrition }) {
   );
 }
 
+/** Maps cart availability states to badge tones. */
 function statusTone(status) {
   if (status === CART_ITEM_STATUS.valid) return "success";
   if (status === CART_ITEM_STATUS.soldOut || status === CART_ITEM_STATUS.pricePending || status === CART_ITEM_STATUS.invalidAddon) return "warning";
   return "danger";
 }
 
+/** Renders one hydrated cart line and its edit, quantity, and removal actions. */
 function CartLine({ item, index, onIncrement, onDecrement, onRemove, onEdit }) {
   const name = item.product?.name || "Unavailable meal";
   const quantity = item.configuration.quantity;
@@ -106,6 +111,7 @@ function CartLine({ item, index, onIncrement, onDecrement, onRemove, onEdit }) {
   );
 }
 
+/** Renders aggregate price/nutrition and enables checkout only for a valid cart. */
 function CartSummary({ items, subtotal, nutrition, onCheckout }) {
   const ready = items.length > 0 && items.every((item) => item.orderable) && subtotal.complete;
   return (
@@ -138,6 +144,7 @@ function CartSummary({ items, subtotal, nutrition, onCheckout }) {
   );
 }
 
+/** Renders and coordinates the persisted cart, live hydration, editing, and checkout. */
 export function CartDialog({ open, onClose }) {
   const [clearOpen, setClearOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -150,33 +157,40 @@ export function CartDialog({ open, onClose }) {
   const nutrition = useMemo(() => calculateHydratedCartNutrition(hydratedItems), [hydratedItems]);
   const editProduct = editItem ? products.find((product) => product.id === editItem.configuration.productId) || null : null;
 
+  /** Shows requested success copy or warns that the browser write failed. */
   function report(result, message) {
     const feedback = persistMessage(result, message);
     notify(feedback.message, feedback.tone);
   }
 
+  /** Increments one line and reports persistence availability. */
   function handleIncrement(item) {
     report(cart.incrementItem(item.key), `${item.product?.name || "Meal"} quantity increased`);
   }
 
+  /** Decrements one line and reports persistence availability. */
   function handleDecrement(item) {
     report(cart.decrementItem(item.key), `${item.product?.name || "Meal"} quantity decreased`);
   }
 
+  /** Removes one line and reports persistence availability. */
   function handleRemove(item) {
     report(cart.removeItem(item.key), `${item.product?.name || "Unavailable meal"} removed from basket`);
   }
 
+  /** Opens customization for the selected hydrated line. */
   function beginEdit(item) {
     setEditItem(item);
     onClose();
   }
 
+  /** Replaces the edited line with its newly validated configuration. */
   function handleReconfigured(configuration) {
     report(cart.replaceItem(editItem.key, configuration), "Basket selection updated");
     setEditItem(null);
   }
 
+  /** Clears every cart line after explicit customer confirmation. */
   function confirmClear() {
     report(cart.clearCart(), "Basket cleared");
     setClearOpen(false);

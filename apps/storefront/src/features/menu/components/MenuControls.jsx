@@ -10,10 +10,12 @@ const quickFilters = Object.freeze([
   { id: "complete-nutrition", label: "Complete nutrition" },
 ]);
 
+/** Renders an accessible pressed-state chip for one menu filter. */
 function ToggleChip({ pressed, children, ...props }) {
   return <button type="button" aria-pressed={pressed} className={`min-h-10 shrink-0 rounded-full border px-4 text-sm font-semibold transition-colors ${pressed ? "border-brand-950 bg-brand-950 text-white" : "border-line bg-surface text-brand-950 hover:border-muted"}`} {...props}>{children}</button>;
 }
 
+/** Renders search, category, dietary filters, result count, and reset controls. */
 export function MenuControls({ categories, search, onSearchChange, categoryId, onCategoryChange, filters, onFilterToggle, resultCount, onReset }) {
   const hasRefinements = search.trim() || categoryId !== "all" || filters.length;
 

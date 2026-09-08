@@ -6,10 +6,12 @@ export const PLANNER_FILTERS = Object.freeze([
   Object.freeze({ id: "complete-macros", label: "Complete Macros" }),
 ]);
 
+/** Finds categories whose normalized name or slug contains a semantic token. */
 function categoryIdsMatching(categories, token) {
   return new Set(categories.filter((category) => `${category.slug} ${category.name}`.toLocaleLowerCase().includes(token)).map((category) => category.id));
 }
 
+/** Applies planner search and the selected nutritional or category shortcut. */
 export function filterPlannerProducts(products, categories, { search = "", filter = "all" } = {}) {
   const query = search.trim().toLocaleLowerCase();
   const mainCategoryIds = categoryIdsMatching(categories, "main");

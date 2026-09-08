@@ -11,6 +11,10 @@ export const faqs = Object.freeze([
   { question: "How do WhatsApp orders work?", answer: "We'll save your order before opening WhatsApp with your order number and summary. Follow our team's payment instructions; continuing to WhatsApp does not mean the order is paid." },
 ]);
 
+/**
+ * Builds only valid, explicitly configured contact destinations for the footer.
+ * Invalid optional settings are omitted rather than rendered as broken or unsafe links.
+ */
 export function getContactContent(env = {}) {
   const clean = (key) => typeof env[key] === "string" ? env[key].trim() : "";
   const phone = clean("VITE_CONTACT_PHONE");

@@ -6,6 +6,7 @@ import { Card } from "../../../components/ui/Surface.jsx";
 import { formatPlannerDate, PLANNER_SLOTS } from "../../planner/utils/plannerModel.js";
 import { CHECKOUT_SOURCE } from "../utils/checkoutModel.js";
 
+/** Renders aggregate checkout macros and their completeness status. */
 function NutritionReview({ nutrition }) {
   if (!nutrition?.hasAny) return <p className="mt-3 text-sm text-muted">Nutrition information is unavailable for this order.</p>;
   return (
@@ -21,6 +22,7 @@ function NutritionReview({ nutrition }) {
   );
 }
 
+/** Renders the configured basket lines included in checkout. */
 function CartReview({ items }) {
   return (
     <ul className="mt-5 divide-y divide-line">
@@ -38,6 +40,7 @@ function CartReview({ items }) {
   );
 }
 
+/** Renders the dated occupied slots included in meal-plan checkout. */
 function MealPlanReview({ summary }) {
   return (
     <div className="mt-5 grid gap-4">
@@ -63,6 +66,7 @@ function MealPlanReview({ summary }) {
   );
 }
 
+/** Renders source items, delivery fee, nutrition, and estimated checkout total. */
 export function CheckoutReview({ source, cartItems, plannerSummary, nutrition, subtotalKobo, selectedZone, totalKobo }) {
   return (
     <Card as="section" className="p-5 sm:p-6" aria-labelledby="checkout-review-title">

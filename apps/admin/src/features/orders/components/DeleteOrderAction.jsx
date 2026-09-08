@@ -9,6 +9,7 @@ import { useAuth } from "../../auth/hooks/useAuth.js";
 import { useDeleteOrder } from "../hooks/useOrders.js";
 import { orderErrorMessage } from "../utils/orderUtils.js";
 
+/** Confirms and executes eligible order deletion with exact reference matching. */
 export function DeleteOrderAction({ order, onDeleted, size = "small" }) {
   const { admin } = useAuth();
   const { notify } = useToast();

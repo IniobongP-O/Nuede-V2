@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { verifyPaystackPayment } from "../api/checkoutApi.js";
 import { isValidPaystackReference } from "../utils/paymentResultModel.js";
 
+/** Polls backend reconciliation for a valid Paystack reference until it is terminal. */
+/** Polls backend reconciliation for a valid Paystack reference until terminal or capped. */
 export function usePaystackPayment(reference) {
   return useQuery({
     queryKey: ["storefront-checkout", "paystack-payment", reference],

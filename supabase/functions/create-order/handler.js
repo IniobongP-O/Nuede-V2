@@ -3,6 +3,7 @@ import { corsHeaders } from "../_shared/cors.js";
 import { createAuthoritativeOrder } from "../_shared/order/engine.js";
 import { OrderError, publicErrorBody } from "../_shared/order/errors.js";
 
+/** Serializes a CORS-enabled JSON response for the public order endpoint. */
 function json(body, status) {
   return new Response(JSON.stringify(body), {
     status,
@@ -10,6 +11,7 @@ function json(body, status) {
   });
 }
 
+/** Handles preflight, payload parsing, authoritative creation, and safe error mapping. */
 export async function handleCreateOrderRequest(request, { client, logger = console, createOrder = createAuthoritativeOrder } = {}) {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
   if (request.method !== "POST") {

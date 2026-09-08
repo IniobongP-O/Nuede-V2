@@ -13,20 +13,24 @@ const menuProductFields = [
   "product_addon_assignments(addon_id,sort_order,addon:product_addons!product_addon_assignments_addon_fk(id,name,price_kobo,calories,protein_g,carbohydrates_g,fat_g,is_available,updated_at))",
 ].join(",");
 
+/** Returns the configured Supabase client or fails with the setup error. */
 function requireSupabase() {
   if (!supabase) throw new Error(supabaseConfigurationError);
   return supabase;
 }
 
+/** Converts a query failure into the storefront's stable menu error. */
 function throwIfError(error) {
   if (error) throw new Error("The live menu could not be loaded.", { cause: error });
 }
 
+/** Resolves a public Storage object path to its customer-facing URL. */
 export function getCatalogImageUrl(path) {
   if (!path) return "";
   return requireSupabase().storage.from(catalogImageBucket).getPublicUrl(path).data.publicUrl;
 }
 
+/** Loads enabled menu categories in their configured display order. */
 export async function getCategories() {
   const { data, error } = await requireSupabase()
     .from("categories")
@@ -38,6 +42,7 @@ export async function getCategories() {
   return data || [];
 }
 
+/** Loads and normalizes every product visible to anonymous storefront users. */
 export async function getMenuProducts() {
   // The enabled-category inner relationship and public RLS jointly define what
   // anonymous customers may see. Embedded variants/add-ons avoid N+1 requests.

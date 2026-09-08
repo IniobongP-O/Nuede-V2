@@ -1,11 +1,13 @@
 import { supabase, supabaseConfigurationError } from "../../../lib/supabaseClient.js";
 import { normalizeCheckoutSettings, normalizeDeliveryZone } from "../utils/checkoutModel.js";
 
+/** Returns the configured Supabase client or fails with the setup error. */
 function requireSupabase() {
   if (!supabase) throw new Error(supabaseConfigurationError);
   return supabase;
 }
 
+/** Loads active delivery zones and converts database rows to checkout models. */
 export async function getDeliveryZones() {
   const { data, error } = await requireSupabase().from("delivery_zones")
     .select("id,name,fee_kobo,sort_order")
@@ -16,6 +18,7 @@ export async function getDeliveryZones() {
   return (data || []).map(normalizeDeliveryZone);
 }
 
+/** Loads the singleton public payment-method settings row. */
 export async function getCheckoutSettings() {
   const { data, error } = await requireSupabase().from("checkout_payment_options")
     .select("paystack_enabled,whatsapp_enabled")
@@ -47,10 +50,12 @@ const customerErrorMessages = Object.freeze({
   INVALID_PAYMENT_REFERENCE: "This payment link is incomplete or no longer valid.",
 });
 
+/** Maps a backend error code to safe customer copy without exposing internals. */
 function customerErrorMessage(code, fallback) {
   return customerErrorMessages[code] || fallback;
 }
 
+/** Extracts structured recovery information from a failed Edge Function response. */
 async function functionErrorBody(error) {
   // Supabase exposes non-2xx function bodies on the response context. Clone it so
   // reading structured recovery data does not consume another caller's stream.
@@ -63,6 +68,7 @@ async function functionErrorBody(error) {
   }
 }
 
+/** Persists an authoritative order and returns its validated WhatsApp handoff. */
 export async function createWhatsappOrder(contract) {
   const { data, error } = await requireSupabase().functions.invoke("create-whatsapp-order", { body: contract });
   if (error) {
@@ -80,6 +86,7 @@ export async function createWhatsappOrder(contract) {
   return data.order;
 }
 
+/** Creates an authoritative order and returns a validated Paystack initialization. */
 export async function initializePaystackCheckout(contract) {
   const { data, error } = await requireSupabase().functions.invoke("initialize-paystack", { body: contract });
   if (error) {
@@ -96,6 +103,7 @@ export async function initializePaystackCheckout(contract) {
   return payment;
 }
 
+/** Requests backend/provider reconciliation for a known Paystack reference. */
 export async function verifyPaystackPayment(reference) {
   // The reference is a lookup key only. The Edge Function verifies non-terminal
   // attempts with Paystack; this client response cannot mark an order paid.

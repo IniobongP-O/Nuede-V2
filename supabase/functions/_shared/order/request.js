@@ -1,5 +1,6 @@
 export const MEAL_SLOTS = Object.freeze(["breakfast", "lunch", "dinner", "snack"]);
 
+/** Converts either checkout contract into one shared list of configured order lines. */
 export function flattenOrderItems(request) {
   if (request.orderType === "cart") {
     return request.items.map((configuration) => ({
@@ -17,6 +18,7 @@ export function flattenOrderItems(request) {
   }));
 }
 
+/** Collects unique catalog IDs so order context can be loaded in bounded batches. */
 export function collectSelectionIds(items) {
   const productIds = new Set();
   const variantIds = new Set();

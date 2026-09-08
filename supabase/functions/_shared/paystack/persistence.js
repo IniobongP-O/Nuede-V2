@@ -4,10 +4,12 @@ import { OrderError } from "../order/errors.js";
 import { persistenceItems } from "../order/persistence.js";
 import { normalizeWhatsappRecipient } from "../whatsapp.js";
 
+/** Creates the standard database-stage error for payment persistence failures. */
 function persistenceFailure(message, cause) {
   return new OrderError("PAYMENT_PERSISTENCE_FAILED", message, { status: 500, stage: "payment_persistence", cause });
 }
 
+/** Persists the order and its pending Paystack attempt in one transaction. */
 export async function persistPaystackOrderAtomically(client, snapshot, reference) {
   // The order and pending attempt must either both exist or neither exist. This
   // permanent record is created before contacting hosted checkout so later
@@ -26,6 +28,7 @@ export async function persistPaystackOrderAtomically(client, snapshot, reference
   return data;
 }
 
+/** Records initialization failure without overwriting a concurrently paid attempt. */
 export async function failPaystackInitialization(client, reference, failureCode = "initialization_failed") {
   const { data, error } = await client.rpc("record_paystack_initialization_failure_atomic", {
     p_provider_reference: reference,
@@ -34,6 +37,7 @@ export async function failPaystackInitialization(client, reference, failureCode 
   if (error || !["pending", "paid"].includes(data?.status)) throw persistenceFailure("The failed initialization could not be recorded safely.", error);
 }
 
+/** Idempotently applies a provider transaction to its local payment and order. */
 export async function reconcilePaystackPayment(client, transaction) {
   // Webhooks and browser-triggered verification deliberately share the same
   // locked RPC, making duplicate or concurrent provider events idempotent.
@@ -49,6 +53,7 @@ export async function reconcilePaystackPayment(client, transaction) {
   return data;
 }
 
+/** Loads one Paystack attempt together with the status of its owning order. */
 export async function loadPaystackPayment(client, reference) {
   const { data, error } = await client.from("payments")
     .select("id,order_id,amount_kobo,status,verification_status,provider_reference,failure_code,orders!inner(order_reference,payment_status,fulfilment_status,total_kobo)")
@@ -59,11 +64,13 @@ export async function loadPaystackPayment(client, reference) {
   return data || null;
 }
 
+/** Converts stored integer-kobo representations to a safe number or null. */
 function safeKobo(value) {
   const numeric = typeof value === "string" ? Number(value) : value;
   return Number.isSafeInteger(numeric) && numeric >= 0 ? numeric : null;
 }
 
+/** Builds an optional WhatsApp follow-up for a payment proven to be paid. */
 export function buildPaidWhatsappHandoff(result, recipient) {
   if (!recipient) return null;
   try {
@@ -82,6 +89,7 @@ export function buildPaidWhatsappHandoff(result, recipient) {
   }
 }
 
+/** Derives the public payment state from the payment row and matching order state. */
 export function normalizePaymentResult(row, { statusOverride, whatsappRecipient } = {}) {
   if (!row) return null;
   const order = Array.isArray(row.orders) ? row.orders[0] : row.orders;

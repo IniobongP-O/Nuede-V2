@@ -9,6 +9,7 @@ import { TextInput } from "../components/ui/FormControls.jsx";
 import { useAuth } from "../features/auth/hooks/useAuth.js";
 import { loginSchema } from "../features/auth/validation/loginSchema.js";
 
+/** Maps authentication failures to concise login guidance. */
 function loginErrorMessage(error) {
   if (error?.message?.toLowerCase().includes("invalid login credentials")) {
     return "The email address or password is incorrect.";
@@ -17,6 +18,7 @@ function loginErrorMessage(error) {
   return "Nuede could not sign you in. Check the connection and try again.";
 }
 
+/** Owns validation and submission of the administrator sign-in form. */
 export function LoginPage() {
   const { signIn } = useAuth();
   const [submitError, setSubmitError] = useState("");

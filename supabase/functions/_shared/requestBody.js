@@ -1,6 +1,9 @@
 import { OrderError } from "./order/errors.js";
 
-// Bound bytes while reading: Content-Length alone is untrusted and may be absent.
+/**
+ * Reads a request body while enforcing the byte limit on the actual stream.
+ * `Content-Length` is used only as an early rejection because it may be absent or false.
+ */
 export async function readRequestText(request, maxBytes = 128 * 1024) {
   const tooLarge = () => new OrderError("PAYLOAD_TOO_LARGE", "The request is too large.", { status: 413, stage: "request" });
   if (Number(request.headers.get("content-length")) > maxBytes) throw tooLarge();
@@ -26,6 +29,7 @@ export async function readRequestText(request, maxBytes = 128 * 1024) {
   }
 }
 
+/** Reads a bounded request body and parses it as JSON. */
 export async function readRequestJson(request) {
   return JSON.parse(await readRequestText(request));
 }

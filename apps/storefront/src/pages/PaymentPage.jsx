@@ -17,6 +17,7 @@ const presentations = Object.freeze({
   failed: { icon: CircleAlert, tone: "danger", badge: "Not confirmed", title: "We couldn't confirm this payment", message: "You can return to the menu and try again when you're ready." },
 });
 
+/** Reconciles a returned Paystack reference and renders its trusted payment state. */
 export function PaymentPage() {
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") || "";

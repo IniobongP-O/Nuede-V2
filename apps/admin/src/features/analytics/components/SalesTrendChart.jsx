@@ -5,6 +5,7 @@ import { EmptyState } from "../../../components/ui/FeedbackStates.jsx";
 import { Panel } from "../../../components/ui/AdminPrimitives.jsx";
 import { chartMoneyValue, formatAnalyticsDate, formatChartKobo } from "../utils/analyticsUtils.js";
 
+/** Renders the formatted hover detail for the selected trend point. */
 function ChartTooltip({ active, payload, label, metric }) {
   if (!active || !payload?.length) return null;
   const value = payload[0].value;
@@ -12,6 +13,7 @@ function ChartTooltip({ active, payload, label, metric }) {
   return <div className="rounded-control border border-line bg-surface px-3 py-2 shadow-floating"><p className="text-xs text-muted">{formatAnalyticsDate(label)}</p><p className="mt-1 text-sm font-semibold text-brand-950">{metric === "revenue" ? formatKobo(exactValue) : `${Number(value).toLocaleString("en-NG")} paid orders`}</p></div>;
 }
 
+/** Renders daily revenue or order count over the active analytics range. */
 export function SalesTrendChart({ dailySales = [], metric = "revenue", compact = false }) {
   const isRevenue = metric === "revenue";
   const title = isRevenue ? "Revenue over time" : "Paid orders over time";

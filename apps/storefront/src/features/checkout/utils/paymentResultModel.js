@@ -5,10 +5,12 @@ export const PAYMENT_RESULT_STATES = Object.freeze({
   failed: "failed",
 });
 
+/** Validates the restricted reference alphabet accepted by the payment endpoint. */
 export function isValidPaystackReference(value) {
   return typeof value === "string" && /^[A-Za-z0-9.=-]{6,100}$/.test(value);
 }
 
+/** Maps query and backend reconciliation state to one payment-result screen state. */
 export function paymentResultState({ reference, isPending, isError, payment }) {
   // Redirect presence or query parameters are never proof of payment; only the
   // backend's reconciled status can produce the successful UI state.

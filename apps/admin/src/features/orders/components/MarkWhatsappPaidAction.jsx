@@ -11,6 +11,7 @@ import { orderErrorMessage } from "../utils/orderUtils.js";
 
 const payableStatuses = new Set(["unpaid", "pending", "failed"]);
 
+/** Confirms and records an administrator-observed WhatsApp payment. */
 export function MarkWhatsappPaidAction({ order }) {
   const { admin } = useAuth();
   const { notify } = useToast();

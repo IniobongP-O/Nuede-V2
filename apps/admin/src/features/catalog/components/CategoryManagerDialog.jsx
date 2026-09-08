@@ -10,6 +10,7 @@ import { useToast } from "../../../components/ui/toastContext.js";
 import { useCreateCategory, useSetCategoryEnabled, useUpdateCategory } from "../hooks/useCatalog.js";
 import { catalogErrorMessage } from "../utils/catalogUtils.js";
 
+/** Renders editable category identity, order, and availability controls. */
 function CategoryRow({ category, updateMutation, enableMutation }) {
   const [name, setName] = useState(category.name);
   const [sortOrder, setSortOrder] = useState(String(category.sort_order));
@@ -46,6 +47,7 @@ function CategoryRow({ category, updateMutation, enableMutation }) {
   return <li className="grid gap-3 rounded-card border border-line p-4"><div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_7rem_auto]"><TextInput label={`Category name: ${category.name}`} value={name} onChange={(event) => setName(event.target.value)} disabled={busy} /><TextInput label="Display order" inputMode="numeric" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)} disabled={busy} /><div className="flex items-end gap-2"><Button size="small" variant="secondary" busy={updateMutation.isPending && updateMutation.variables?.id === category.id} onClick={save}>Save</Button><Button size="small" variant="ghost" busy={enableMutation.isPending && enableMutation.variables?.id === category.id} onClick={toggleEnabled}>{category.is_enabled ? "Disable" : "Enable"}</Button></div></div><div className="flex items-center justify-between gap-3"><span className={`text-xs font-semibold ${category.is_enabled ? "text-success" : "text-muted"}`}>{category.is_enabled ? "Enabled" : "Disabled"}</span>{error ? <p className="text-sm text-danger" role="alert">{error}</p> : null}</div></li>;
 }
 
+/** Coordinates category creation and management in one modal workflow. */
 export function CategoryManagerDialog({ open, onClose, categories, loading, queryError }) {
   const createMutation = useCreateCategory();
   const updateMutation = useUpdateCategory();

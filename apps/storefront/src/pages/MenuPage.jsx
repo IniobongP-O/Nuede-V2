@@ -15,6 +15,7 @@ import { ProductDetailDialog } from "../features/product-detail/components/Produ
 
 const emptyList = Object.freeze([]);
 
+/** Renders the searchable public menu and owns the selected product dialog. */
 export function MenuPage() {
   const [search, setSearch] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("all");

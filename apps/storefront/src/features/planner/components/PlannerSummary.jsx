@@ -6,10 +6,12 @@ import { storefrontPaths } from "../../../app/routePaths.js";
 import { Button } from "../../../components/ui/Button.jsx";
 import { formatPlannerDate } from "../utils/plannerModel.js";
 
+/** Renders one aggregate nutrition metric with its completeness treatment. */
 function NutritionMetric({ label, field, value }) {
   return <div><dt className="text-white/60">{label}</dt><dd className="mt-1 font-semibold">{value == null ? "—" : formatNutritionValue(field, value)}</dd></div>;
 }
 
+/** Renders capacity, dates, estimated cost, nutrition, issues, and clear action. */
 export function PlannerSummary({ plan, summary, onClear }) {
   const hasMeals = summary.selectedMealCount > 0;
   const nutrition = summary.nutrition.averageDaily;

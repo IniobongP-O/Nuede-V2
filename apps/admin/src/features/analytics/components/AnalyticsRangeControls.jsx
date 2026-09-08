@@ -2,6 +2,7 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { SelectInput, TextInput } from "../../../components/ui/FormControls.jsx";
 import { analyticsPresetOptions } from "../utils/analyticsUtils.js";
 
+/** Renders preset/custom report dates and drives the analytics range controller. */
 export function AnalyticsRangeControls({ controller, compact = false }) {
   const { preset, draft, validationError, selectPreset, updateDraft, applyCustomRange } = controller;
   return <div className={`flex flex-wrap items-end gap-3 ${compact ? "max-w-xl" : "w-full"}`}>
@@ -18,4 +19,3 @@ export function AnalyticsRangeControls({ controller, compact = false }) {
     {validationError ? <p className="w-full text-sm font-semibold text-danger" role="alert">{validationError}</p> : null}
   </div>;
 }
-

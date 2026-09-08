@@ -13,6 +13,7 @@ import { useToast } from "../components/ui/toastContext.js";
 import { useAuth } from "../features/auth/hooks/useAuth.js";
 import { useAdminCheckoutSettings, useUpdateAdminCheckoutSettings } from "../features/checkout-settings/hooks/useCheckoutSettingsAdmin.js";
 
+/** Loads and updates the payment methods available to storefront checkout. */
 export function SettingsPage() {
   const auth = useAuth();
   const canManagePayments = ["owner", "admin"].includes(auth.admin?.role);
@@ -26,6 +27,7 @@ export function SettingsPage() {
     reset({ paystackEnabled: query.data.paystack_enabled, whatsappEnabled: query.data.whatsapp_enabled });
   }, [query.data, reset]);
 
+  /** Validates and persists the selected checkout payment-method settings. */
   function save(formValues) {
     if (!canManagePayments) return;
     mutation.mutate({ ...formValues, updatedBy: auth.user.id }, {

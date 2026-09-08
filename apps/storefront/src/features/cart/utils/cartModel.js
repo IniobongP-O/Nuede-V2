@@ -27,10 +27,12 @@ const statusDetails = Object.freeze({
   [CART_ITEM_STATUS.invalidAddon]: { label: "Add-on changed", message: "A selected add-on is unavailable or no longer offered with this meal. Configure the meal again or remove it." },
 });
 
+/** Creates the explicit “unknown” nutrition value used by stale cart lines. */
 function unavailableNutrition() {
   return calculateNutrition([{}]);
 }
 
+/** Maps a current product's catalog availability to a cart-specific status. */
 function productStatus(product) {
   if (product.menuStatus === "price_pending") return CART_ITEM_STATUS.pricePending;
   if (product.menuStatus === "sold_out") return CART_ITEM_STATUS.soldOut;
@@ -38,6 +40,7 @@ function productStatus(product) {
   return CART_ITEM_STATUS.valid;
 }
 
+/** Resolves the first cart status that makes a catalog-backed selection invalid. */
 function resolveStatus(item, product, variant, selectedAddons, missingAddonIds) {
   const currentProductStatus = productStatus(product);
   if (currentProductStatus !== CART_ITEM_STATUS.valid) return currentProductStatus;
@@ -56,6 +59,10 @@ function resolveStatus(item, product, variant, selectedAddons, missingAddonIds) 
   return validation.valid ? CART_ITEM_STATUS.valid : CART_ITEM_STATUS.unavailable;
 }
 
+/**
+ * Re-resolves a persisted cart configuration against the current public catalog.
+ * Stale selections remain visible for correction but can never become orderable.
+ */
 export function hydrateCartItem(item, publicProducts = []) {
   // Stored configurations are never trusted as current. Hydration resolves each
   // stable ID against the public catalog and keeps stale lines visible/removable
@@ -109,10 +116,12 @@ export function hydrateCartItem(item, publicProducts = []) {
   });
 }
 
+/** Hydrates every stored cart configuration against one catalog snapshot. */
 export function hydrateCartItems(items = [], publicProducts = []) {
   return items.map((item) => hydrateCartItem(item, publicProducts));
 }
 
+/** Sums complete, orderable cart line prices or returns `null` when incomplete. */
 export function calculateCartSubtotal(hydratedItems = []) {
   // This subtotal supports review UI only. Invalid lines are excluded and mark
   // the estimate incomplete; checkout independently reloads and prices on server.
@@ -132,6 +141,7 @@ export function calculateCartSubtotal(hydratedItems = []) {
   });
 }
 
+/** Aggregates nutrition across all hydrated cart lines, including partial values. */
 export function calculateHydratedCartNutrition(hydratedItems = []) {
   return calculateCartNutrition(hydratedItems.map((item) => item.nutrition));
 }

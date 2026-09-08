@@ -5,6 +5,7 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { Card, PageHeader } from "../../../components/ui/Surface.jsx";
 import { redirectToPaystackCheckout } from "../utils/paystackCheckout.js";
 
+/** Renders the saved Paystack attempt and a guarded hosted-checkout continuation. */
 export function PaystackCheckoutReady({ payment, priceChanged = false }) {
   return (
     <div id="paystack-checkout-ready" tabIndex="-1" className="outline-none focus-visible:ring-2 focus-visible:ring-brand-700">

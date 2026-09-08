@@ -10,6 +10,7 @@ import {
   setSavedMealIds,
 } from "../storage/savedMealsStorage.js";
 
+/** Owns saved-meal IDs, local persistence, and cross-tab synchronization. */
 export function SavedMealsProvider({ children }) {
   const [savedMealIds, setSavedMealIdsState] = useState(getSavedMealIds);
   const savedMealIdsRef = useRef(savedMealIds);
@@ -22,6 +23,7 @@ export function SavedMealsProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    /** Replaces saved IDs when another browser tab updates storage. */
     function handleStorage(event) {
       if (event.key !== SAVED_MEALS_STORAGE_KEY) return;
       replaceState(parseSavedMealIds(event.newValue));

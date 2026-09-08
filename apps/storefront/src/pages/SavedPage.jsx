@@ -17,6 +17,7 @@ import { selectSavedProducts } from "../features/saved-meals/utils/savedMealsMod
 
 const emptyList = Object.freeze([]);
 
+/** Resolves and displays locally saved meals against the current public catalog. */
 export function SavedPage() {
   const [detailProductId, setDetailProductId] = useState(null);
   const [clearConfirmationOpen, setClearConfirmationOpen] = useState(false);
@@ -36,6 +37,7 @@ export function SavedPage() {
   );
   const selectedProduct = detailProductId ? productsById.get(detailProductId) || null : null;
 
+  /** Confirms and clears every saved meal while reporting persistence failure. */
   function confirmClearAll() {
     const result = clearSavedMeals();
     setClearConfirmationOpen(false);
@@ -43,6 +45,7 @@ export function SavedPage() {
     notify(result.persisted ? "All saved meals cleared" : "Saved meals were cleared, but we couldn't save the change for your next visit", result.persisted ? "success" : "error");
   }
 
+  /** Saves a configured meal to the cart and closes its editor. */
   function handleConfigured(configuration) {
     const product = productsById.get(configuration.productId);
     const result = addItem(configuration);

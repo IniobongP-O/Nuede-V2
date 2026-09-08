@@ -1,5 +1,7 @@
 import { formatKobo } from "@nuede/domain/currency";
 
+/** Renders available add-ons as a controlled multi-selection field. */
+/** Renders compatible add-ons as a controlled multi-selection list. */
 export function AddonPicker({ addons, selectedIds, onChange, disabled = false }) {
   const selected = new Set(selectedIds || []);
   const toggle = (addonId, checked) => {

@@ -1,5 +1,6 @@
 import { PLANNER_DURATIONS } from "../utils/plannerModel.js";
 
+/** Renders the supported plan-length choices as a single-selection control. */
 export function PlannerDuration({ durationDays, onChange }) {
   return (
     <section className="rounded-card border border-line bg-surface p-5" aria-labelledby="planner-duration-title">

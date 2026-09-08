@@ -1,13 +1,16 @@
+/** Encodes binary digest bytes as lowercase hexadecimal text. */
 function bytesToHex(bytes) {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
+/** Computes Paystack's SHA-512 HMAC signature for an exact raw payload. */
 export async function signPaystackPayload(rawPayload, secretKey, cryptoImpl = crypto) {
   const encoder = new TextEncoder();
   const key = await cryptoImpl.subtle.importKey("raw", encoder.encode(secretKey), { name: "HMAC", hash: "SHA-512" }, false, ["sign"]);
   return bytesToHex(new Uint8Array(await cryptoImpl.subtle.sign("HMAC", key, encoder.encode(rawPayload))));
 }
 
+/** Verifies a Paystack signature with a full-digest constant-work comparison. */
 export async function verifyPaystackSignature(rawPayload, signature, secretKey, cryptoImpl = crypto) {
   if (!secretKey || !/^[a-f0-9]{128}$/i.test(signature || "")) return false;
   const expected = await signPaystackPayload(rawPayload, secretKey, cryptoImpl);

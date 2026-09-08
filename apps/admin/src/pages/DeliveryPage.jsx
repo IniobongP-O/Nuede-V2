@@ -15,12 +15,14 @@ import { Panel, StatusBadge } from "../components/ui/AdminPrimitives.jsx";
 import { useToast } from "../components/ui/toastContext.js";
 import { useAdminDeliveryZones, useCreateDeliveryZone, useDeleteDeliveryZone, useUpdateDeliveryZone } from "../features/checkout-settings/hooks/useCheckoutSettingsAdmin.js";
 
+/** Converts a delivery mutation failure to actionable admin-facing copy. */
 function deliveryMutationMessage(error, fallback) {
   if (error?.cause?.code === "23505") return "A delivery area with that name already exists.";
   if (["42501", "PGRST301"].includes(error?.cause?.code)) return "Your session is not authorized to change delivery areas.";
   return fallback;
 }
 
+/** Renders inline fee/availability editing and deletion for one delivery zone. */
 function DeliveryZoneEditor({ zone, mutation, onDelete }) {
   const { notify } = useToast();
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -29,6 +31,7 @@ function DeliveryZoneEditor({ zone, mutation, onDelete }) {
   });
   useEffect(() => { reset({ feeNgn: koboToNairaInput(zone.fee_kobo) }); }, [reset, zone.fee_kobo]);
 
+  /** Persists the edited delivery fee for this zone. */
   function save(values) {
     mutation.mutate({ id: zone.id, feeKobo: parseNairaToKobo(values.feeNgn), isActive: zone.is_active }, {
       onSuccess: () => notify(`${zone.name} delivery fee updated.`, "success"),
@@ -36,6 +39,7 @@ function DeliveryZoneEditor({ zone, mutation, onDelete }) {
     });
   }
 
+  /** Toggles whether customers may currently select this delivery zone. */
   function toggleActive() {
     mutation.mutate({ id: zone.id, feeKobo: zone.fee_kobo, isActive: !zone.is_active }, {
       onSuccess: () => notify(`${zone.name} ${zone.is_active ? "disabled" : "enabled"} for checkout.`, "success"),
@@ -51,6 +55,7 @@ function DeliveryZoneEditor({ zone, mutation, onDelete }) {
   );
 }
 
+/** Owns validated creation of a new delivery zone. */
 function AddDeliveryZoneDialog({ open, onClose, zones }) {
   const { notify } = useToast();
   const mutation = useCreateDeliveryZone();
@@ -59,12 +64,14 @@ function AddDeliveryZoneDialog({ open, onClose, zones }) {
     defaultValues: { name: "", feeNgn: "" },
   });
 
+  /** Resets create-form state before closing the dialog. */
   function close() {
     if (mutation.isPending) return;
     reset();
     onClose();
   }
 
+  /** Validates and creates a delivery zone with the next display order. */
   function create(values) {
     const nextSortOrder = zones.length ? Math.max(...zones.map((zone) => zone.sort_order)) + 10 : 0;
     mutation.mutate({ name: values.name, feeKobo: parseNairaToKobo(values.feeNgn), sortOrder: nextSortOrder }, {
@@ -80,6 +87,7 @@ function AddDeliveryZoneDialog({ open, onClose, zones }) {
   return <Dialog open={open} onClose={close} title="Add delivery area" description="New areas are enabled immediately and appear at checkout with the fee entered here." footer={<><Button variant="ghost" onClick={close} disabled={mutation.isPending}>Cancel</Button><Button type="submit" form="add-delivery-zone-form" busy={mutation.isPending}>Add delivery area</Button></>}><form id="add-delivery-zone-form" className="grid gap-4" onSubmit={handleSubmit(create)} noValidate><TextInput label="Area name" required autoComplete="off" placeholder="e.g. Maitama" error={errors.name?.message} {...register("name")} /><TextInput label="Delivery fee (NGN)" required inputMode="decimal" placeholder="1800" error={errors.feeNgn?.message} {...register("feeNgn")} />{errors.root?.message ? <p className="text-sm text-danger" role="alert">{errors.root.message}</p> : null}</form></Dialog>;
 }
 
+/** Coordinates delivery-zone listing, creation, editing, activation, and deletion. */
 export function DeliveryPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -88,6 +96,7 @@ export function DeliveryPage() {
   const deleteMutation = useDeleteDeliveryZone();
   const { notify } = useToast();
 
+  /** Deletes the selected zone after explicit administrator confirmation. */
   function confirmDelete() {
     if (!deleteTarget) return;
     deleteMutation.mutate(deleteTarget.id, {

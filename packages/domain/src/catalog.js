@@ -1,3 +1,4 @@
+/** Returns whether a variant is available and has a usable integer-kobo price. */
 export function isOrderableVariant(variant) {
   return variant?.status === "available"
     && Number.isSafeInteger(variant.price_kobo)

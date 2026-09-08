@@ -1,6 +1,7 @@
 import { Panel } from "../../../components/ui/AdminPrimitives.jsx";
 import { getMostOrderedMeal } from "../utils/analyticsUtils.js";
 
+/** Highlights the highest-volume meal with explicit loading and empty states. */
 export function MostOrderedMealCard({ productSales, loading = false }) {
   const meal = loading ? null : getMostOrderedMeal(productSales);
 

@@ -27,6 +27,7 @@ import { catalogErrorMessage, filterProducts, nextProductStatus } from "../featu
 const initialFilters = { search: "", category: "all", status: "all", type: "all" };
 const emptyCatalogRecords = Object.freeze([]);
 
+/** Coordinates catalog filters, editors, availability actions, and deletion. */
 export function MenuPage() {
   const categoriesQuery = useCategories();
   const productsQuery = useProducts();

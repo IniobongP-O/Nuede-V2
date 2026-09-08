@@ -1,3 +1,4 @@
+/** Accepts only HTTPS redirects hosted on Paystack's checkout origin. */
 export function isSafePaystackAuthorizationUrl(value) {
   try {
     const url = new URL(value);
@@ -7,6 +8,7 @@ export function isSafePaystackAuthorizationUrl(value) {
   }
 }
 
+/** Navigates to a validated Paystack checkout URL and reports whether navigation began. */
 export function redirectToPaystackCheckout(value, navigate = (url) => window.location.assign(url)) {
   if (!isSafePaystackAuthorizationUrl(value)) return false;
   try {

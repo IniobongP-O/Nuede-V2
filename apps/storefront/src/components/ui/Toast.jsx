@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 
 import { ToastContext } from "./toastContext.js";
 
+/** Owns the transient toast queue and exposes notification actions to descendants. */
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
   const nextId = useRef(0);

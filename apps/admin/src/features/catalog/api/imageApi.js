@@ -5,11 +5,13 @@ import {
 
 import { supabase, supabaseConfigurationError } from "../../../lib/supabaseClient.js";
 
+/** Returns the configured Supabase client or fails with the setup error. */
 function requireSupabase() {
   if (!supabase) throw new Error(supabaseConfigurationError);
   return supabase;
 }
 
+/** Converts a canvas export callback into a rejecting/fulfilling Blob promise. */
 function canvasBlob(canvas, type, quality) {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -19,6 +21,7 @@ function canvasBlob(canvas, type, quality) {
   });
 }
 
+/** Decodes an uploaded image into a browser object suitable for resizing. */
 async function decodedImage(file) {
   if (typeof createImageBitmap === "function") return createImageBitmap(file);
   const objectUrl = URL.createObjectURL(file);
@@ -35,6 +38,7 @@ async function decodedImage(file) {
   }
 }
 
+/** Validates, resizes, and encodes a catalog image for efficient public delivery. */
 export async function prepareCatalogImage(file) {
   const validationMessage = catalogImageValidationMessage(file);
   if (validationMessage) throw new Error(validationMessage);
@@ -63,6 +67,7 @@ export async function prepareCatalogImage(file) {
   }
 }
 
+/** Uploads a prepared image to a collision-resistant entity-specific object path. */
 export async function uploadCatalogImage({ file, entityType, entityId }) {
   const optimized = await prepareCatalogImage(file);
   const directory = entityType === "variant" ? "variants" : "products";
@@ -78,12 +83,14 @@ export async function uploadCatalogImage({ file, entityType, entityId }) {
   return path;
 }
 
+/** Removes a catalog image object when a path is present. */
 export async function removeCatalogImage(path) {
   if (!path) return;
   const { error } = await requireSupabase().storage.from(catalogImageBucket).remove([path]);
   if (error) throw error;
 }
 
+/** Resolves a stored image path to its public Storage URL. */
 export function catalogImageUrl(path) {
   if (!path) return "";
   return requireSupabase().storage.from(catalogImageBucket).getPublicUrl(path).data.publicUrl;

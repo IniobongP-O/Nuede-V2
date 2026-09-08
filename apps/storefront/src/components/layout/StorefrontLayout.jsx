@@ -7,6 +7,7 @@ import { ToastProvider } from "../ui/Toast.jsx";
 import { StorefrontFooter } from "./StorefrontFooter.jsx";
 import { StorefrontHeader } from "./StorefrontHeader.jsx";
 
+/** Wraps storefront routes in the persistent header, footer, and cart dialog. */
 export function StorefrontLayout() {
   useMenuRealtime();
 

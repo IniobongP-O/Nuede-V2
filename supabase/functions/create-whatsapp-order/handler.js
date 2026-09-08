@@ -4,6 +4,7 @@ import { createAuthoritativeOrder } from "../_shared/order/engine.js";
 import { OrderError, publicErrorBody } from "../_shared/order/errors.js";
 import { buildWhatsappHandoff, normalizeWhatsappRecipient } from "../_shared/whatsapp.js";
 
+/** Serializes a CORS-enabled JSON response for the WhatsApp order endpoint. */
 function json(body, status) {
   return new Response(JSON.stringify(body), {
     status,
@@ -11,6 +12,7 @@ function json(body, status) {
   });
 }
 
+/** Creates the business error returned when this endpoint receives another method. */
 function whatsappMethodError() {
   return new OrderError("INVALID_PAYMENT_METHOD", "Use the WhatsApp checkout route only for WhatsApp orders.", {
     status: 422,
@@ -36,6 +38,7 @@ export class WhatsappHandoffError extends OrderError {
   }
 }
 
+/** Creates a permanent order first, then attaches its recoverable WhatsApp handoff. */
 export async function createWhatsappOrder(candidate, client, {
   recipient,
   createOrder = createAuthoritativeOrder,
@@ -69,6 +72,7 @@ export async function createWhatsappOrder(candidate, client, {
   }
 }
 
+/** Handles the public WhatsApp order HTTP contract and customer-safe recovery data. */
 export async function handleCreateWhatsappOrderRequest(request, {
   client,
   recipient,

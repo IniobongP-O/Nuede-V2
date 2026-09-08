@@ -11,6 +11,7 @@ import { TestimonialEditor } from "../features/content/components/TestimonialEdi
 import { useContentList, useContentMutations } from "../features/content/hooks/useContent.js";
 
 const initialFilters = { kind: "feedback", search: "", subject: "", rating: "", page: 0 };
+/** Renders private feedback search/filtering with testimonial-promotion actions. */
 export function FeedbackPage() {
   const [filters, setFilters] = useState(initialFilters);
   const [selected, setSelected] = useState(null);

@@ -2,6 +2,7 @@ import { useContext } from "react";
 
 import { AuthContext } from "../context/authContext.js";
 
+/** Returns the authenticated admin context and enforces provider placement. */
 export function useAuth() {
   const value = useContext(AuthContext);
 

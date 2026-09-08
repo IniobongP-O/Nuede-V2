@@ -1,9 +1,13 @@
-// A fixed window (not a trailing debounce) bounds availability latency even
-// during continuous edits. Realtime remains a signal, never a data authority.
+/**
+ * Coalesces realtime catalog events into bounded React Query invalidations.
+ * A fixed window, rather than a trailing debounce, prevents continuous edits
+ * from postponing customer-visible availability updates indefinitely.
+ */
 export function createCatalogInvalidator(queryClient, queryKeys, windowMs = 100) {
   let timer = null;
   let categoriesPending = false;
   let disposed = false;
+  /** Schedules product refresh and optionally includes the category query. */
   function schedule(categories = false) {
     if (disposed) return;
     categoriesPending ||= categories;

@@ -4,10 +4,12 @@ import { reconcilePaystackPayment } from "../_shared/paystack/persistence.js";
 import { paystackWebhookEnvelopeSchema, paystackWebhookSchema } from "../_shared/paystack/schema.js";
 import { verifyPaystackSignature } from "../_shared/paystack/signature.js";
 
+/** Serializes the minimal JSON response used by the provider webhook. */
 function json(body, status) {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 }
 
+/** Verifies, validates, and idempotently reconciles one raw Paystack webhook. */
 export async function processPaystackWebhook(rawPayload, signature, client, {
   secretKey,
   verifySignature = verifyPaystackSignature,
@@ -42,6 +44,7 @@ export async function processPaystackWebhook(rawPayload, signature, client, {
   return { received: true, matched: Boolean(result), idempotent: result?.idempotent === true };
 }
 
+/** Handles the provider webhook without enabling browser CORS semantics. */
 export async function handlePaystackWebhookRequest(request, {
   client,
   secretKey,

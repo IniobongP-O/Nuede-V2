@@ -6,6 +6,7 @@ import { plannerConfigurationSchema, plannerDateSchema, plannerDurationSchema } 
 const stableIdSchema = z.string().uuid("Choose a valid option.");
 const optionalTrimmed = (maximum) => z.string().trim().max(maximum);
 
+/** Advances a YYYY-MM-DD value without introducing host-timezone offsets. */
 function addCalendarDays(calendarDate, amount) {
   // Calendar-only values are advanced in UTC so daylight-saving or host time
   // zones cannot change the serialized meal-plan schedule.

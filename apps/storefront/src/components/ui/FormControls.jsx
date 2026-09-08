@@ -2,6 +2,7 @@ import { useId } from "react";
 
 const controlClasses = "min-h-11 w-full rounded-control border border-line bg-surface px-3.5 text-sm text-ink transition-colors placeholder:text-muted/70 hover:border-muted focus:border-brand-700 disabled:cursor-not-allowed disabled:bg-line/40 disabled:text-muted";
 
+/** Connects a form control with its label, help text, and validation error. */
 function FieldShell({ id, label, required, help, error, children, className = "" }) {
   const descriptionId = help || error ? `${id}-description` : undefined;
   return (
@@ -16,6 +17,7 @@ function FieldShell({ id, label, required, help, error, children, className = ""
   );
 }
 
+/** Renders an accessible text input inside the shared field shell. */
 export function TextInput({ id: suppliedId, label, help, error, required = false, className = "", fieldClassName = "", ...props }) {
   const generatedId = useId();
   const id = suppliedId || generatedId;
@@ -28,6 +30,7 @@ export function TextInput({ id: suppliedId, label, help, error, required = false
   );
 }
 
+/** Renders an accessible select input inside the shared field shell. */
 export function SelectInput({ id: suppliedId, label, help, error, required = false, children, className = "", fieldClassName = "", ...props }) {
   const generatedId = useId();
   const id = suppliedId || generatedId;
@@ -42,6 +45,7 @@ export function SelectInput({ id: suppliedId, label, help, error, required = fal
   );
 }
 
+/** Renders an accessible multiline input inside the shared field shell. */
 export function TextArea({ id: suppliedId, label, help, error, required = false, className = "", fieldClassName = "", ...props }) {
   const generatedId = useId();
   const id = suppliedId || generatedId;
@@ -54,6 +58,7 @@ export function TextArea({ id: suppliedId, label, help, error, required = false,
   );
 }
 
+/** Renders a labelled checkbox with optional supporting text. */
 export function CheckboxField({ id: suppliedId, label, help, ...props }) {
   const generatedId = useId();
   const id = suppliedId || generatedId;

@@ -9,12 +9,14 @@ import { ProductImage } from "../../menu/components/ProductImage.jsx";
 import { filterPlannerProducts, PLANNER_FILTERS } from "../utils/plannerFilters.js";
 import { formatPlannerDate, PLANNER_SLOTS } from "../utils/plannerModel.js";
 
+/** Formats the currently selected planner destination for customer guidance. */
 function targetLabel(target) {
   if (!target) return "Choose a slot, or use Quick add.";
   const slot = PLANNER_SLOTS.find(({ key }) => key === target.slot)?.label || target.slot;
   return `${slot}, ${formatPlannerDate(target.date, { weekday: "short", day: "numeric", month: "short" })} selected`;
 }
 
+/** Produces concise calorie/protein copy for a planner library card. */
 function nutritionPreview(product) {
   const values = [
     product.nutrition.calories == null ? null : formatNutritionValue("calories", product.nutrition.calories),
@@ -23,6 +25,7 @@ function nutritionPreview(product) {
   return values.length ? values.join(" · ") : "Nutrition unavailable";
 }
 
+/** Renders the searchable planner meal library with targeted and quick-add actions. */
 export function PlannerLibrary({ products, categories, activeTarget, onChoose, onQuickAdd }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");

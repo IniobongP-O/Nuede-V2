@@ -9,6 +9,8 @@ const statusPresentation = {
   unavailable: { label: "Unavailable", tone: "neutral" },
 };
 
+/** Maps a catalog availability status to its label and semantic badge tone. */
+/** Renders a product availability value with its configured admin tone and label. */
 export function ProductStatusBadge({ status }) {
   const presentation = statusPresentation[status] || { label: status, tone: "neutral" };
   return <StatusBadge tone={presentation.tone}>{presentation.label}</StatusBadge>;

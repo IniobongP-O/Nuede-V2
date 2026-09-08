@@ -5,6 +5,7 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { Card, PageHeader } from "../../../components/ui/Surface.jsx";
 import { isSafeWhatsappUrl } from "../utils/whatsappHandoff.js";
 
+/** Renders the persisted order reference and guarded WhatsApp continuation. */
 export function WhatsappOrderCreated({ order }) {
   const safeUrl = order.whatsapp?.url && isSafeWhatsappUrl(order.whatsapp.url) ? order.whatsapp.url : null;
   return (

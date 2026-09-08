@@ -1,14 +1,17 @@
 import { calculateItemNutrition } from "@nuede/domain/nutrition";
 import { productConfigurationSchema } from "@nuede/validation/customization";
 
+/** Returns whether a value can safely participate in integer-kobo arithmetic. */
 function isSafeKobo(value) {
   return Number.isSafeInteger(value) && value >= 0;
 }
 
+/** Creates the consistent validation issue shape consumed by customization UIs. */
 function issue(code, message, field = null) {
   return { code, message, field };
 }
 
+/** Verifies that a variant belongs to a product and is currently orderable. */
 export function isVariantOrderableForProduct(product, variant) {
   return Boolean(
     product
@@ -20,38 +23,45 @@ export function isVariantOrderableForProduct(product, variant) {
   );
 }
 
+/** Returns the grouped product variants that may be shown to customers. */
 export function getVisibleVariants(product) {
   if (!product?.isGrouped) return [];
   return (product.variants || []).filter((variant) => variant.status !== "hidden");
 }
 
+/** Resolves an automatic-selection group's usable default variant. */
 export function getDefaultVariant(product) {
   if (!product?.isGrouped || product.requiresVariantSelection || !product.defaultVariantId) return null;
   const variant = getVisibleVariants(product).find((item) => item.id === product.defaultVariantId);
   return isVariantOrderableForProduct(product, variant) ? variant : null;
 }
 
+/** Returns add-ons assigned to the product with valid stable identities. */
 export function getCompatibleAddons(product) {
   return (product?.addons || []).filter((addon) => addon?.id);
 }
 
+/** Reports whether the product has at least one currently orderable base selection. */
 export function isProductOrderable(product) {
   if (!product || product.status !== "available" || product.menuStatus !== "available") return false;
   if (product.isGrouped) return getVisibleVariants(product).some((variant) => isVariantOrderableForProduct(product, variant));
   return isSafeKobo(product.priceKobo);
 }
 
+/** Resolves the standard product or selected grouped variant used as the meal base. */
 function selectedBase(product, variantId) {
   if (!product) return null;
   if (!product.isGrouped) return product;
   return getVisibleVariants(product).find((variant) => variant.id === variantId) || null;
 }
 
+/** Resolves requested add-on IDs against the product's current assignments. */
 function selectedAddons(product, addonIds) {
   const selected = new Set(addonIds || []);
   return getCompatibleAddons(product).filter((addon) => selected.has(addon.id));
 }
 
+/** Calculates a non-authoritative live display price for the selected configuration. */
 export function calculateConfiguredDisplayPrice(product, variantId, addonIds = [], quantity = 1) {
   // This is deliberately a display calculation. The checkout contract sends IDs
   // and quantity only, and the Edge Function re-prices from current database rows.
@@ -69,6 +79,7 @@ export function calculateConfiguredDisplayPrice(product, variantId, addonIds = [
   return { unitPriceKobo, linePriceKobo, complete: true };
 }
 
+/** Calculates nutrition for the currently selected base, add-ons, and quantity. */
 export function calculateConfiguredItemNutrition(product, variantId, addonIds = [], quantity = 1) {
   return calculateItemNutrition({
     product,
@@ -78,6 +89,10 @@ export function calculateConfiguredItemNutrition(product, variantId, addonIds = 
   });
 }
 
+/**
+ * Validates a requested configuration structurally and against live product rules.
+ * Returns field-addressable issues and a canonical configuration on success.
+ */
 export function validateProductConfiguration({ product, variantId = null, addonIds = [], quantity = 1 }) {
   // Structural validation protects the shared contract; the checks below bind
   // those IDs to the current product and its current orderability/compatibility.
@@ -137,6 +152,7 @@ export function validateProductConfiguration({ product, variantId = null, addonI
   return { valid: issues.length === 0, issues, configuration: issues.length === 0 ? structure.data : null };
 }
 
+/** Validates and freezes a product configuration for safe insertion into client state. */
 export function buildProductConfiguration(input) {
   const result = validateProductConfiguration(input);
   if (!result.valid) return result;

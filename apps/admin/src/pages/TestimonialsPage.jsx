@@ -10,6 +10,7 @@ import { TestimonialEditor } from "../features/content/components/TestimonialEdi
 import { useContentList, useContentMutations } from "../features/content/hooks/useContent.js";
 
 const initialFilters = { kind: "testimonials", search: "", rating: "", publication: "", page: 0 };
+/** Renders testimonial search, editing, publication, pagination, and deletion. */
 export function TestimonialsPage() {
   const [filters, setFilters] = useState(initialFilters);
   const [editor, setEditor] = useState(null);

@@ -13,6 +13,7 @@ import { OrderStatusBadge } from "../features/orders/components/OrderStatusBadge
 import { useOrder, useUpdateFulfilmentStatus } from "../features/orders/hooks/useOrders.js";
 import { orderErrorMessage } from "../features/orders/utils/orderUtils.js";
 
+/** Loads one order and coordinates fulfilment, payment, and deletion actions. */
 export function OrderDetailPage() {
   const { orderReference } = useParams();
   const location = useLocation();

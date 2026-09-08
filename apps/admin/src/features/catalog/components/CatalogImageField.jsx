@@ -6,6 +6,8 @@ import { catalogImageTypes, catalogImageValidationMessage } from "@nuede/validat
 import { Button } from "../../../components/ui/Button.jsx";
 import { catalogImageUrl } from "../api/imageApi.js";
 
+/** Manages image preview, file selection, validation, and removal intent. */
+/** Coordinates image preview, file selection, validation, and explicit removal. */
 export function CatalogImageField({ label, currentPath, file, onFileChange, removeImage, onRemoveImageChange, disabled = false }) {
   const id = useId();
   const inputRef = useRef(null);

@@ -5,6 +5,7 @@ import { getContactContent } from "../../features/content/config/storefrontConte
 import { Container } from "./Container.jsx";
 
 const contact = getContactContent(import.meta.env);
+/** Renders configured contact links, service information, and nutrition copy. */
 export function StorefrontFooter() {
   return <footer id="contact" className="scroll-mt-24 border-t border-line bg-surface py-12 sm:py-16">
     <Container className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr]">
