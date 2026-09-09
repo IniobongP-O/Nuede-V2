@@ -16,11 +16,11 @@ function ProductImage({ product }) {
 
 /** Renders compact calories and macro values for a product row. */
 function NutritionSummary({ product }) {
-  if (product.product_type === "grouped") return <span className="text-xs text-muted">Variant-specific</span>;
+  if (product.product_type === "grouped") return <span className="grid gap-1 text-xs text-muted"><span>Variant-specific</span><span className="max-w-40 truncate font-mono" title={`/menu/${product.slug}`}>/menu/{product.slug}</span></span>;
   const values = [product.calories, product.protein_g, product.carbohydrates_g, product.fat_g];
   const populated = values.filter((value) => value !== null && value !== undefined).length;
   const label = populated === 4 ? "Complete" : populated === 0 ? "Unavailable" : `${populated}/4 fields`;
-  return <span className="text-xs text-muted">{label}</span>;
+  return <span className="grid gap-1 text-xs text-muted"><span>{label}</span><span className="max-w-40 truncate font-mono" title={`/menu/${product.slug}`}>/menu/{product.slug}</span></span>;
 }
 
 /** Renders memoized desktop and mobile catalog lists with row-level actions. */

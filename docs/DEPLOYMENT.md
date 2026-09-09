@@ -86,6 +86,8 @@ must be fixed by applying their original migrations, not recreating them manuall
 | Boundary | Variables | Rules |
 |---|---|---|
 | Both Vercel apps | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Same intended Supabase backend; public/publishable key only |
+| Storefront SEO | `VITE_PUBLIC_SITE_URL` | Required approved HTTPS production origin; localhost, example and Vercel preview origins fail production builds |
+| Storefront optional SEO | `VITE_GOOGLE_SITE_VERIFICATION` | Real Search Console token when issued; empty is valid |
 | Storefront optional contact | `VITE_CONTACT_PHONE`, `VITE_CONTACT_WHATSAPP`, `VITE_CONTACT_EMAIL`, `VITE_CONTACT_INSTAGRAM`, `VITE_CONTACT_HOURS` | Approved public business values; empty values render no fake link |
 | Edge runtime | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Supabase-provided backend credentials; never Vite/Vercel frontend values |
 | Edge custom secrets | `PAYSTACK_SECRET_KEY`, `NUEDE_STOREFRONT_URL`, `NUEDE_WHATSAPP_NUMBER` | Backend only; storefront URL is the final origin with trailing slash |

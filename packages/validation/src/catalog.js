@@ -5,6 +5,33 @@ const decimalPattern = /^\d+(\.\d{1,2})?$/;
 const integerPattern = /^\d+$/;
 const maximumSafeKobo = BigInt(Number.MAX_SAFE_INTEGER);
 
+export const reservedProductSlugs = Object.freeze([
+  "menu", "saved", "planner", "checkout", "payment", "about", "faq", "contact", "delivery", "meal-plans", "high-protein-meals",
+]);
+export const productSlugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** Derives the stable public slug proposed when a meal is first created. */
+export function slugifyProductName(value) {
+  return String(value ?? "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 120).replace(/-+$/g, "");
+}
+
+/** Adds the first available numeric suffix without changing an already unique base. */
+export function uniqueSlugCandidate(base, usedSlugs = []) {
+  if (!base) return "";
+  const used = new Set(usedSlugs);
+  if (!used.has(base)) return base;
+  let suffix = 2;
+  while (used.has(`${base}-${suffix}`)) suffix += 1;
+  return `${base}-${suffix}`;
+}
+
+export const productSlugSchema = z.string().trim().min(1, "Enter a public URL slug.").max(120, "Use 120 characters or fewer.").refine(
+  (value) => productSlugPattern.test(value),
+  "Use lowercase letters, numbers, and single hyphens only.",
+).refine((value) => !reservedProductSlugs.includes(value), "Choose a slug that does not conflict with a storefront route.");
+const optionalProductSlugSchema = z.union([z.literal(""), productSlugSchema]).default("");
+
 export const catalogImageBucket = "product-images";
 export const catalogImageMaximumBytes = 5 * 1024 * 1024;
 export const catalogImageTypes = Object.freeze([
@@ -71,6 +98,7 @@ export const categoryFormSchema = z.object({
 
 export const productFormSchema = z.object({
   name: nameSchema("a product name"),
+  slug: optionalProductSlugSchema,
   categoryId: uuidSchema,
   description: descriptionSchema,
   priceNgn: moneyInputSchema,
@@ -103,6 +131,7 @@ export const productFormSchema = z.object({
 
 export const groupedProductFormSchema = z.object({
   name: nameSchema("a grouped meal name"),
+  slug: optionalProductSlugSchema,
   categoryId: uuidSchema,
   description: descriptionSchema,
   availability: z.enum(variantAvailabilityValues),

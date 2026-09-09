@@ -7,6 +7,8 @@ import { Button } from "../../../components/ui/Button.jsx";
 import { Badge, Card } from "../../../components/ui/Surface.jsx";
 import { FavoriteButton } from "../../saved-meals/components/FavoriteButton.jsx";
 import { ProductImage } from "./ProductImage.jsx";
+import { Link } from "react-router-dom";
+import { productPath } from "../../../app/routePaths.js";
 
 const statusPresentation = {
   available: { label: "Available", tone: "success", message: "Ready to order" },
@@ -37,7 +39,7 @@ function NutritionPreview({ nutrition, complete }) {
 // Catalog objects and the menu's state setter are stable across dialog updates.
 // Keep unchanged card work out of opening, closing and basket context commits.
 /** Renders one memoized catalog product card and its save/customize actions. */
-export const MenuProductCard = memo(function MenuProductCard({ product, onOpenDetails }) {
+export const MenuProductCard = memo(function MenuProductCard({ product, onOpenDetails, eager = false }) {
   const status = statusPresentation[product.menuStatus] || statusPresentation.unavailable;
   const price = product.priceKobo === null
     ? product.menuStatus === "price_pending" ? "Price pending" : "Price unavailable"
@@ -45,7 +47,7 @@ export const MenuProductCard = memo(function MenuProductCard({ product, onOpenDe
 
   return (
     <Card className={`flex min-w-0 overflow-hidden flex-col ${product.isOrderable ? "" : "bg-surface/75"}`} aria-labelledby={`menu-product-${product.id}`}>
-      <ProductImage key={product.imageUrl || "missing"} src={product.imageUrl} alt={product.name} />
+      <ProductImage key={product.imageUrl || "missing"} src={product.imageUrl} alt={product.name} eager={eager} />
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">{product.categoryName}</p>
@@ -54,7 +56,7 @@ export const MenuProductCard = memo(function MenuProductCard({ product, onOpenDe
             <FavoriteButton productId={product.id} productName={product.name} />
           </div>
         </div>
-        <h2 id={`menu-product-${product.id}`} className="mt-3 font-display text-2xl leading-tight text-brand-950">{product.name}</h2>
+        <h2 id={`menu-product-${product.id}`} className="mt-3 font-display text-2xl leading-tight text-brand-950"><Link className="rounded hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-700" to={productPath(product.slug)}>{product.name}</Link></h2>
         <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-muted">{product.description || "Description coming soon."}</p>
         {product.isGrouped ? (
           <p className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-brand-700"><Layers3 className="size-4" aria-hidden="true" />Choose from {product.variantCount} {product.variantCount === 1 ? "option" : "options"}</p>

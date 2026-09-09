@@ -264,7 +264,7 @@ A cycle is not complete merely because implementation stopped or automated check
 - Form controls require visible labels. Helper/error text must be associated through `aria-describedby`.
 - Reusable feedback components cover loading, error, and empty states. Toast viewports use ARIA live regions.
 - Fixture content belongs under `src/fixtures` and must not be promoted into shared domain/config packages or disguised behind a fake API.
-- About, FAQ, and Contact remain storefront homepage anchors until production content work.
+- About, FAQ, and Contact have dedicated Cycle 19 routes while the homepage keeps concise linked sections.
 - Commercial-looking Cycle 1 actions must be inert or explicitly describe themselves as demonstrations.
 
 See `docs/DESIGN.md` for visual, responsive, interaction, and accessibility conventions.

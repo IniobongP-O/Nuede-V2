@@ -55,3 +55,10 @@ export async function getMenuProducts() {
   throwIfError(error);
   return (data || []).map((row) => normalizeMenuProduct(row, getCatalogImageUrl));
 }
+
+/** Loads public historical slug mappings; RLS excludes redirects to private meals. */
+export async function getProductSlugRedirects() {
+  const { data, error } = await requireSupabase().from("product_slug_redirects").select("slug,product_id");
+  throwIfError(error);
+  return data || [];
+}

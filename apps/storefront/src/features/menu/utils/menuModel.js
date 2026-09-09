@@ -156,6 +156,7 @@ export function normalizeMenuProduct(product, imageUrlForPath = () => "") {
     imagePath,
     imageUrl: imagePath ? imageUrlForPath(imagePath) : "",
     sortOrder: product.sort_order,
+    updatedAt: product.updated_at || null,
   };
 }
 

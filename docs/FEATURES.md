@@ -1,5 +1,9 @@
 # Feature authority and roadmap
 
+## Cycle 19 — SEO, discovery, and crawlability
+
+The existing storefront now exposes stable live product URLs and focused meal-plan, high-protein, Abuja-delivery, About, FAQ, and Contact pages without a redesign. Vite build-time prerendering produces meaningful initial HTML, centralized route metadata, canonicals, truthful JSON-LD, sitemap and robots assets. Product IDs remain commerce identity; slugs are public routing identity with database-backed history. Utility routes are noindex, admin isolation is preserved, and filesystem routing improves direct-request 404 behavior. See [SEO.md](SEO.md) and the Cycle 19 table in [TRACEABILITY.md](TRACEABILITY.md).
+
 ## Cycle 18 — final hardening, external launch blocked
 
 [Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.

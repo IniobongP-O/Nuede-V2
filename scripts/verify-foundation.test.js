@@ -141,7 +141,7 @@ test("environment examples remain placeholders and local environment files stay 
   assert.ok(environmentExamples.length > 0);
   assert.match(gitignore, /^\.env$/m);
   assert.match(gitignore, /^\.env\.\*$/m);
-  assert.match(gitignore, /^!\*\*\/\.env\.example$/m);
+  assert.match(gitignore, /^!apps\/storefront\/\.env\.example$/m);
 
   for (const environmentFile of environmentExamples) {
     const lines = (await readFile(path.join(repositoryRoot, environmentFile), "utf8"))

@@ -1,12 +1,14 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider } from "react-router-dom";
+import { BrowserRouter, StaticRouter } from "react-router-dom";
 
-import { storefrontRouter } from "./app/router.jsx";
-import { queryClient } from "./lib/queryClient.js";
+import { StorefrontRoutes } from "./app/router.jsx";
+import { createStorefrontQueryClient } from "./lib/queryClient.js";
 
 /** Composes global storefront providers around the application router. */
-function App() {
-  return <QueryClientProvider client={queryClient}><RouterProvider router={storefrontRouter} /></QueryClientProvider>;
+function App({ location, queryClient = createStorefrontQueryClient() }) {
+  const Router = location ? StaticRouter : BrowserRouter;
+  const routerProps = location ? { location } : {};
+  return <QueryClientProvider client={queryClient}><Router {...routerProps}><StorefrontRoutes /></Router></QueryClientProvider>;
 }
 
 export default App;

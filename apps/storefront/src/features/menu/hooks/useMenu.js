@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getCategories, getMenuProducts } from "../api/menuApi.js";
+import { getCategories, getMenuProducts, getProductSlugRedirects } from "../api/menuApi.js";
 
 export const menuQueryKeys = Object.freeze({
   all: ["storefront-menu"],
   categories: ["storefront-menu", "categories"],
   products: ["storefront-menu", "products"],
+  redirects: ["storefront-menu", "slug-redirects"],
 });
 
 const menuQueryOptions = {
@@ -21,4 +22,8 @@ export function useCategories() {
 /** Provides the live, periodically refreshed normalized product query. */
 export function useMenu() {
   return useQuery({ ...menuQueryOptions, queryKey: menuQueryKeys.products, queryFn: getMenuProducts });
+}
+
+export function useProductSlugRedirects() {
+  return useQuery({ ...menuQueryOptions, queryKey: menuQueryKeys.redirects, queryFn: getProductSlugRedirects });
 }

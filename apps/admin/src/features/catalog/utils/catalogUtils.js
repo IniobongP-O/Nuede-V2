@@ -1,6 +1,6 @@
 import { koboToNairaInput } from "@nuede/domain/currency";
 import { groupedProductOrderabilityMessage } from "@nuede/domain/catalog";
-import { optionalNumber, parseNairaToKobo } from "@nuede/validation/catalog";
+import { optionalNumber, parseNairaToKobo, slugifyProductName } from "@nuede/validation/catalog";
 
 export const catalogStatusOptions = Object.freeze([
   { value: "all", label: "All statuses" },
@@ -14,12 +14,7 @@ export const catalogStatusOptions = Object.freeze([
 
 /** Converts editable text to the lowercase hyphenated base used for catalog slugs. */
 export function slugify(value) {
-  return String(value)
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "item";
+  return slugifyProductName(value) || "item";
 }
 
 /** Maps a standard-product form to database columns and exact integer-kobo values. */
@@ -29,6 +24,7 @@ export function productFormToRecord(values) {
     category_id: values.categoryId,
     product_type: "standard",
     name: values.name.trim(),
+    slug: values.slug?.trim() || "",
     description: values.description.trim(),
     price_kobo: values.priceNgn === "" ? null : parseNairaToKobo(values.priceNgn),
     calories: optionalNumber(values.calories),
@@ -47,6 +43,7 @@ export function groupedProductFormToRecord(values) {
     category_id: values.categoryId,
     product_type: "grouped",
     name: values.name.trim(),
+    slug: values.slug?.trim() || "",
     description: values.description.trim(),
     price_kobo: null,
     calories: null,
@@ -70,6 +67,7 @@ export function productToFormValues(product, defaultCategoryId = "") {
 
   return {
     name: product?.name || "",
+    slug: product?.slug || "",
     categoryId: product?.category_id || defaultCategoryId,
     description: product?.description || "",
     priceNgn: koboToNairaInput(product?.price_kobo),
@@ -89,6 +87,7 @@ export function groupedProductToFormValues(product, defaultCategoryId = "") {
   const availability = visibility === "shown" ? product?.status || "unavailable" : "unavailable";
   return {
     name: product?.name || "",
+    slug: product?.slug || "",
     categoryId: product?.category_id || defaultCategoryId,
     description: product?.description || "",
     availability: ["available", "sold_out", "unavailable"].includes(availability) ? availability : "unavailable",

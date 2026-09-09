@@ -96,7 +96,7 @@ export function MenuPage() {
             <EmptyState className="mt-8" title="The menu is being prepared" message="There are no meals to show right now. Please check back soon." />
           ) : visibleProducts.length ? (
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3">
-              {visibleProducts.map((product) => <MenuProductCard key={product.id} product={product} onOpenDetails={setDetailSelection} />)}
+              {visibleProducts.map((product, index) => <MenuProductCard key={product.id} product={product} onOpenDetails={setDetailSelection} eager={index < 3} />)}
             </div>
           ) : (
             <EmptyState className="mt-8" title="No meals match" message="Try a different search, category, or filter combination." action={<Button variant="secondary" onClick={resetFilters}>Show all meals</Button>} />

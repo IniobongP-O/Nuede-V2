@@ -45,8 +45,8 @@ export function StorefrontHeader() {
         <Brand />
         <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
           {storefrontNavigation.map((item) => <NavigationLink key={item.path} item={item} />)}
-          <a className="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-brand-950" href="/#about">About</a>
-          <a className="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-brand-950" href="/#faq">FAQ</a>
+          <NavLink className="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-brand-950" to={storefrontPaths.about}>About</NavLink>
+          <NavLink className="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-brand-950" to={storefrontPaths.faq}>FAQ</NavLink>
         </nav>
         <div className="flex items-center gap-2">
           <button className="inline-flex min-h-11 items-center gap-2 rounded-control px-3 text-sm font-semibold text-brand-950 hover:bg-brand-100" type="button" onClick={() => setCartOpen(true)} aria-label={`Open basket, ${itemCount} ${itemCount === 1 ? "item" : "items"}`} aria-haspopup="dialog" aria-expanded={cartOpen}>
@@ -62,9 +62,9 @@ export function StorefrontHeader() {
       <Dialog open={mobileOpen} onClose={() => setMobileOpen(false)} title="Explore Nuede" description="Choose where you'd like to go">
         <nav className="grid" aria-label="Mobile navigation">
           {storefrontNavigation.map((item) => <NavigationLink key={item.path} item={item} mobile onNavigate={() => setMobileOpen(false)} />)}
-          <a className="flex min-h-12 items-center border-b border-line text-lg font-semibold text-brand-950" href="/#about" onClick={() => setMobileOpen(false)}>About</a>
-          <a className="flex min-h-12 items-center border-b border-line text-lg font-semibold text-brand-950" href="/#faq" onClick={() => setMobileOpen(false)}>FAQ</a>
-          <a className="flex min-h-12 items-center text-lg font-semibold text-brand-950" href="/#contact" onClick={() => setMobileOpen(false)}>Contact</a>
+          <Link className="flex min-h-12 items-center border-b border-line text-lg font-semibold text-brand-950" to={storefrontPaths.about} onClick={() => setMobileOpen(false)}>About</Link>
+          <Link className="flex min-h-12 items-center border-b border-line text-lg font-semibold text-brand-950" to={storefrontPaths.faq} onClick={() => setMobileOpen(false)}>FAQ</Link>
+          <Link className="flex min-h-12 items-center text-lg font-semibold text-brand-950" to={storefrontPaths.contact} onClick={() => setMobileOpen(false)}>Contact</Link>
         </nav>
       </Dialog>
       <CartDialog open={cartOpen} onClose={() => setCartOpen(false)} />

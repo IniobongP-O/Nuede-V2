@@ -394,3 +394,26 @@ Cycle 15 post-implementation verification passed the focused 8-test order-manage
 Cycle 16 post-implementation verification passed the focused 9-test analytics suite, the complete 150-test Node suite, repository lint, the 18-test Cycle 14 payment suite, the 8-test Cycle 15 order-management suite, both production builds, and `git diff --check`. The builds required a sandbox-relaxed rerun after esbuild was denied parent-directory access; both reruns passed with only the existing large-chunk advisory.
 
 `npx supabase status` was attempted and reported `docker: command not found (podman also not found)`. Migration replay, the 39-assertion Cycle 16 pgTAP file, live RLS/RPC execution, SQL reconciliation against PostgreSQL, and authenticated browser acceptance were therefore not run and are not claimed as passed. Deterministic tests validate the formulas, query boundaries, date presets, UI states, and source architecture; they do not substitute for applying the migration.
+
+## Cycle 19 SEO, discovery, and crawlability
+
+| Requirement ID | Required | Implemented | Tested |
+|---|---|---|---|
+| SEO-01 | Crawlable public routes | Shared React Router tree adds product and seven focused content routes | Route/source tests and generated HTML audit |
+| SEO-02 | Stable product slugs | Existing slug identity hardened with validation, reserved values, stable update behavior, history table and trigger | Slug unit matrix and migration review; database runtime pending |
+| SEO-03 | Full product pages | `/menu/:slug` reuses normalized menu data and existing customization/cart contract | Generated product source plus Cycle 7/9 cart regressions |
+| SEO-04 | Route metadata | Central title, description, Open Graph, Twitter and optional verification layer | Metadata unit tests and generated source audit |
+| SEO-05 | Canonicals | One validated public site origin builds all canonical URLs | Environment and metadata tests |
+| SEO-06 | Prerendering | Vite SSR build renders shared route tree from one public catalog snapshot and hydrates its query cache | Storefront production build and generated HTML audit |
+| SEO-07 | Sitemap | Build-generated absolute static/product URLs with real product `updated_at` | Sitemap unit and generated-file tests |
+| SEO-08 | Robots | Generated permissive public robots file with absolute sitemap | Unit and generated-file tests |
+| SEO-09 | Structured data | Website, Organization, Product/Offer, Breadcrumb and FAQ schemas without invented ratings/business fields | Availability/price/schema tests and generated product audit |
+| SEO-10 | Indexability | Central public-product/static/utility rules; query states and utilities noindex | Metadata/sitemap/generated utility tests |
+| SEO-11 | 404 handling | Filesystem deployment replaces storefront catch-all; custom noindex `404.html` | Vercel contract and generated 404 audit; deployed HTTP status pending |
+| SEO-12 | Redirects | Slug history resolves in SPA and build emits canonical noindex browser redirect pages | Migration/source coverage; real 301/308 is a documented static-host limitation |
+| SEO-13 | Internal linking | Product names, header, homepage and footer expose product/content routes | SSR source inspection and component tests |
+| SEO-14 | Local SEO | Natural Abuja delivery/about/contact content backed by existing service facts | Generated landing-page source audit; Business Profile remains manual |
+| SEO-15 | Core Web Vitals | Existing dimensions, lazy cards, eager hero/detail and async decode preserved | Source/build review; production field/Lighthouse run pending |
+| SEO-16 | Social metadata | Per-route OG/Twitter metadata and live product image when available | Metadata and generated source tests |
+| SEO-17 | Admin isolation | Admin deployment retains global `X-Robots-Tag: noindex, nofollow`; never enters sitemap | Deployment regression and sitemap tests |
+| SEO-18 | Verification/documentation | Production assertions, Cycle 19 tests, generated artifact audit and this runbook | Full local verification; Search Console/deployed checks pending |

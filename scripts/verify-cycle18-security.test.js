@@ -51,6 +51,7 @@ test("Cycle 18 build guard accepts allowlisted Nuede public variables", () => {
   assert.doesNotThrow(() => validatePublicEnvironment({
     VITE_SUPABASE_URL: "https://test-project.supabase.co",
     VITE_SUPABASE_ANON_KEY: "public-anon-key-for-tests",
+    VITE_PUBLIC_SITE_URL: "https://www.nuede-test.ng",
     VITE_CONTACT_PHONE: "",
     VITE_CONTACT_WHATSAPP: "",
     VITE_CONTACT_EMAIL: "",
@@ -139,6 +140,7 @@ test("Cycle 18 production build guard accepts valid public Supabase configuratio
   assert.doesNotThrow(() => validatePublicEnvironment({
     VITE_SUPABASE_URL: "https://test-project.supabase.co",
     VITE_SUPABASE_ANON_KEY: "public-anon-key-for-tests",
+    VITE_PUBLIC_SITE_URL: "https://www.nuede-test.ng",
     VITE_VERCEL_ENV: "production",
   }, { production: true }));
 });
@@ -149,7 +151,12 @@ test("Cycle 18 app deployment contracts independently include SPA routing and pr
     assert.equal(config.framework, "vite");
     assert.equal(config.outputDirectory, "dist");
     assert.equal(config.buildCommand, "npm run build");
-    assert.ok(config.rewrites.some((rule) => rule.destination === "/index.html"));
+    if (app === "storefront") {
+      assert.equal(config.cleanUrls, true);
+      assert.equal(config.rewrites, undefined);
+    } else {
+      assert.ok(config.rewrites.some((rule) => rule.destination === "/index.html"));
+    }
     const headers = Object.fromEntries(config.headers[0].headers.map(({ key, value }) => [key, value]));
     assert.equal(headers["Referrer-Policy"], "no-referrer");
     assert.match(headers["Content-Security-Policy"], /frame-ancestors 'none'/);

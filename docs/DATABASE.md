@@ -1,5 +1,9 @@
 # Database rules
 
+## Cycle 19 product slug history
+
+Migration `20260909000100_harden_product_seo_slugs.sql` retains the existing `products.slug` column and stable product IDs. It adds slug length/reserved-route checks plus the RLS-protected `product_slug_redirects` history table. Trusted database triggers preserve an old slug only when an authorized product update changes it and reject reuse across products. Anonymous redirect reads require the target product and category to remain public. No guest mutation privilege or commerce authority is added. Apply and verify this migration before a production SEO build; local database replay remains environment-dependent.
+
 ## Public-view advisor follow-up
 
 The current chain contains 15 migrations through `20260904000400`. The newest migration uses invoker-security public views with column-scoped guest SELECT grants and guest-only RLS. The focused embedded PostgreSQL tests pass; the full Supabase pgTAP suite remains unrun. See [public-view fix](PUBLIC-VIEW-SECURITY.md). The earlier 14-migration record below describes the initial Cycle 18 run.

@@ -22,7 +22,8 @@ import {
 
 /** Owns canonical cart state, local persistence, cross-tab sync, and cart actions. */
 export function CartProvider({ children }) {
-  const [items, setItemsState] = useState(getCartItems);
+  const deferredHydration = Boolean(globalThis.__NUEDE_PRERENDER_HYDRATION__);
+  const [items, setItemsState] = useState(() => deferredHydration ? [] : getCartItems());
   const itemsRef = useRef(items);
 
   const replaceState = useCallback((nextItems) => {
@@ -38,6 +39,7 @@ export function CartProvider({ children }) {
   }, [replaceState]);
 
   useEffect(() => {
+    if (deferredHydration) queueMicrotask(() => replaceState(getCartItems()));
     // The storage event synchronizes other tabs; same-tab writes update React
     // state through commit because browsers do not echo this event to the writer.
     /** Replaces local cart state when another browser tab updates storage. */
@@ -47,7 +49,7 @@ export function CartProvider({ children }) {
     }
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
-  }, [replaceState]);
+  }, [deferredHydration, replaceState]);
 
   const addItem = useCallback((configuration) => {
     const key = createCartItemKey(configuration);

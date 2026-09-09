@@ -1,5 +1,9 @@
 # Nuede V2 architecture
 
+## Cycle 19 — SEO without a framework migration
+
+The storefront now has a build-only Vite SSR/prerender entry over the shared React Router tree. It seeds the existing normalized Supabase menu query into an isolated TanStack Query client, renders indexable HTML, and hydrates the same snapshot in the browser before live refresh resumes. Central SEO helpers own metadata, structured data, sitemap, robots, indexability, and canonical URL generation. Static route files replace the storefront catch-all rewrite so unknown direct requests can remain genuine hosting-level 404s. Commerce identity, pricing authority, RLS, checkout, and the independent admin app are unchanged. See [SEO.md](SEO.md).
+
 ## Cycle 18 — final hardening, external launch blocked
 
 [Current verification report](CYCLE18.md), [all 212 numbered requirements](FEATURE-MATRIX.md), and [deployment runbook](DEPLOYMENT.md) supersede historical “not begun” statements below. Cycles 0–17 remain accepted. Current hosted schema/function gaps are recorded explicitly and no final launch proof is claimed.

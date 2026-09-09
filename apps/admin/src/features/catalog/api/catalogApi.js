@@ -1,4 +1,5 @@
 import { supabase, supabaseConfigurationError } from "../../../lib/supabaseClient.js";
+import { uniqueSlugCandidate } from "@nuede/validation/catalog";
 import { slugify } from "../utils/catalogUtils.js";
 import { removeCatalogImage, uploadCatalogImage } from "./imageApi.js";
 
@@ -38,7 +39,7 @@ function normalizeProduct(product) {
   };
 }
 
-/** Finds a unique slug while preserving an existing record's own slug when editing. */
+/** Finds a unique generated slug for new records. */
 async function uniqueSlug(table, name, excludeId) {
   const client = requireSupabase();
   const base = slugify(name);
@@ -46,11 +47,13 @@ async function uniqueSlug(table, name, excludeId) {
   if (excludeId) query = query.neq("id", excludeId);
   const { data, error } = await query;
   throwIfError(error);
-  const used = new Set(data.map((row) => row.slug));
-  if (!used.has(base)) return base;
-  let suffix = 2;
-  while (used.has(`${base}-${suffix}`)) suffix += 1;
-  return `${base}-${suffix}`;
+  let historicalSlugs = [];
+  if (table === "products") {
+    const { data: redirects, error: redirectError } = await client.from("product_slug_redirects").select("slug").like("slug", `${base}%`);
+    throwIfError(redirectError);
+    historicalSlugs = redirects.map((row) => row.slug);
+  }
+  return uniqueSlugCandidate(base, [...data.map((row) => row.slug), ...historicalSlugs]);
 }
 
 /** Reloads one product with the same relationships returned by catalog lists. */
@@ -79,9 +82,23 @@ async function replaceAssignments(productId, addonIds) {
 async function saveProduct({ id, record, addonIds = [], imageFile, previousImagePath, removeImage = false }) {
   const client = requireSupabase();
   const entityId = id || crypto.randomUUID();
-  const slug = await uniqueSlug("products", record.name, id);
+  const existingProduct = id ? await readProduct(id) : null;
+  const requestedSlug = record.slug?.trim();
+  const slug = requestedSlug || existingProduct?.slug || await uniqueSlug("products", record.name, id);
+  if (requestedSlug && requestedSlug !== existingProduct?.slug) {
+    const [{ data: products, error: productError }, { data: redirects, error: redirectError }] = await Promise.all([
+      client.from("products").select("id").eq("slug", requestedSlug).neq("id", id || entityId),
+      client.from("product_slug_redirects").select("product_id").eq("slug", requestedSlug),
+    ]);
+    throwIfError(productError || redirectError);
+    if (products.length || redirects.some((redirect) => redirect.product_id !== id)) {
+      const error = new Error("That public URL slug is already in use."); error.code = "23505"; throw error;
+    }
+  }
+  const productRecord = { ...record };
+  delete productRecord.slug;
   const existingImagePath = id && previousImagePath === undefined
-    ? (await readProduct(id)).image_path
+    ? existingProduct.image_path
     : previousImagePath;
   let uploadedPath;
   let productPersisted = false;
@@ -92,8 +109,8 @@ async function saveProduct({ id, record, addonIds = [], imageFile, previousImage
   // so failure compensation never removes the only image of a persisted product.
   try {
     const query = id
-      ? client.from("products").update({ ...record, slug, image_path: imagePath }).eq("id", id).eq("product_type", record.product_type)
-      : client.from("products").insert({ ...record, id: entityId, slug, image_path: imagePath });
+      ? client.from("products").update({ ...productRecord, slug, image_path: imagePath }).eq("id", id).eq("product_type", record.product_type)
+      : client.from("products").insert({ ...productRecord, id: entityId, slug, image_path: imagePath });
     const { error } = await query.select("id").single();
     throwIfError(error);
     productPersisted = true;

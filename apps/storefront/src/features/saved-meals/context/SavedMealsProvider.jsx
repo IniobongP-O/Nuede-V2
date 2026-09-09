@@ -12,7 +12,8 @@ import {
 
 /** Owns saved-meal IDs, local persistence, and cross-tab synchronization. */
 export function SavedMealsProvider({ children }) {
-  const [savedMealIds, setSavedMealIdsState] = useState(getSavedMealIds);
+  const deferredHydration = Boolean(globalThis.__NUEDE_PRERENDER_HYDRATION__);
+  const [savedMealIds, setSavedMealIdsState] = useState(() => deferredHydration ? [] : getSavedMealIds());
   const savedMealIdsRef = useRef(savedMealIds);
 
   const replaceState = useCallback((nextIds) => {
@@ -23,6 +24,7 @@ export function SavedMealsProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    if (deferredHydration) queueMicrotask(() => replaceState(getSavedMealIds()));
     /** Replaces saved IDs when another browser tab updates storage. */
     function handleStorage(event) {
       if (event.key !== SAVED_MEALS_STORAGE_KEY) return;
@@ -30,7 +32,7 @@ export function SavedMealsProvider({ children }) {
     }
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
-  }, [replaceState]);
+  }, [deferredHydration, replaceState]);
 
   const saveMeal = useCallback((productId) => {
     const current = savedMealIdsRef.current;

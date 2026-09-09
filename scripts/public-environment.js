@@ -1,6 +1,7 @@
 const publicNames = new Set([
   "VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY", "VITE_CONTACT_PHONE",
   "VITE_CONTACT_WHATSAPP", "VITE_CONTACT_EMAIL", "VITE_CONTACT_INSTAGRAM", "VITE_CONTACT_HOURS",
+  "VITE_PUBLIC_SITE_URL", "VITE_GOOGLE_SITE_VERIFICATION",
 ]);
 const vercelPublicPrefix = "VITE_VERCEL_";
 
@@ -32,6 +33,11 @@ export function validatePublicEnvironment(env, { production = false } = {}) {
       throw new Error("Production requires the intended HTTPS Supabase URL.");
     }
     if (!key || /your-|example|placeholder|fixture/.test(key)) throw new Error("Production requires a Supabase public key.");
+    let siteUrl;
+    try { siteUrl = new URL(env.VITE_PUBLIC_SITE_URL); } catch { /* Fail closed below. */ }
+    if (!siteUrl || siteUrl.protocol !== "https:" || siteUrl.username || siteUrl.password || siteUrl.pathname !== "/" || siteUrl.search || siteUrl.hash || /localhost|127\.0\.0\.1|\.vercel\.app$|example/.test(siteUrl.hostname)) {
+      throw new Error("Production requires the canonical HTTPS storefront URL, not localhost or a preview domain.");
+    }
   }
 }
 
