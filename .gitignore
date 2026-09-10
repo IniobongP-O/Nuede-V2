@@ -9,9 +9,7 @@ coverage/
 # Local environment files
 .env
 .env.*
-
-
-
+!apps/storefront/.env.example
 # Logs and caches
 *.log
 .eslintcache

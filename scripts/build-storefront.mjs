@@ -2,20 +2,14 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { build, loadEnv } from "vite";
-import { getDeploymentEnvironment, mergePublicEnvironment, validatePublicEnvironment } from "./public-environment.js";
+import { resolveStorefrontEnvironment } from "./public-environment.js";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const appRoot = path.join(repositoryRoot, "apps", "storefront");
 const distRoot = path.join(appRoot, "dist");
 const ssrRoot = path.join(appRoot, ".seo-ssr");
-const deploymentEnvironment = getDeploymentEnvironment();
-const production = deploymentEnvironment === "production";
-const preview = deploymentEnvironment === "preview";
 const mode = process.env.NODE_ENV === "development" ? "development" : "production";
-const publicEnv = validatePublicEnvironment(mergePublicEnvironment(loadEnv(mode, appRoot, "VITE_"), process.env), {
-  production,
-  requireCanonical: production || preview,
-});
+const { production, preview, publicEnvironment: publicEnv, siteUrl } = resolveStorefrontEnvironment(loadEnv(mode, appRoot, "VITE_"), process.env);
 
 await build({ root: appRoot, configFile: path.join(appRoot, "vite.config.js"), mode });
 await build({ root: appRoot, configFile: path.join(appRoot, "vite.config.js"), mode, build: { ssr: "src/entry-server.jsx", outDir: ".seo-ssr", emptyOutDir: true } });
@@ -31,7 +25,6 @@ try {
     catalog = { categories: [], products: [], redirects: [] };
   }
   const template = await readFile(path.join(distRoot, "index.html"), "utf8");
-  const siteUrl = publicEnv.VITE_PUBLIC_SITE_URL || "http://localhost:5175";
   const staticPaths = ["/", "/menu", "/meal-plans", "/high-protein-meals", "/delivery/abuja", "/about", "/faq", "/contact"];
   const publicProducts = catalog.products.filter((product) => product.slug && !["hidden", "archived", "price_pending"].includes(product.status));
   if (production && publicProducts.length === 0) throw new Error("Production SEO generation found no indexable products; refusing to publish an empty product sitemap.");
@@ -95,7 +88,7 @@ try {
   await writeFile(path.join(distRoot, "sitemap.xml"), createSitemap({ siteUrl, staticPaths, products: publicProducts }));
   await writeFile(path.join(distRoot, "robots.txt"), createRobotsTxt(siteUrl, { disallowAll: preview }));
   const generated = await Promise.all([...staticPaths, ...productPaths].map(async (pathname) => readFile(pathname === "/" ? path.join(distRoot, "index.html") : path.join(distRoot, pathname.slice(1), "index.html"), "utf8")));
-  if (generated.some((html) => !html.includes('rel="canonical"') || !html.includes('<meta name="description"') || /localhost|\.vercel\.app/.test(html) && (production || preview))) throw new Error("Generated SEO HTML failed canonical metadata assertions.");
+  if (generated.some((html) => !html.includes('rel="canonical"') || !html.includes('<meta name="description"') || !html.includes(`rel="canonical" href="${siteUrl}`) || !html.includes(`property="og:url" content="${siteUrl}`))) throw new Error("Generated SEO HTML failed canonical metadata assertions.");
   if (preview && generated.some((html) => !html.includes('<meta name="robots" content="noindex,nofollow">'))) throw new Error("Preview SEO HTML failed noindex assertions.");
   console.log(`SEO build: prerendered ${staticPaths.length} landing routes, ${productPaths.length} product routes, and ${historicalRedirects.length} historical slug redirects.`);
 } finally {

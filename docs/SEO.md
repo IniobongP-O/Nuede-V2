@@ -8,18 +8,30 @@ No pricing or ordering authority moved into prerendering. Product URLs identify 
 
 The build emits route-local `index.html` files instead of a catch-all SPA rewrite. This lets Vercel serve generated public and utility routes from the filesystem and return a genuine HTTP 404 for an unknown direct URL, with `404.html` as the noindex error document. Client-side React Router navigation continues to work normally.
 
-## Production Canonical Domain Setup
+## Current domain strategy
 
-`VITE_PUBLIC_SITE_URL` is the single source of truth for the permanent customer-facing storefront origin. Canonical tags, sitemap entries, the sitemap URL in `robots.txt`, Open Graph URLs, JSON-LD, product URLs, breadcrumbs, and prerendered pages all derive from its normalized origin. It is public configuration, not a secret.
+Nuede may use its stable Vercel production project URL as a temporary canonical origin until a custom domain is connected. The storefront resolves one normalized canonical origin in this order:
 
-The value must:
+1. `VITE_PUBLIC_SITE_URL`, when explicitly configured;
+2. `https://${VERCEL_PROJECT_PRODUCTION_URL}` on Vercel, while that trusted system value is the project's `*.vercel.app` production hostname;
+3. `http://localhost:5175` for local development and ordinary local builds only.
+
+Production and Preview builds fail with an actionable error if neither supported production origin is available. `VERCEL_URL` and `VERCEL_BRANCH_URL` are deployment-specific and are never considered by the resolver. A Preview deployment therefore uses the same production canonical origin while every page receives `noindex,nofollow` metadata and Preview `robots.txt` disallows crawling. Production is not noindexed.
+
+Vercel documents `VERCEL_PROJECT_PRODUCTION_URL` as a build-time and runtime system variable that is also present on Preview deployments and does not include the `https://` scheme. When no custom domain exists, it supplies the stable Vercel project production hostname. The build reads this system variable only in Node and injects the resolved public origin; it does not expose the raw system variable or merge arbitrary `process.env` values into the browser configuration.
+
+`VITE_PUBLIC_SITE_URL` remains the permanent-domain override and is public configuration, not a secret. When set, it must:
 
 - use HTTPS;
 - be a root URL with no path, query, or fragment;
 - contain no username or password;
-- be the approved permanent domain, not localhost, an IP loopback, a placeholder/example domain, or any `*.vercel.app` domain.
+- be the approved permanent domain, not localhost, an IP loopback, or a placeholder/example domain.
 
-Configure it manually in **Storefront Vercel project → Settings → Environment Variables**:
+A manually supplied `*.vercel.app` value is accepted only when it exactly matches the trusted `VERCEL_PROJECT_PRODUCTION_URL` hostname on Vercel. Random deployment, branch, and Preview hostnames remain rejected.
+
+## Custom canonical domain setup
+
+Once a real custom domain is ready, configure it manually in **Storefront Vercel project → Settings → Environment Variables**:
 
 ```text
 Name: VITE_PUBLIC_SITE_URL
@@ -27,11 +39,17 @@ Value: https://YOUR-REAL-PRODUCTION-DOMAIN
 Environment: Production
 ```
 
-Add the same value to **Preview**. Preview builds then keep production canonicals while every page receives `noindex,nofollow` metadata and preview `robots.txt` disallows crawling. The static Vite deployment cannot conditionally declare a Vercel header by environment, so this equivalent build-time policy is emitted only for Preview and is never applied to Production.
+Set it for both **Production** and **Preview** so the permanent custom domain wins everywhere. No code change is required. The migration checklist is:
 
-Vercel's deployment-specific `VERCEL_URL` is never used as the canonical. `VERCEL_PROJECT_PRODUCTION_URL` is also not inferred as authoritative because it may be a platform alias rather than the approved customer domain. The explicit `VITE_PUBLIC_SITE_URL` value always wins.
+1. Configure the custom domain in Vercel.
+2. Choose one canonical form: apex or `www`.
+3. Redirect the alternate hostname to that canonical hostname.
+4. Set `VITE_PUBLIC_SITE_URL=https://CANONICAL-DOMAIN` for Production and Preview.
+5. Redeploy so canonical metadata and the sitemap are regenerated.
+6. Update Google Search Console and submit the new sitemap.
+7. Keep the old Vercel hostname from competing in search through the domain redirect/canonical configuration.
 
-Production and Preview Vercel builds fail with an actionable message when the canonical value is missing or invalid. Local development and ordinary local builds may omit it and use `http://localhost:5175` only as a non-production fallback. A local SEO production simulation uses `VERCEL_ENV=production` and must supply the canonical explicitly.
+Do not add a redirect before the real custom domain exists. The temporary Vercel fallback should eventually be replaced by this explicit custom-domain setting.
 
 ## Other public configuration
 

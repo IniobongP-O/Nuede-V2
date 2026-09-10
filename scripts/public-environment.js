@@ -4,7 +4,8 @@ const publicNames = new Set([
   "VITE_PUBLIC_SITE_URL", "VITE_GOOGLE_SITE_VERIFICATION",
 ]);
 const vercelPublicPrefix = "VITE_VERCEL_";
-const canonicalSiteUrlError = "Storefront SEO requires a valid VITE_PUBLIC_SITE_URL. Set it in the storefront Vercel project's Production environment (and Preview so previews canonicalize to production) to the permanent HTTPS root URL, for example https://www.your-domain.com. Credentials, paths, queries, fragments, localhost, placeholder domains, and *.vercel.app domains are not accepted.";
+const localCanonicalSiteUrl = "http://localhost:5175";
+const canonicalSiteUrlError = "Storefront SEO requires a canonical production origin. Configure VITE_PUBLIC_SITE_URL to your permanent HTTPS custom domain, or deploy through Vercel with VERCEL_PROJECT_PRODUCTION_URL available. Deployment-specific VERCEL_URL and VERCEL_BRANCH_URL domains are never used as canonical URLs.";
 
 /** Returns whether a value resembles a backend credential that must never enter a browser bundle. */
 export function containsBackendSecret(value) {
@@ -35,21 +36,59 @@ export function getDeploymentEnvironment(processEnvironment = process.env) {
     : "local";
 }
 
+/** Validates the hostname-only Vercel system value used by the trusted fallback path. */
+export function validateVercelProductionHostname(value) {
+  const hostname = typeof value === "string" ? value.trim().toLowerCase() : "";
+  const vercelHostname = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.vercel\.app$/;
+  if (!vercelHostname.test(hostname)) throw new Error(canonicalSiteUrlError);
+  return hostname;
+}
+
 /** Returns a normalized canonical origin or throws an actionable, value-free configuration error. */
-export function validateCanonicalSiteUrl(value) {
+export function validateCanonicalSiteUrl(value, { trustedVercelProductionHostname = "" } = {}) {
   const configuredValue = typeof value === "string" ? value.trim() : "";
   let siteUrl;
   try { siteUrl = new URL(configuredValue); } catch { /* Fail closed below. */ }
   const hostname = siteUrl?.hostname.toLowerCase() || "";
-  const disallowedHost = /localhost|^127(?:\.|$)|example|placeholder|your-(?:domain|production)|\.vercel\.app$/i.test(hostname) || hostname === "[::1]";
-  if (!siteUrl || siteUrl.protocol !== "https:" || siteUrl.username || siteUrl.password || siteUrl.pathname !== "/" || configuredValue.includes("?") || configuredValue.includes("#") || disallowedHost) {
+  const isVercelHostname = hostname.endsWith(".vercel.app");
+  const allowedVercelHostname = Boolean(trustedVercelProductionHostname) && hostname === trustedVercelProductionHostname;
+  const disallowedHost = /localhost|^127(?:\.|$)|example|placeholder|your-(?:domain|production)/i.test(hostname)
+    || hostname === "[::1]"
+    || hostname.endsWith(".")
+    || (isVercelHostname && !allowedVercelHostname);
+  if (!siteUrl || siteUrl.protocol !== "https:" || siteUrl.username || siteUrl.password || siteUrl.port || siteUrl.pathname !== "/" || configuredValue.includes("?") || configuredValue.includes("#") || disallowedHost) {
     throw new Error(canonicalSiteUrlError);
   }
   return siteUrl.origin;
 }
 
+/** Resolves the one canonical storefront origin without consulting deployment-specific URLs. */
+export function resolveCanonicalSiteUrl(env = {}, { requireCanonical = false, localFallback = localCanonicalSiteUrl } = {}) {
+  const explicitSiteUrl = typeof env.VITE_PUBLIC_SITE_URL === "string" ? env.VITE_PUBLIC_SITE_URL.trim() : "";
+  const deploymentEnvironment = getDeploymentEnvironment(env);
+  const onVercel = deploymentEnvironment !== "local";
+
+  if (explicitSiteUrl) {
+    let trustedVercelProductionHostname = "";
+    let explicitHostname = "";
+    try { explicitHostname = new URL(explicitSiteUrl).hostname.toLowerCase(); } catch { /* The canonical validator reports the safe error. */ }
+    if (onVercel && explicitHostname.endsWith(".vercel.app") && env.VERCEL_PROJECT_PRODUCTION_URL) {
+      trustedVercelProductionHostname = validateVercelProductionHostname(env.VERCEL_PROJECT_PRODUCTION_URL);
+    }
+    return validateCanonicalSiteUrl(explicitSiteUrl, { trustedVercelProductionHostname });
+  }
+
+  if (onVercel && env.VERCEL_PROJECT_PRODUCTION_URL) {
+    const trustedVercelProductionHostname = validateVercelProductionHostname(env.VERCEL_PROJECT_PRODUCTION_URL);
+    return validateCanonicalSiteUrl(`https://${trustedVercelProductionHostname}`, { trustedVercelProductionHostname });
+  }
+
+  if (requireCanonical) throw new Error(canonicalSiteUrlError);
+  return localFallback;
+}
+
 /** Validates the complete browser environment and returns its normalized public values. */
-export function validatePublicEnvironment(env, { production = false, requireCanonical = production } = {}) {
+export function validatePublicEnvironment(env, { production = false, requireCanonical = production, systemEnvironment = {} } = {}) {
   for (const [name, value] of Object.entries(env)) {
     if (!name.startsWith("VITE_")) continue;
     const allowedName = publicNames.has(name) || name.startsWith(vercelPublicPrefix);
@@ -60,9 +99,8 @@ export function validatePublicEnvironment(env, { production = false, requireCano
     }
   }
   const normalizedEnvironment = { ...env };
-  if (requireCanonical || env.VITE_PUBLIC_SITE_URL) {
-    normalizedEnvironment.VITE_PUBLIC_SITE_URL = validateCanonicalSiteUrl(env.VITE_PUBLIC_SITE_URL);
-  }
+  normalizedEnvironment.siteUrl = resolveCanonicalSiteUrl({ ...systemEnvironment, ...env }, { requireCanonical });
+  if (env.VITE_PUBLIC_SITE_URL) normalizedEnvironment.VITE_PUBLIC_SITE_URL = normalizedEnvironment.siteUrl;
   if (production) {
     const key = env.VITE_SUPABASE_ANON_KEY || "";
     let url;
@@ -75,12 +113,26 @@ export function validatePublicEnvironment(env, { production = false, requireCano
   return normalizedEnvironment;
 }
 
+/** Resolves browser-safe values and server-only Vercel context for a storefront build. */
+export function resolveStorefrontEnvironment(fileEnvironment = {}, processEnvironment = process.env) {
+  const deploymentEnvironment = getDeploymentEnvironment(processEnvironment);
+  const production = deploymentEnvironment === "production";
+  const preview = deploymentEnvironment === "preview";
+  const publicEnvironment = validatePublicEnvironment(
+    mergePublicEnvironment(fileEnvironment, processEnvironment),
+    { production, requireCanonical: production || preview, systemEnvironment: processEnvironment },
+  );
+  return { deploymentEnvironment, production, preview, publicEnvironment, siteUrl: publicEnvironment.siteUrl };
+}
+
 /** Guards Vite's resolved public env and injects only the safe deployment classification. */
-export function publicEnvironmentGuard({ canonicalSeo = false } = {}) {
+export function publicEnvironmentGuard({ canonicalSeo = false, canonicalSiteUrl = "" } = {}) {
   return {
     name: "nuede-public-environment",
     config() {
-      return { define: { "import.meta.env.VITE_NUEDE_DEPLOYMENT_ENV": JSON.stringify(getDeploymentEnvironment()) } };
+      const define = { "import.meta.env.VITE_NUEDE_DEPLOYMENT_ENV": JSON.stringify(getDeploymentEnvironment()) };
+      if (canonicalSiteUrl) define["import.meta.env.VITE_NUEDE_CANONICAL_SITE_URL"] = JSON.stringify(canonicalSiteUrl);
+      return { define };
     },
     configResolved(config) {
       const deploymentEnvironment = getDeploymentEnvironment();
@@ -88,6 +140,7 @@ export function publicEnvironmentGuard({ canonicalSeo = false } = {}) {
       validatePublicEnvironment(publicEnvironment, {
         production: deploymentEnvironment === "production",
         requireCanonical: canonicalSeo && ["production", "preview"].includes(deploymentEnvironment),
+        systemEnvironment: process.env,
       });
     },
   };
