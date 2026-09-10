@@ -50,6 +50,7 @@ export function createSeoMetadata(pathname, products = []) {
     canonicalPath = null;
   }
   if (NOINDEX_PATHS.includes(cleanPath)) robots = "noindex,follow";
+  if (seoConfig.previewDeployment) robots = "noindex,nofollow";
   const canonical = canonicalPath ? absoluteUrl(canonicalPath) : "";
   return { title, description, robots, canonical, openGraph: { title, description, url: canonical || absoluteUrl("/"), image, type, locale: seoConfig.locale } };
 }

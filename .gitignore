@@ -11,6 +11,7 @@ coverage/
 .env.*
 
 
+
 # Logs and caches
 *.log
 .eslintcache
@@ -24,3 +25,6 @@ Thumbs.db
 
 # Docs
 docs/
+!docs/
+docs/*
+!docs/SEO.md

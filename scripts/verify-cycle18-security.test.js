@@ -114,7 +114,9 @@ test("Cycle 18 other backend-secret formats remain protected", () => {
 });
 
 test("Cycle 18 production build guard rejects missing and placeholder Supabase configuration", () => {
-  assert.throws(() => validatePublicEnvironment({}, { production: true }), /Production requires/);
+  assert.throws(() => validatePublicEnvironment({
+    VITE_PUBLIC_SITE_URL: "https://www.nuede-test.ng",
+  }, { production: true }), /Production requires the intended HTTPS Supabase URL/);
   for (const url of [
     "http://test-project.supabase.co",
     "https://localhost:54321",
@@ -126,12 +128,14 @@ test("Cycle 18 production build guard rejects missing and placeholder Supabase c
     assert.throws(() => validatePublicEnvironment({
       VITE_SUPABASE_URL: url,
       VITE_SUPABASE_ANON_KEY: "public-anon-key-for-tests",
+      VITE_PUBLIC_SITE_URL: "https://www.nuede-test.ng",
     }, { production: true }), /Production requires the intended HTTPS Supabase URL/);
   }
   for (const key of ["", "your-public-key", "example-public-key", "placeholder-anon-key", "fixture-anon-key"]) {
     assert.throws(() => validatePublicEnvironment({
       VITE_SUPABASE_URL: "https://test-project.supabase.co",
       VITE_SUPABASE_ANON_KEY: key,
+      VITE_PUBLIC_SITE_URL: "https://www.nuede-test.ng",
     }, { production: true }), /Production requires a Supabase public key/);
   }
 });

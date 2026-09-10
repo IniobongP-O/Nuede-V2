@@ -83,21 +83,25 @@ must be fixed by applying their original migrations, not recreating them manuall
 
 ## Environment variables
 
-| Boundary | Variables | Rules |
-|---|---|---|
-| Both Vercel apps | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Same intended Supabase backend; public/publishable key only |
-| Storefront SEO | `VITE_PUBLIC_SITE_URL` | Required approved HTTPS production origin; localhost, example and Vercel preview origins fail production builds |
-| Storefront optional SEO | `VITE_GOOGLE_SITE_VERIFICATION` | Real Search Console token when issued; empty is valid |
-| Storefront optional contact | `VITE_CONTACT_PHONE`, `VITE_CONTACT_WHATSAPP`, `VITE_CONTACT_EMAIL`, `VITE_CONTACT_INSTAGRAM`, `VITE_CONTACT_HOURS` | Approved public business values; empty values render no fake link |
-| Edge runtime | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Supabase-provided backend credentials; never Vite/Vercel frontend values |
-| Edge custom secrets | `PAYSTACK_SECRET_KEY`, `NUEDE_STOREFRONT_URL`, `NUEDE_WHATSAPP_NUMBER` | Backend only; storefront URL is the final origin with trailing slash |
-| Operator tooling | `SUPABASE_ACCESS_TOKEN`, database password, Vercel CLI authentication | Secure session/secret store only |
+| Boundary | Variables | Required | Exposure | Rules |
+|---|---|---|---|---|
+| Both Vercel apps | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Production | Public, not secret | Same intended Supabase backend; public/publishable key only |
+| Storefront SEO | `VITE_PUBLIC_SITE_URL` | Production and Preview | Public, not secret | Permanent HTTPS root origin; no path/query/fragment, localhost, placeholder, credentials, or `*.vercel.app` domain |
+| Storefront optional SEO | `VITE_GOOGLE_SITE_VERIFICATION` | Optional | Public, not secret | Real Search Console token when issued; empty is valid |
+| Storefront optional contact | `VITE_CONTACT_PHONE`, `VITE_CONTACT_WHATSAPP`, `VITE_CONTACT_EMAIL`, `VITE_CONTACT_INSTAGRAM`, `VITE_CONTACT_HOURS` | Optional | Public, not secret | Approved public business values; empty values render no fake link |
+| Edge runtime | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Production | Backend secret | Supabase-provided backend credentials; never Vite/Vercel frontend values |
+| Edge custom secrets | `PAYSTACK_SECRET_KEY`, `NUEDE_STOREFRONT_URL`, `NUEDE_WHATSAPP_NUMBER` | Feature-dependent | Backend secret/config | Backend only; storefront URL is the final origin with trailing slash |
+| Operator tooling | `SUPABASE_ACCESS_TOKEN`, database password, Vercel CLI authentication | Operational | Secret | Secure session/secret store only |
+
+For the storefront Vercel project, open **Settings → Environment Variables** and set `VITE_PUBLIC_SITE_URL=https://YOUR-REAL-PRODUCTION-DOMAIN` for Production and Preview. This is an explicit operator action: repository code cannot configure or discover the intended external domain. Do not substitute `VERCEL_URL`, `VERCEL_PROJECT_PRODUCTION_URL`, or a temporary deployment alias. See [Production Canonical Domain Setup](SEO.md#production-canonical-domain-setup) for validation and preview-indexing behavior.
 
 The Vite build guard rejects arbitrary `VITE_` names while permitting Nuede's explicit
 allowlist and Vercel-generated public metadata under `VITE_VERCEL_*`. Every permitted value,
 including Vercel metadata, is still rejected if it matches a backend secret pattern. Production
-Vercel builds reject missing/placeholder configuration. Keep preview and production
-environment values separate. Do not pass backend keys through Vite to solve access errors.
+Vercel builds reject missing/placeholder configuration. Preview uses the same canonical origin
+but emits `noindex,nofollow` and a crawl-disallowing `robots.txt`. Keep other preview and
+production values separate where their backend scope differs. Do not pass backend keys through
+Vite to solve access errors.
 
 ## Edge Functions and Paystack
 

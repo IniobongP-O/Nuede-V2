@@ -54,6 +54,9 @@ test("Cycle 19 sitemap and robots include only canonical public routes", () => {
   const robots = createRobotsTxt("https://nuede.test/");
   assert.match(robots, /Allow: \//);
   assert.match(robots, /Sitemap: https:\/\/nuede\.test\/sitemap\.xml/);
+  const previewRobots = createRobotsTxt("https://nuede.test/", { disallowAll: true });
+  assert.match(previewRobots, /Disallow: \//);
+  assert.doesNotMatch(previewRobots, /Allow: \//);
   assert.equal(isIndexableProduct(product), true);
 });
 

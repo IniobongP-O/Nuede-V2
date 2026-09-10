@@ -19,7 +19,7 @@ export function Seo({ products = [], structuredData = [] }) {
   const { pathname, search } = useLocation();
   useEffect(() => {
     const metadata = createSeoMetadata(pathname, products);
-    if (search) metadata.robots = "noindex,follow";
+    if (search && !seoConfig.previewDeployment) metadata.robots = "noindex,follow";
     document.title = metadata.title;
     upsert('meta[name="description"]', "meta", { name: "description", content: metadata.description });
     upsert('meta[name="robots"]', "meta", { name: "robots", content: metadata.robots });

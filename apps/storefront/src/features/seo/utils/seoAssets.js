@@ -13,6 +13,8 @@ export function createSitemap({ siteUrl, staticPaths, products }) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`;
 }
 
-export function createRobotsTxt(siteUrl) {
-  return `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl.replace(/\/+$/, "")}/sitemap.xml\n`;
+/** Returns robots policy using the canonical sitemap and optional preview-wide blocking. */
+export function createRobotsTxt(siteUrl, { disallowAll = false } = {}) {
+  const crawlPolicy = disallowAll ? "Disallow: /" : "Allow: /";
+  return `User-agent: *\n${crawlPolicy}\n\nSitemap: ${siteUrl.replace(/\/+$/, "")}/sitemap.xml\n`;
 }
